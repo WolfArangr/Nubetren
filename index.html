@@ -154,7 +154,7 @@
     const isHoliday = document.getElementById("bankHoliday").checked;
 
     const startTimeMinutes = timeToMinutes(startTimeStr);
-    const cutoffTime = startTimeMinutes - 20;
+    const cutoffTime = startTimeMinutes - 21;
 
     let schedule = (isHoliday || dayOfWeek === "Sábado" || dayOfWeek === "Domingo")
       ? weekendTrains
@@ -172,12 +172,13 @@
     }
 
     const selectedTrain = validTrains[validTrains.length - 1];
-    const leaveHome = selectedTrain.minutes - 20;
+    const leaveHome = selectedTrain.minutes - 21;
 
-    resultBox.innerHTML = `
-      <strong>Tren recomendado:</strong> ${selectedTrain.time}<br>
-      <strong>Hora para salir de nido:</strong> ${minutesToTime(leaveHome)}
-    `;
+resultBox.innerHTML = `
+  <strong>Tren recomendado:</strong> ${selectedTrain.time}<br>
+  <strong>Hora para salir de nido:</strong> ${minutesToTime(leaveHome)}<br>
+  <strong>Hora para salir de nido en moto:</strong> ${minutesToTime(leaveHome + 10)}
+`;
   });
 </script>
 
