@@ -124,16 +124,17 @@
     pointerEvents: 'none'
   });
 
-  // Settings
-  const gravity = 0.2;
-  const damping = 0.99;
+  // Physics settings
+  const damping = 0.995;
   const bounceLoss = 0.7;
   const groundFriction = 0.95;
+  let gravity = { x: 0, y: 0.3 }; // initial downward
 
+  // Generate emojis
   for (let i = 0; i < numEmojis; i++) {
     const emoji = document.createElement('div');
     emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-    const fontSize = Math.random() * 48 + 12;
+    const fontSize = Math.random() * 60 + 12;
     emoji.style.position = 'absolute';
     emoji.style.fontSize = `${fontSize}px`;
 
@@ -143,55 +144,48 @@
     };
 
     const velocity = {
-      x: (Math.random() - 0.5) * (Math.random() * 2 + 1) * 1.5,
-      y: (Math.random() - 0.5) * (Math.random() * 2 + 1) * 1.5
+      x: (Math.random() - 0.5) * 4,
+      y: (Math.random() - 0.5) * 4
     };
 
     emojiContainer.appendChild(emoji);
     emojiElements.push({ el: emoji, pos, velocity });
   }
 
+  // Animate
   function animate() {
     for (const obj of emojiElements) {
       const { el, pos, velocity } = obj;
 
-      // Apply gravity
-      velocity.y += gravity;
+      // Apply gravity from device tilt
+      velocity.x += gravity.x;
+      velocity.y += gravity.y;
 
-      // Apply damping (slow down over time)
+      // Apply damping
       velocity.x *= damping;
       velocity.y *= damping;
 
-      // Move position
+      // Move
       pos.x += velocity.x;
       pos.y += velocity.y;
 
       const maxX = window.innerWidth - el.offsetWidth;
       const maxY = window.innerHeight - el.offsetHeight;
 
-      // Bounce on X edges
+      // Collision with walls
       if (pos.x < 0 || pos.x > maxX) {
         velocity.x *= -1;
         pos.x = Math.max(0, Math.min(pos.x, maxX));
       }
 
-      // Bounce or stop at bottom
-      if (pos.y > maxY) {
-        pos.y = maxY;
-        velocity.y *= -bounceLoss;
-
-        // Simulate resting by reducing x-speed too
-        if (Math.abs(velocity.y) < 1) {
-          velocity.y = 0;
-          velocity.x *= groundFriction;
-        }
-      }
-
-      // Top edge bounce
-      if (pos.y < 0) {
+      if (pos.y < 0 || pos.y > maxY) {
         velocity.y *= -1;
-        pos.y = 0;
+        pos.y = Math.max(0, Math.min(pos.y, maxY));
       }
+
+      // Stickiness on walls (optional)
+      if (Math.abs(velocity.x) < 0.05) velocity.x = 0;
+      if (Math.abs(velocity.y) < 0.05) velocity.y = 0;
 
       el.style.left = `${pos.x}px`;
       el.style.top = `${pos.y}px`;
@@ -202,7 +196,19 @@
 
   animate();
 
-  // Shake Detection
+  // Device orientation → gravity vector
+  if (window.DeviceOrientationEvent) {
+    window.addEventListener('deviceorientation', (event) => {
+      const tiltX = event.gamma; // left to right [-90,90]
+      const tiltY = event.beta;  // front to back [-180,180]
+
+      // Convert to gravity direction (tweak sensitivity as needed)
+      gravity.x = (tiltX || 0) / 30;
+      gravity.y = (tiltY || 0) / 30;
+    });
+  }
+
+  // Optional: Shake detection (same as before)
   let lastX, lastY, lastZ;
   const shakeThreshold = 15;
 
@@ -215,7 +221,7 @@
       const delta = Math.abs(x - lastX) + Math.abs(y - lastY) + Math.abs(z - lastZ);
 
       if (delta > shakeThreshold) {
-        // SHAKE DETECTED
+        // SHAKE DETECTED!
         emojiElements.forEach(obj => {
           obj.velocity.x += (Math.random() - 0.5) * 30;
           obj.velocity.y += (Math.random() - 0.5) * 30;
@@ -228,7 +234,6 @@
     lastZ = z;
   });
 </script>
-
 
 <body>
 
