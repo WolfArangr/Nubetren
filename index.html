@@ -125,7 +125,7 @@
   });
 
   // Physics settings
-  const damping = 0.994;
+  const damping = 0.99;
   const bounceLoss = 0.7;
   const groundFriction = 0.95;
   let gravity = { x: 0, y: 0.1 }; // initial downward
@@ -148,8 +148,11 @@
       y: (Math.random() - 0.5) * 4
     };
 
+    const rotation = Math.random() * 360;
+    const rotationSpeed = (Math.random() - 0.5) * 2; // degrees per frame
+
     emojiContainer.appendChild(emoji);
-    emojiElements.push({ el: emoji, pos, velocity });
+    emojiElements.push({ el: emoji, pos, velocity, rotation, rotationSpeed });
   }
 
   // Animate
@@ -187,8 +190,9 @@
       if (Math.abs(velocity.x) < 0.05) velocity.x = 0;
       if (Math.abs(velocity.y) < 0.05) velocity.y = 0;
 
-      el.style.left = `${pos.x}px`;
-      el.style.top = `${pos.y}px`;
+      // Update rotation
+      obj.rotation += obj.rotationSpeed;
+      el.style.transform = `translate(${pos.x}px, ${pos.y}px) rotate(${obj.rotation}deg)`;
     }
 
     requestAnimationFrame(animate);
@@ -203,12 +207,12 @@
       const tiltY = event.beta;  // front to back [-180,180]
 
       // Convert to gravity direction (tweak sensitivity as needed)
-      gravity.x = (tiltX || 0) / 30;
-      gravity.y = (tiltY || 0) / 30;
+      gravity.x = (tiltX || 0) / 60;
+      gravity.y = (tiltY || 0) / 60;
     });
   }
 
-  // Optional: Shake detection (same as before)
+  // Optional: Shake detection
   let lastX, lastY, lastZ;
   const shakeThreshold = 15;
 
@@ -225,6 +229,7 @@
         emojiElements.forEach(obj => {
           obj.velocity.x += (Math.random() - 0.5) * 30;
           obj.velocity.y += (Math.random() - 0.5) * 30;
+          obj.rotationSpeed += (Math.random() - 0.5) * 10;
         });
       }
     }
