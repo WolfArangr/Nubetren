@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>El gatijuego</title>
+<title>Juego del Gato Flotante</title>
 <style>
   body {
     margin: 0;
-    background: #87ceeb; /* sky blue */
+    background: #87ceeb; /* cielo azul */
     font-family: sans-serif;
     overflow: hidden;
     display: flex;
@@ -54,8 +54,8 @@
   <div id="cat">🐱</div>
 </div>
 
-<button id="tapBtn">Haz flotar al gato</button>
-<div id="scoreBoard">Puntuación: 0 | Puntuación máxima: 0</div>
+<button id="tapBtn">Toca para Flotar</button>
+<div id="scoreBoard">Puntuación: 0 | Récord: 0</div>
 
 <script>
 (() => {
@@ -66,30 +66,30 @@
 
   const gameWidth = game.clientWidth;
   const gameHeight = game.clientHeight;
-  const catSize = 48; // font size px (approx height)
+  const catSize = 48; // tamaño fuente px (aprox altura)
   const emojiSize = 36;
 
-  // Cat physics
+  // Física del gato
   let catY = gameHeight / 2;
   let velocity = 0;
-  const gravity = 0.5;
-  const lift = -10; // upward velocity on tap
+  const gravity = 0.6;
+  const lift = -10; // velocidad hacia arriba al tocar
 
-  // Game state
+  // Estado del juego
   let obstacles = [];
   let clouds = [];
   let frameCount = 0;
   let score = 0;
-  let highscore = 0;
+  let highScore = 0;
   let gameOver = false;
 
-  // Random emojis as obstacles (avoid these)
+  // Emojis de obstáculos (evitar)
   const obstacleEmojis = ['🔥','💥','⚡️','🌵','🐍','💣','👹','💀'];
 
-  // Cloud emoji (collect these)
+  // Emoji de nube (coleccionar)
   const cloudEmoji = '☁️';
 
-  // Create an emoji element and append to game
+  // Crear emoji y añadir al juego
   function createEmoji(type, emoji, x, y) {
     const el = document.createElement('div');
     el.classList.add('emoji');
@@ -100,12 +100,12 @@
     return {el, type, x, y};
   }
 
-  // Spawn obstacles and clouds periodically
+  // Generar obstáculos y nubes periódicamente
   function spawnEntities() {
-    if (frameCount % 90 === 0) { // every ~1.5 seconds at 60fps
+    if (frameCount % 90 === 0) { // cada ~1.5 segundos a 60fps
       const y = Math.random() * (gameHeight - emojiSize);
-      // Randomly decide cloud or obstacle
-      const isCloud = Math.random() < 0.3; // 30% chance cloud
+      // Decidir nube o obstáculo
+      const isCloud = Math.random() < 0.3; // 30% probabilidad nube
       if (isCloud) {
         clouds.push(createEmoji('cloud', cloudEmoji, gameWidth, y));
       } else {
@@ -115,7 +115,7 @@
     }
   }
 
-  // Move emojis left
+  // Mover emojis hacia la izquierda
   function moveEntities() {
     for (let i = obstacles.length - 1; i >= 0; i--) {
       obstacles[i].x -= 4;
@@ -135,7 +135,7 @@
     }
   }
 
-  // Check collision between cat and emojis (simple box collision)
+  // Comprobar colisiones simples por caja
   function checkCollision(rect1, rect2) {
     return !(rect2.left > rect1.right ||
              rect2.right < rect1.left ||
@@ -143,12 +143,12 @@
              rect2.bottom < rect1.top);
   }
 
-  // Update score and handle collisions
+  // Actualizar puntuación y colisiones
   function updateScoreAndCollisions() {
     const catRect = cat.getBoundingClientRect();
     const gameRect = game.getBoundingClientRect();
 
-    // Translate catRect to game coordinates
+    // Ajustar coordenadas al juego
     const catBox = {
       left: catRect.left - gameRect.left,
       right: catRect.right - gameRect.left,
@@ -156,7 +156,7 @@
       bottom: catRect.bottom - gameRect.top
     };
 
-    // Check obstacles collision - if collide, game over
+    // Colisión con obstáculos → fin del juego
     for (let o of obstacles) {
       const oBox = {
         left: o.x,
@@ -169,7 +169,7 @@
       }
     }
 
-    // Check clouds collision - if collide, remove cloud & add score
+    // Colisión con nubes → sumar puntos y eliminar nube
     for (let i = clouds.length - 1; i >= 0; i--) {
       const c = clouds[i];
       const cBox = {
@@ -186,9 +186,8 @@
     }
   }
 
-  // Reset game state
+  // Reiniciar juego
   function resetGame() {
-    // Remove all emojis
     for (let o of obstacles) game.removeChild(o.el);
     for (let c of clouds) game.removeChild(c.el);
     obstacles = [];
@@ -200,21 +199,19 @@
     gameOver = false;
   }
 
-  // Update scoreboard display
+  // Actualizar marcador
   function updateScoreBoard() {
-    scoreBoard.textContent = `Puntuación: ${score} | Puntuación Máxima: ${highScore}`;
+    scoreBoard.textContent = `Puntuación: ${score} | Récord: ${highScore}`;
   }
 
-  // Main game loop
+  // Bucle principal
   function gameLoop() {
     if (!gameOver) {
       frameCount++;
 
-      // Apply gravity to cat velocity and update position
       velocity += gravity;
       catY += velocity;
 
-      // Keep cat inside game bounds vertically
       if (catY + catSize > gameHeight) {
         catY = gameHeight - catSize;
         velocity = 0;
@@ -233,7 +230,7 @@
       if (gameOver) {
         if(score > highScore) highScore = score;
         updateScoreBoard();
-        alert('Se acabó. Puntuación: ' + score + '\nOK para reiniciar.');
+        alert('¡Juego terminado! Tu puntuación: ' + score + '\nPulsa Aceptar para reiniciar.');
         resetGame();
       }
 
@@ -243,7 +240,6 @@
     requestAnimationFrame(gameLoop);
   }
 
-  // On tap button click: apply lift to cat velocity
   tapBtn.addEventListener('click', () => {
     if (!gameOver) {
       velocity = lift;
