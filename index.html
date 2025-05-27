@@ -43,10 +43,10 @@
 </head>
 <body>
 
-<h2>Planificador de salida para el tren</h2>
+<h2>Nubificador de salida para el tren</h2>
 
 <form id="plannerForm">
-  <label for="startTime">Hora de entrada al trabajo (HH:MM)</label>
+  <label for="startTime">Hora de entrada al nubajo (HH:MM)</label>
   <input type="time" id="startTime" required>
 
   <label for="dayOfWeek">Día de la semana</label>
@@ -116,7 +116,7 @@
 
     document.getElementById("resultBox").innerHTML = `
       <strong>Tren recomendado:</strong> ${selectedTrain.time}<br>
-      <strong>Hora para salir de casa:</strong> ${minutesToTime(leaveHome)}
+      <strong>Hora para salir de nido:</strong> ${minutesToTime(leaveHome)}
     `;
   });
 </script>
