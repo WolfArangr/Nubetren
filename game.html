@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>El gatijuego</title>
+<style>
+  body {
+    margin: 0;
+    background: #87ceeb; /* sky blue */
+    font-family: sans-serif;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  #game {
+    position: relative;
+    width: 400px;
+    height: 600px;
+    background: #ccefff;
+    border: 2px solid #333;
+    overflow: hidden;
+    margin-top: 20px;
+  }
+  #cat {
+    position: absolute;
+    font-size: 48px;
+    left: 50px;
+    user-select: none;
+  }
+  .emoji {
+    position: absolute;
+    font-size: 36px;
+    user-select: none;
+  }
+  #tapBtn {
+    margin-top: 15px;
+    padding: 10px 25px;
+    font-size: 24px;
+    cursor: pointer;
+    user-select: none;
+  }
+  #scoreBoard {
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+
+<div id="game">
+  <div id="cat">🐱</div>
+</div>
+
+<button id="tapBtn">Haz flotar al gato</button>
+<div id="scoreBoard">Puntuación: 0 | Puntuación máxima: 0</div>
+
+<script>
+(() => {
+  const game = document.getElementById('game');
+  const cat = document.getElementById('cat');
+  const tapBtn = document.getElementById('tapBtn');
+  const scoreBoard = document.getElementById('scoreBoard');
+
+  const gameWidth = game.clientWidth;
+  const gameHeight = game.clientHeight;
+  const catSize = 48; // font size px (approx height)
+  const emojiSize = 36;
+
+  // Cat physics
+  let catY = gameHeight / 2;
+  let velocity = 0;
+  const gravity = 0.5;
+  const lift = -10; // upward velocity on tap
+
+  // Game state
+  let obstacles = [];
+  let clouds = [];
+  let frameCount = 0;
+  let score = 0;
+  let highScore = 0;
+  let gameOver = false;
+
+  // Random emojis as obstacles (avoid these)
+  const obstacleEmojis = ['🔥','💥','⚡️','🌵','🐍','💣','👹','💀'];
+
+  // Cloud emoji (collect these)
+  const cloudEmoji = '☁️';
+
+  // Create an emoji element and append to game
+  function createEmoji(type, emoji, x, y) {
+    const el = document.createElement('div');
+    el.classList.add('emoji');
+    el.textContent = emoji;
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    game.appendChild(el);
+    return {el, type, x, y};
+  }
+
+  // Spawn obstacles and clouds periodically
+  function spawnEntities() {
+    if (frameCount % 90 === 0) { // every ~1.5 seconds at 60fps
+      const y = Math.random() * (gameHeight - emojiSize);
+      // Randomly decide cloud or obstacle
+      const isCloud = Math.random() < 0.3; // 30% chance cloud
+      if (isCloud) {
+        clouds.push(createEmoji('cloud', cloudEmoji, gameWidth, y));
+      } else {
+        const emoji = obstacleEmojis[Math.floor(Math.random() * obstacleEmojis.length)];
+        obstacles.push(createEmoji('obstacle', emoji, gameWidth, y));
+      }
+    }
+  }
+
+  // Move emojis left
+  function moveEntities() {
+    for (let i = obstacles.length - 1; i >= 0; i--) {
+      obstacles[i].x -= 4;
+      obstacles[i].el.style.left = obstacles[i].x + 'px';
+      if (obstacles[i].x + emojiSize < 0) {
+        game.removeChild(obstacles[i].el);
+        obstacles.splice(i,1);
+      }
+    }
+    for (let i = clouds.length - 1; i >= 0; i--) {
+      clouds[i].x -= 4;
+      clouds[i].el.style.left = clouds[i].x + 'px';
+      if (clouds[i].x + emojiSize < 0) {
+        game.removeChild(clouds[i].el);
+        clouds.splice(i,1);
+      }
+    }
+  }
+
+  // Check collision between cat and emojis (simple box collision)
+  function checkCollision(rect1, rect2) {
+    return !(rect2.left > rect1.right ||
+             rect2.right < rect1.left ||
+             rect2.top > rect1.bottom ||
+             rect2.bottom < rect1.top);
+  }
+
+  // Update score and handle collisions
+  function updateScoreAndCollisions() {
+    const catRect = cat.getBoundingClientRect();
+    const gameRect = game.getBoundingClientRect();
+
+    // Translate catRect to game coordinates
+    const catBox = {
+      left: catRect.left - gameRect.left,
+      right: catRect.right - gameRect.left,
+      top: catRect.top - gameRect.top,
+      bottom: catRect.bottom - gameRect.top
+    };
+
+    // Check obstacles collision - if collide, game over
+    for (let o of obstacles) {
+      const oBox = {
+        left: o.x,
+        right: o.x + emojiSize,
+        top: o.y,
+        bottom: o.y + emojiSize
+      };
+      if (checkCollision(catBox, oBox)) {
+        gameOver = true;
+      }
+    }
+
+    // Check clouds collision - if collide, remove cloud & add score
+    for (let i = clouds.length - 1; i >= 0; i--) {
+      const c = clouds[i];
+      const cBox = {
+        left: c.x,
+        right: c.x + emojiSize,
+        top: c.y,
+        bottom: c.y + emojiSize
+      };
+      if (checkCollision(catBox, cBox)) {
+        score++;
+        game.removeChild(c.el);
+        clouds.splice(i, 1);
+      }
+    }
+  }
+
+  // Reset game state
+  function resetGame() {
+    // Remove all emojis
+    for (let o of obstacles) game.removeChild(o.el);
+    for (let c of clouds) game.removeChild(c.el);
+    obstacles = [];
+    clouds = [];
+
+    catY = gameHeight / 2;
+    velocity = 0;
+    score = 0;
+    gameOver = false;
+  }
+
+  // Update scoreboard display
+  function updateScoreBoard() {
+    scoreBoard.textContent = `Score: ${score} | High Score: ${highScore}`;
+  }
+
+  // Main game loop
+  function gameLoop() {
+    if (!gameOver) {
+      frameCount++;
+
+      // Apply gravity to cat velocity and update position
+      velocity += gravity;
+      catY += velocity;
+
+      // Keep cat inside game bounds vertically
+      if (catY + catSize > gameHeight) {
+        catY = gameHeight - catSize;
+        velocity = 0;
+      }
+      if (catY < 0) {
+        catY = 0;
+        velocity = 0;
+      }
+
+      cat.style.top = catY + 'px';
+
+      spawnEntities();
+      moveEntities();
+      updateScoreAndCollisions();
+
+      if (gameOver) {
+        if(score > highScore) highScore = score;
+        updateScoreBoard();
+        alert('Se acabó. Puntuación: ' + score + '\nOK para reiniciar.');
+        resetGame();
+      }
+
+      updateScoreBoard();
+    }
+
+    requestAnimationFrame(gameLoop);
+  }
+
+  // On tap button click: apply lift to cat velocity
+  tapBtn.addEventListener('click', () => {
+    if (!gameOver) {
+      velocity = lift;
+    }
+  });
+
+  resetGame();
+  gameLoop();
+})();
+</script>
+
+</body>
+</html>
