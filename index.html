@@ -207,8 +207,8 @@
       const tiltY = event.beta;  // front to back [-180,180]
 
       // Convert to gravity direction (tweak sensitivity as needed)
-      gravity.x = (tiltX || 0) / 60;
-      gravity.y = (tiltY || 0) / 60;
+      gravity.x = (tiltX || 0) / 45;
+      gravity.y = (tiltY || 0) / 45;
     });
   }
 
