@@ -290,6 +290,9 @@
   <button type="submit">Calcular</button>
 
   <div class="result" id="resultBox"></div>
+  
+  <button type="button" id="goToGameButton">Ir al juego</button>
+  
 </form>
 
 <script>
@@ -340,6 +343,10 @@ resultBox.innerHTML = `
   <strong>Hora para salir de nido a pata:</strong> ${minutesToTime(leaveHome)}<br>
   <strong>Hora para salir de nido en moto:</strong> ${minutesToTime(leaveHome + 10)}
 `;
+  });
+
+    document.getElementById('goToGameButton').addEventListener('click', () => {
+    window.location.href = 'game.html';
   });
 </script>
 
