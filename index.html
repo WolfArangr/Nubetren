@@ -111,46 +111,92 @@
   const emojiContainer = document.getElementById('emoji-background');
   const emojis = ['☁️', '😺', '❤️'];
   const numEmojis = 100;
+  const emojiElements = [];
 
-  emojiContainer.style.position = 'fixed';
-  emojiContainer.style.top = 0;
-  emojiContainer.style.left = 0;
-  emojiContainer.style.width = '100%';
-  emojiContainer.style.height = '100%';
-  emojiContainer.style.zIndex = '-1';
-  emojiContainer.style.overflow = 'hidden';
-  emojiContainer.style.pointerEvents = 'none';
+  Object.assign(emojiContainer.style, {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    zIndex: '-1',
+    overflow: 'hidden',
+    pointerEvents: 'none'
+  });
 
+  // Generate emojis with random positions and velocities
   for (let i = 0; i < numEmojis; i++) {
     const emoji = document.createElement('div');
     emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    const fontSize = Math.random() * 48 + 12;
     emoji.style.position = 'absolute';
-    emoji.style.fontSize = `${Math.random() * 48 + 12}px`;
-    emoji.style.left = `${Math.random() * 100}%`;
-    emoji.style.top = `${Math.random() * 100}%`;
-    emoji.style.animation = `float${i} ${15 + Math.random() * 45}s linear infinite`;
-    emojiContainer.appendChild(emoji);
+    emoji.style.fontSize = `${fontSize}px`;
 
-    const keyframes = `
-      @keyframes float${i} {
-        0% {
-          transform: translate(0, 0) rotate(0deg);
-          opacity: 0.6;
-        }
-        50% {
-          transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 200 - 100}px) rotate(${Math.random() * 360}deg);
-          opacity: 0.9;
-        }
-        100% {
-          transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 200 - 100}px) rotate(${Math.random() * 720}deg);
-          opacity: 0.6;
-        }
-      }
-    `;
-    const styleSheet = document.createElement("style");
-    styleSheet.innerHTML = keyframes;
-    document.head.appendChild(styleSheet);
+    const pos = {
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight
+    };
+
+    const velocity = {
+      x: (Math.random() - 0.5) * (Math.random() * 2 + 1) * 1.5,
+      y: (Math.random() - 0.5) * (Math.random() * 2 + 1) * 1.5
+    };
+
+    emojiContainer.appendChild(emoji);
+    emojiElements.push({ el: emoji, pos, velocity });
   }
+
+  // Animate bouncing
+  function animate() {
+    for (const obj of emojiElements) {
+      const { el, pos, velocity } = obj;
+
+      pos.x += velocity.x;
+      pos.y += velocity.y;
+
+      if (pos.x < 0 || pos.x > window.innerWidth - el.offsetWidth) {
+        velocity.x *= -1;
+        pos.x = Math.max(0, Math.min(pos.x, window.innerWidth - el.offsetWidth));
+      }
+      if (pos.y < 0 || pos.y > window.innerHeight - el.offsetHeight) {
+        velocity.y *= -1;
+        pos.y = Math.max(0, Math.min(pos.y, window.innerHeight - el.offsetHeight));
+      }
+
+      el.style.left = `${pos.x}px`;
+      el.style.top = `${pos.y}px`;
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+
+  // Shake detection
+  let lastX, lastY, lastZ;
+  let shakeThreshold = 15;
+
+  window.addEventListener('devicemotion', function (event) {
+    if (!event.accelerationIncludingGravity) return;
+
+    const { x, y, z } = event.accelerationIncludingGravity;
+
+    if (lastX !== null) {
+      const delta = Math.abs(x - lastX) + Math.abs(y - lastY) + Math.abs(z - lastZ);
+
+      if (delta > shakeThreshold) {
+        // SHAKE DETECTED! Boost all velocities
+        emojiElements.forEach(obj => {
+          obj.velocity.x += (Math.random() - 0.5) * 20;
+          obj.velocity.y += (Math.random() - 0.5) * 20;
+        });
+      }
+    }
+
+    lastX = x;
+    lastY = y;
+    lastZ = z;
+  });
 </script>
 
 
