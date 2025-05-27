@@ -126,7 +126,7 @@
 
   // Physics settings
   const damping = 0.99;
-  const bounceLoss = 0.8;
+  const bounceLoss = 0.5;
   const groundFriction = 0.95;
   const baseGravity = { x: 0, y: 0.1 }; // gravity when active
 
@@ -156,7 +156,7 @@
     const rotationSpeed = (Math.random() - 0.5) * 2; // degrees per frame
 
     // Random gravity delay time in ms for each emoji
-    const gravityDelay = (Math.random() * (gravityDelayMax - gravityDelayMin) + gravityDelayMin) * 1000;
+    const gravityDelay = (Math.random() * (gravityDelayMax - gravityDelayMin) + gravityDelayMin) * 100;
 
     emojiContainer.appendChild(emoji);
     emojiElements.push({ el: emoji, pos, velocity, rotation, rotationSpeed, gravityDelay, gravityActive: false, gravityVector: { x: 0, y: 0 } });
@@ -169,7 +169,7 @@
 
       // Activate gravity after delay
       if (!obj.gravityActive) {
-        obj.gravityDelay -= 16.67; // approximate frame duration ~60fps
+        obj.gravityDelay -= 10.00; // approximate frame duration ~60fps
         if (obj.gravityDelay <= 0) {
           obj.gravityActive = true;
           obj.gravityVector = { ...baseGravity };
