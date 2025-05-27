@@ -124,7 +124,12 @@
     pointerEvents: 'none'
   });
 
-  // Generate emojis with random positions and velocities
+  // Settings
+  const gravity = 0.2;
+  const damping = 0.99;
+  const bounceLoss = 0.7;
+  const groundFriction = 0.95;
+
   for (let i = 0; i < numEmojis; i++) {
     const emoji = document.createElement('div');
     emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
@@ -146,21 +151,46 @@
     emojiElements.push({ el: emoji, pos, velocity });
   }
 
-  // Animate bouncing
   function animate() {
     for (const obj of emojiElements) {
       const { el, pos, velocity } = obj;
 
+      // Apply gravity
+      velocity.y += gravity;
+
+      // Apply damping (slow down over time)
+      velocity.x *= damping;
+      velocity.y *= damping;
+
+      // Move position
       pos.x += velocity.x;
       pos.y += velocity.y;
 
-      if (pos.x < 0 || pos.x > window.innerWidth - el.offsetWidth) {
+      const maxX = window.innerWidth - el.offsetWidth;
+      const maxY = window.innerHeight - el.offsetHeight;
+
+      // Bounce on X edges
+      if (pos.x < 0 || pos.x > maxX) {
         velocity.x *= -1;
-        pos.x = Math.max(0, Math.min(pos.x, window.innerWidth - el.offsetWidth));
+        pos.x = Math.max(0, Math.min(pos.x, maxX));
       }
-      if (pos.y < 0 || pos.y > window.innerHeight - el.offsetHeight) {
+
+      // Bounce or stop at bottom
+      if (pos.y > maxY) {
+        pos.y = maxY;
+        velocity.y *= -bounceLoss;
+
+        // Simulate resting by reducing x-speed too
+        if (Math.abs(velocity.y) < 1) {
+          velocity.y = 0;
+          velocity.x *= groundFriction;
+        }
+      }
+
+      // Top edge bounce
+      if (pos.y < 0) {
         velocity.y *= -1;
-        pos.y = Math.max(0, Math.min(pos.y, window.innerHeight - el.offsetHeight));
+        pos.y = 0;
       }
 
       el.style.left = `${pos.x}px`;
@@ -172,23 +202,23 @@
 
   animate();
 
-  // Shake detection
+  // Shake Detection
   let lastX, lastY, lastZ;
-  let shakeThreshold = 15;
+  const shakeThreshold = 15;
 
   window.addEventListener('devicemotion', function (event) {
     if (!event.accelerationIncludingGravity) return;
 
     const { x, y, z } = event.accelerationIncludingGravity;
 
-    if (lastX !== null) {
+    if (lastX !== undefined) {
       const delta = Math.abs(x - lastX) + Math.abs(y - lastY) + Math.abs(z - lastZ);
 
       if (delta > shakeThreshold) {
-        // SHAKE DETECTED! Boost all velocities
+        // SHAKE DETECTED
         emojiElements.forEach(obj => {
-          obj.velocity.x += (Math.random() - 0.5) * 20;
-          obj.velocity.y += (Math.random() - 0.5) * 20;
+          obj.velocity.x += (Math.random() - 0.5) * 30;
+          obj.velocity.y += (Math.random() - 0.5) * 30;
         });
       }
     }
