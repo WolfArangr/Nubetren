@@ -128,7 +128,11 @@
   const damping = 0.99;
   const bounceLoss = 0.7;
   const groundFriction = 0.95;
-  let gravity = { x: 0, y: 0.1 }; // initial downward
+  const baseGravity = { x: 0, y: 0.1 }; // gravity when active
+
+  // Gravity delay range in seconds (change here easily)
+  const gravityDelayMin = 5;
+  const gravityDelayMax = 30;
 
   // Generate emojis
   for (let i = 0; i < numEmojis; i++) {
@@ -151,18 +155,32 @@
     const rotation = Math.random() * 360;
     const rotationSpeed = (Math.random() - 0.5) * 2; // degrees per frame
 
+    // Random gravity delay time in ms for each emoji
+    const gravityDelay = (Math.random() * (gravityDelayMax - gravityDelayMin) + gravityDelayMin) * 1000;
+
     emojiContainer.appendChild(emoji);
-    emojiElements.push({ el: emoji, pos, velocity, rotation, rotationSpeed });
+    emojiElements.push({ el: emoji, pos, velocity, rotation, rotationSpeed, gravityDelay, gravityActive: false, gravityVector: { x: 0, y: 0 } });
   }
 
   // Animate
-  function animate() {
+  function animate(timestamp = 0) {
     for (const obj of emojiElements) {
       const { el, pos, velocity } = obj;
 
-      // Apply gravity from device tilt
-      velocity.x += gravity.x;
-      velocity.y += gravity.y;
+      // Activate gravity after delay
+      if (!obj.gravityActive) {
+        obj.gravityDelay -= 16.67; // approximate frame duration ~60fps
+        if (obj.gravityDelay <= 0) {
+          obj.gravityActive = true;
+          obj.gravityVector = { ...baseGravity };
+        }
+      }
+
+      // Apply gravity only if active
+      if (obj.gravityActive) {
+        velocity.x += obj.gravityVector.x;
+        velocity.y += obj.gravityVector.y;
+      }
 
       // Apply damping
       velocity.x *= damping;
@@ -200,15 +218,21 @@
 
   animate();
 
-  // Device orientation → gravity vector
+  // Device orientation → gravity vector (updates gravityVector for each emoji if active)
   if (window.DeviceOrientationEvent) {
     window.addEventListener('deviceorientation', (event) => {
       const tiltX = event.gamma; // left to right [-90,90]
       const tiltY = event.beta;  // front to back [-180,180]
 
       // Convert to gravity direction (tweak sensitivity as needed)
-      gravity.x = (tiltX || 0) / 45;
-      gravity.y = (tiltY || 0) / 45;
+      const newGravity = { x: (tiltX || 0) / 45, y: (tiltY || 0) / 45 };
+
+      // Update gravity vector only for emojis where gravity is active
+      emojiElements.forEach(obj => {
+        if (obj.gravityActive) {
+          obj.gravityVector = newGravity;
+        }
+      });
     });
   }
 
