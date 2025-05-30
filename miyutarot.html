@@ -82,29 +82,35 @@
     }
 
     .weekly-card {
+		  display: flex;
+	 flex-direction: column;
+	 justify-content: center;
+	 align-items: center;
+	 text-align: center;
+	 min-height: 300px;
+ 	 padding: 1.0em;
       background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(255, 215, 0, 0.05) 100%);
       border: 2px solid #d4af37;
-      border-radius: 20px;
-      padding: 2em;
+      border-radius: 40px;
       margin: 1em auto;
-      max-width: 400px;
+      width: 300px;
+	  height: 500px
       backdrop-filter: blur(15px);
       box-shadow: 
-        0 10px 30px rgba(0,0,0,0.5),
-        0 0 50px rgba(212, 175, 55, 0.3),
-        inset 0 1px 0 rgba(255,255,255,0.1);
+      0 10px 30px rgba(0,0,0,0.5),
+      0 0 50px rgba(212, 175, 55, 0.3),
+      inset 0 1px 0 rgba(255,255,255,0.1);
       transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      cursor: pointer;
+      cursor: help;
       position: relative;
       overflow: hidden;
-      perspective: 1000px;
     }
 
     .card-inner {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      transition: transform 0.8s;
+      position: center;
+      width: 300px;
+      height: 500px;
+      transition: transform 1.5s;
       transform-style: preserve-3d;
     }
 
@@ -127,6 +133,20 @@
       justify-content: center;
       align-items: center;
       color: #ffd700;
+      padding: 0;
+    }
+
+    .card-back-image {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 2px solid #ffd700;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+    }
+
+    .weekly-card .card-back-image {
+      height: 500px;
     }
 
     .card-front {
@@ -134,14 +154,15 @@
     }
 
     .card-back-pattern {
-      font-size: 4em;
+      font-size: 5em;
       margin-bottom: 0.2em;
+	  margin-top: 0.5em;
       text-shadow: 0 0 20px #ffd700;
       animation: pulse 2s ease-in-out infinite;
     }
 
     .weekly-card .card-back-pattern {
-      font-size: 5em;
+      font-size: 8em;
     }
 
     @keyframes pulse {
@@ -151,13 +172,13 @@
 
     .card-back-text {
       font-family: 'Cinzel', serif;
-      font-size: 1.2em;
+      font-size: 2.5em;
       text-align: center;
       font-weight: 600;
     }
 
     .weekly-card .card-back-text {
-      font-size: 1.4em;
+      font-size: 2em;
     }
 
     .weekly-card::before {
@@ -201,20 +222,25 @@
     }
 
     .daily-card {
+	  display: flex;
+	 flex-direction: column;
+	 justify-content: center;
+	 align-items: center;
+	 text-align: center;
+	 min-height: 300px;
+ 	 padding: 1.0em;
       background: linear-gradient(135deg, rgba(139, 69, 19, 0.2) 0%, rgba(160, 82, 45, 0.1) 100%);
       border: 1px solid rgba(212, 175, 55, 0.6);
       border-radius: 15px;
-      padding: 1.5em;
-      width: 280px;
+      width: 300px;
       backdrop-filter: blur(10px);
       box-shadow: 
         0 8px 25px rgba(0,0,0,0.4),
         0 0 30px rgba(212, 175, 55, 0.2);
-      transition: all 0.3s ease;
-      cursor: pointer;
-      position: relative;
+      transition: all 1s ease;
+      cursor: help;
+      position: center;
       overflow: hidden;
-      perspective: 1000px;
     }
 
     .daily-card::after {
@@ -242,7 +268,7 @@
 
     .card-name {
       font-family: 'Cinzel', serif;
-      font-size: 1.4em;
+      font-size: 3.2em;
       font-weight: 600;
       margin-bottom: 0.8em;
       color: #ffd700;
@@ -250,11 +276,11 @@
     }
 
     .daily-card .card-name {
-      font-size: 1.2em;
+      font-size: 2.5em;
     }
 
     .card-description {
-      font-size: 1em;
+      font-size: 2em;
       line-height: 1.6;
       color: #f4e4c1;
       opacity: 0.9;
@@ -262,7 +288,7 @@
     }
 
     .daily-card .card-description {
-      font-size: 0.9em;
+      font-size: 1.8em;
     }
 
     @media (max-width: 768px) {
@@ -296,13 +322,20 @@
   <div class="mystical-symbol symbol-2">⭐</div>
   <div class="mystical-symbol symbol-3">🔮</div>
 
-  <h1>🔮 MiyuTarot 🔮</h1>
+  <h1>🔮 Tarot Místico</h1>
   
   <div class="weekly-section">
     <h2>✨ Carta de la Semana ✨</h2>
     <div id="weekly" class="weekly-card">
-      <div class="card-name"></div>
-      <div class="card-description"></div>
+      <div class="card-inner">
+        <div class="card-face card-back">
+          <img class="card-back-image" src="" alt="Carta del Tarot" loading="lazy">
+        </div>
+        <div class="card-face card-front">
+          <div class="card-name"></div>
+          <div class="card-description"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -320,8 +353,94 @@
       "As de Bastos", "2 de Bastos", "3 de Bastos", "4 de Bastos", "5 de Bastos", "6 de Bastos", "7 de Bastos", "8 de Bastos", "9 de Bastos", "10 de Bastos", "Sota de Bastos", "Caballero de Bastos", "Reina de Bastos", "Rey de Bastos",
       "As de Copas", "2 de Copas", "3 de Copas", "4 de Copas", "5 de Copas", "6 de Copas", "7 de Copas", "8 de Copas", "9 de Copas", "10 de Copas", "Sota de Copas", "Caballero de Copas", "Reina de Copas", "Rey de Copas",
       "As de Espadas", "2 de Espadas", "3 de Espadas", "4 de Espadas", "5 de Espadas", "6 de Espadas", "7 de Espadas", "8 de Espadas", "9 de Espadas", "10 de Espadas", "Sota de Espadas", "Caballero de Espadas", "Reina de Espadas", "Rey de Espadas",
-      "As de Oros", "2 de Oros", "3 de Oros", "4 de Oros", "5 de Oros", "6 de Oros", "7 de Oros", "8 de Oros", "9 de Oros", "10 de Oros", "Sota de Oros", "Caballero de Oros", "Reina de Oros", "Rey de Oros"
+      "As de Pentáculos", "2 de Pentáculos", "3 de Pentáculos", "4 de Pentáculos", "5 de Pentáculos", "6 de Pentáculos", "7 de Pentáculos", "8 de Pentáculos", "9 de Pentáculos", "10 de Pentáculos", "Sota de Pentáculos", "Caballero de Pentáculos", "Reina de Pentáculos", "Rey de Pentáculos"
     ];
+
+    // Mapeo de nombres en español a nombres de archivos en inglés
+    const nombreAArchivo = {
+      "El Loco": "thefool",
+      "El Mago": "themagician", 
+      "La Suma Sacerdotisa": "thehighpriestess",
+      "La Emperatriz": "theempress",
+      "El Emperador": "theemperor",
+      "El Hierofante": "thehierophant",
+      "Los Enamorados": "thelovers",
+      "El Carro": "thechariot",
+      "La Fuerza": "strength",
+      "El Ermitaño": "thehermit",
+      "La Rueda de la Fortuna": "wheeloffortune",
+      "La Justicia": "justice",
+      "El Colgado": "thehangedman",
+      "La Muerte": "death",
+      "La Templanza": "temperance",
+      "El Diablo": "thedevil",
+      "La Torre": "thetower",
+      "La Estrella": "thestar",
+      "La Luna": "themoon",
+      "El Sol": "thesun",
+      "El Juicio": "judgement",
+      "El Mundo": "theworld",
+      // Bastos (Wands)
+      "As de Bastos": "aceofwands",
+      "2 de Bastos": "twoofwands",
+      "3 de Bastos": "threeofwands", 
+      "4 de Bastos": "fourofwands",
+      "5 de Bastos": "fiveofwands",
+      "6 de Bastos": "sixofwands",
+      "7 de Bastos": "sevenofwands",
+      "8 de Bastos": "eightofwands",
+      "9 de Bastos": "nineofwands",
+      "10 de Bastos": "tenofwands",
+      "Sota de Bastos": "pageofwands",
+      "Caballero de Bastos": "knightofwands",
+      "Reina de Bastos": "queenofwands",
+      "Rey de Bastos": "kingofwands",
+      // Copas (Cups)
+      "As de Copas": "aceofcups",
+      "2 de Copas": "twoofcups",
+      "3 de Copas": "threeofcups",
+      "4 de Copas": "fourofcups",
+      "5 de Copas": "fiveofcups",
+      "6 de Copas": "sixofcups",
+      "7 de Copas": "sevenofcups",
+      "8 de Copas": "eightofcups",
+      "9 de Copas": "nineofcups",
+      "10 de Copas": "tenofcups",
+      "Sota de Copas": "pageofcups",
+      "Caballero de Copas": "knightofcups",
+      "Reina de Copas": "queenofcups",
+      "Rey de Copas": "kingofcups",
+      // Espadas (Swords)
+      "As de Espadas": "aceofswords",
+      "2 de Espadas": "twoofswords",
+      "3 de Espadas": "threeofswords",
+      "4 de Espadas": "fourofswords",
+      "5 de Espadas": "fiveofswords",
+      "6 de Espadas": "sixofswords",
+      "7 de Espadas": "sevenofswords",
+      "8 de Espadas": "eightofswords",
+      "9 de Espadas": "nineofswords",
+      "10 de Espadas": "tenofswords",
+      "Sota de Espadas": "pageofswords",
+      "Caballero de Espadas": "knightofswords",
+      "Reina de Espadas": "queenofswords",
+      "Rey de Espadas": "kingofswords",
+      // Pentáculos (Pentacles)
+      "As de Pentáculos": "aceofpentacles",
+      "2 de Pentáculos": "twoofpentacles",
+      "3 de Pentáculos": "threeofpentacles",
+      "4 de Pentáculos": "fourofpentacles",
+      "5 de Pentáculos": "fiveofpentacles",
+      "6 de Pentáculos": "sixofpentacles",
+      "7 de Pentáculos": "sevenofpentacles",
+      "8 de Pentáculos": "eightofpentacles",
+      "9 de Pentáculos": "nineofpentacles",
+      "10 de Pentáculos": "tenofpentacles",
+      "Sota de Pentáculos": "pageofpentacles",
+      "Caballero de Pentáculos": "knightofpentacles",
+      "Reina de Pentáculos": "queenofpentacles",
+      "Rey de Pentáculos": "kingofpentacles"
+    };
 
     const descripciones = {
       "El Loco": "Nuevos comienzos, espontaneidad y fe en el futuro. Es momento de dar un salto de fe.",
@@ -391,21 +510,21 @@
       "Caballero de Espadas": "Ambición, prisa y acción directa sin considerar consecuencias.",
       "Reina de Espadas": "Independencia, inteligencia aguda y comunicación clara y directa.",
       "Rey de Espadas": "Autoridad intelectual, verdad y juicio claro guían decisiones.",
-      // Oros
-      "As de Oros": "Nueva oportunidad financiera, manifestación y abundancia material.",
-      "2 de Oros": "Balance múltiple, flexibilidad y malabarismo de responsabilidades.",
-      "3 de Oros": "Colaboración, trabajo en equipo y construcción conjunta de proyectos.",
-      "4 de Oros": "Conservación, seguridad y aferrarse demasiado a posesiones materiales.",
-      "5 de Oros": "Pérdida financiera, pobreza y sensación de exclusión material.",
-      "6 de Oros": "Generosidad, caridad y equilibrio entre dar y recibir recursos.",
-      "7 de Oros": "Evaluación, paciencia y espera por los frutos del trabajo.",
-      "8 de Oros": "Dedicación, maestría y perfeccionamiento de habilidades laborales.",
-      "9 de Oros": "Abundancia, lujo y disfrute de logros materiales alcanzados.",
-      "10 de Oros": "Riqueza, herencia familiar y seguridad financiera establecida permanentemente.",
-      "Sota de Oros": "Manifestación, estudio y oportunidades prácticas para el crecimiento.",
-      "Caballero de Oros": "Eficiencia, trabajo duro y progreso constante hacia metas.",
-      "Reina de Oros": "Practicidad, generosidad y cuidado material del entorno familiar.",
-      "Rey de Oros": "Abundancia, seguridad financiera y éxito empresarial consolidado."
+      // Pentáculos
+      "As de Pentáculos": "Nueva oportunidad financiera, manifestación y abundancia material.",
+      "2 de Pentáculos": "Balance múltiple, flexibilidad y malabarismo de responsabilidades.",
+      "3 de Pentáculos": "Colaboración, trabajo en equipo y construcción conjunta de proyectos.",
+      "4 de Pentáculos": "Conservación, seguridad y aferrarse demasiado a posesiones materiales.",
+      "5 de Pentáculos": "Pérdida financiera, pobreza y sensación de exclusión material.",
+      "6 de Pentáculos": "Generosidad, caridad y equilibrio entre dar y recibir recursos.",
+      "7 de Pentáculos": "Evaluación, paciencia y espera por los frutos del trabajo.",
+      "8 de Pentáculos": "Dedicación, maestría y perfeccionamiento de habilidades laborales.",
+      "9 de Pentáculos": "Abundancia, lujo y disfrute de logros materiales alcanzados.",
+      "10 de Pentáculos": "Riqueza, herencia familiar y seguridad financiera establecida permanentemente.",
+      "Sota de Pentáculos": "Manifestación, estudio y oportunidades prácticas para el crecimiento.",
+      "Caballero de Pentáculos": "Eficiencia, trabajo duro y progreso constante hacia metas.",
+      "Reina de Pentáculos": "Practicidad, generosidad y cuidado material del entorno familiar.",
+      "Rey de Pentáculos": "Abundancia, seguridad financiera y éxito empresarial consolidado."
     };
 
     function barajarConSemilla(array, semilla) {
@@ -435,6 +554,14 @@
       return Math.ceil((((d - inicioAno) / 86400000) + 1)/7);
     }
 
+    function obtenerUrlImagen(nombreCarta) {
+      const archivo = nombreAArchivo[nombreCarta];
+      if (archivo) {
+        return `https://raw.githubusercontent.com/krates98/tarotcardapi/refs/heads/main/images/${archivo}.jpeg`;
+      }
+      return ''; // Imagen por defecto o vacía si no se encuentra
+    }
+
     function obtenerLecturasTarot() {
       const hoy = new Date();
       const ano = hoy.getFullYear();
@@ -456,18 +583,47 @@
 
     const lecturas = obtenerLecturasTarot();
 
-    // Carta semanal, api es: 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
+    // Carta semanal
     const cartaSemanalEl = document.getElementById("weekly");
+    const cardInnerSemanal = cartaSemanalEl.querySelector('.card-inner');
+    const imagenSemanal = cartaSemanalEl.querySelector('.card-back-image');
     const nombreSemanal = cartaSemanalEl.querySelector('.card-name');
     const descripcionSemanal = cartaSemanalEl.querySelector('.card-description');
+    
+    imagenSemanal.src = obtenerUrlImagen(lecturas.cartaSemanal);
+    imagenSemanal.alt = lecturas.cartaSemanal;
     nombreSemanal.textContent = lecturas.cartaSemanal;
     descripcionSemanal.textContent = descripciones[lecturas.cartaSemanal] || "Una carta llena de misterio y sabiduría antigua.";
 
+    // Evento click para carta semanal
+    cartaSemanalEl.addEventListener('click', function() {
+      cardInnerSemanal.classList.toggle('flipped');
+    });
+
     // Cartas diarias
     const contenedorDiario = document.getElementById("daily");
-    lecturas.cartasDiarias.forEach(carta => {
+    lecturas.cartasDiarias.forEach((carta, index) => {
       const div = document.createElement("div");
       div.className = "daily-card";
+      
+      const cardInner = document.createElement("div");
+      cardInner.className = "card-inner";
+      
+      // Cara trasera con imagen
+      const cardBack = document.createElement("div");
+      cardBack.className = "card-face card-back";
+      
+      const imagen = document.createElement("img");
+      imagen.className = "card-back-image";
+      imagen.src = obtenerUrlImagen(carta);
+      imagen.alt = carta;
+      imagen.loading = "lazy";
+      
+      cardBack.appendChild(imagen);
+      
+      // Cara frontal con texto
+      const cardFront = document.createElement("div");
+      cardFront.className = "card-face card-front";
       
       const nombre = document.createElement("div");
       nombre.className = "card-name";
@@ -477,8 +633,18 @@
       descripcion.className = "card-description";
       descripcion.textContent = descripciones[carta] || "Una carta llena de misterio y sabiduría antigua.";
       
-      div.appendChild(nombre);
-      div.appendChild(descripcion);
+      cardFront.appendChild(nombre);
+      cardFront.appendChild(descripcion);
+      
+      cardInner.appendChild(cardBack);
+      cardInner.appendChild(cardFront);
+      div.appendChild(cardInner);
+      
+      // Evento click para voltear carta
+      div.addEventListener('click', function() {
+        cardInner.classList.toggle('flipped');
+      });
+      
       contenedorDiario.appendChild(div);
     });
   </script>
