@@ -82,32 +82,35 @@
     }
 
     .weekly-card {
+		  display: flex;
+	 flex-direction: column;
+	 justify-content: center;
+	 align-items: center;
+	 text-align: center;
+	 min-height: 300px;
+ 	 padding: 1.0em;
       background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(255, 215, 0, 0.05) 100%);
       border: 2px solid #d4af37;
-      border-radius: 20px;
-      padding: 2em;
+      border-radius: 40px;
       margin: 1em auto;
-      max-width: 400px;
+      width: 300px;
+	  height: 500px
       backdrop-filter: blur(15px);
       box-shadow: 
-        0 10px 30px rgba(0,0,0,0.5),
-        0 0 50px rgba(212, 175, 55, 0.3),
-        inset 0 1px 0 rgba(255,255,255,0.1);
+      0 10px 30px rgba(0,0,0,0.5),
+      0 0 50px rgba(212, 175, 55, 0.3),
+      inset 0 1px 0 rgba(255,255,255,0.1);
       transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      cursor: pointer;
+      cursor: help;
       position: relative;
       overflow: hidden;
-      perspective: 1000px;
-	  display: flex;
-	 flex-direction: column;
-	 align-items: center;
     }
 
     .card-inner {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      transition: transform 0.8s;
+      position: center;
+      width: 300px;
+      height: 500px;
+      transition: transform 1.5s;
       transform-style: preserve-3d;
     }
 
@@ -143,7 +146,7 @@
     }
 
     .weekly-card .card-back-image {
-      height: 250px;
+      height: 500px;
     }
 
     .card-front {
@@ -151,14 +154,15 @@
     }
 
     .card-back-pattern {
-      font-size: 4em;
+      font-size: 5em;
       margin-bottom: 0.2em;
+	  margin-top: 0.5em;
       text-shadow: 0 0 20px #ffd700;
       animation: pulse 2s ease-in-out infinite;
     }
 
     .weekly-card .card-back-pattern {
-      font-size: 5em;
+      font-size: 8em;
     }
 
     @keyframes pulse {
@@ -168,13 +172,13 @@
 
     .card-back-text {
       font-family: 'Cinzel', serif;
-      font-size: 1.2em;
+      font-size: 2.5em;
       text-align: center;
       font-weight: 600;
     }
 
     .weekly-card .card-back-text {
-      font-size: 1.4em;
+      font-size: 2em;
     }
 
     .weekly-card::before {
@@ -218,20 +222,25 @@
     }
 
     .daily-card {
+	  display: flex;
+	 flex-direction: column;
+	 justify-content: center;
+	 align-items: center;
+	 text-align: center;
+	 min-height: 300px;
+ 	 padding: 1.0em;
       background: linear-gradient(135deg, rgba(139, 69, 19, 0.2) 0%, rgba(160, 82, 45, 0.1) 100%);
       border: 1px solid rgba(212, 175, 55, 0.6);
       border-radius: 15px;
-      padding: 1.5em;
-      width: 280px;
+      width: 300px;
       backdrop-filter: blur(10px);
       box-shadow: 
         0 8px 25px rgba(0,0,0,0.4),
         0 0 30px rgba(212, 175, 55, 0.2);
-      transition: all 0.3s ease;
-      cursor: pointer;
-      position: relative;
+      transition: all 1s ease;
+      cursor: help;
+      position: center;
       overflow: hidden;
-      perspective: 1000px;
     }
 
     .daily-card::after {
@@ -259,7 +268,7 @@
 
     .card-name {
       font-family: 'Cinzel', serif;
-      font-size: 1.4em;
+      font-size: 3.2em;
       font-weight: 600;
       margin-bottom: 0.8em;
       color: #ffd700;
@@ -267,11 +276,11 @@
     }
 
     .daily-card .card-name {
-      font-size: 1.2em;
+      font-size: 2.5em;
     }
 
     .card-description {
-      font-size: 1em;
+      font-size: 2em;
       line-height: 1.6;
       color: #f4e4c1;
       opacity: 0.9;
@@ -279,7 +288,7 @@
     }
 
     .daily-card .card-description {
-      font-size: 0.9em;
+      font-size: 1.8em;
     }
 
     @media (max-width: 768px) {
@@ -306,6 +315,153 @@
       0%, 100% { transform: translateY(0px) rotate(0deg); }
       50% { transform: translateY(-20px) rotate(5deg); }
     }
+	
+	<style>
+.interpretation-section {
+  z-index: 2;
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+  margin: 4em auto 2em auto;
+}
+
+.interpretation-container {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(139, 69, 19, 0.1) 100%);
+  border: 2px solid #d4af37;
+  border-radius: 25px;
+  padding: 2.5em;
+  backdrop-filter: blur(15px);
+  box-shadow: 
+    0 15px 35px rgba(0,0,0,0.4),
+    0 0 50px rgba(212, 175, 55, 0.3),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.interpretation-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent 30%, rgba(255,215,0,0.08) 50%, transparent 70%);
+  animation: shimmer 6s ease-in-out infinite;
+}
+
+.interpretation-title {
+  font-family: 'Cinzel', serif;
+  font-size: 2.2em;
+  color: #ffd700;
+  text-align: center;
+  margin-bottom: 1.5em;
+  text-shadow: 0 0 15px #ffd700;
+  position: relative;
+  z-index: 2;
+}
+
+.generate-btn {
+  display: block;
+  margin: 0 auto 2em auto;
+  padding: 15px 35px;
+  background: linear-gradient(45deg, #d4af37, #ffd700);
+  color: #1a0f0a;
+  border: none;
+  border-radius: 50px;
+  font-family: 'Cinzel', serif;
+  font-size: 1.3em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-shadow: none;
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+  position: relative;
+  z-index: 2;
+}
+
+.generate-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(212, 175, 55, 0.6);
+  background: linear-gradient(45deg, #ffd700, #ffed4e);
+}
+
+.generate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.loading-spinner {
+  display: none;
+  margin: 2em auto;
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(212, 175, 55, 0.3);
+  border-left: 4px solid #d4af37;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.interpretation-text {
+  font-size: 1.3em;
+  line-height: 1.8;
+  color: #f4e4c1;
+  text-align: justify;
+  margin-top: 1.5em;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.interpretation-text.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.interpretation-text p {
+  margin-bottom: 1.2em;
+}
+
+.error-message {
+  color: #ff6b6b;
+  text-align: center;
+  font-size: 1.1em;
+  margin: 1em 0;
+  padding: 1em;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 10px;
+  display: none;
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 768px) {
+  .interpretation-container {
+    margin: 2em 1em;
+    padding: 2em 1.5em;
+  }
+  
+  .interpretation-title {
+    font-size: 1.8em;
+  }
+  
+  .interpretation-text {
+    font-size: 1.2em;
+  }
+}
+</style>
+	
   </style>
 </head>
 <body>
@@ -313,7 +469,7 @@
   <div class="mystical-symbol symbol-2">⭐</div>
   <div class="mystical-symbol symbol-3">🔮</div>
 
-  <h1>🔮 Tarot Místico</h1>
+  <h1>🔮 Miyutarot 🔮</h1>
   
   <div class="weekly-section">
     <h2>✨ Carta de la Semana ✨</h2>
@@ -334,6 +490,16 @@
     <h2>🌟 Cartas del Día 🌟</h2>
     <div id="daily" class="daily-cards"></div>
   </div>
+  
+  <div class="interpretation-section">
+  <div class="interpretation-container">
+    <h2 class="interpretation-title">🔮 Interpretación Personalizada 🔮</h2>
+    <button id="generateBtn" class="generate-btn">✨ Generar Lectura con IA ✨</button>
+    <div id="loadingSpinner" class="loading-spinner"></div>
+    <div id="errorMessage" class="error-message"></div>
+    <div id="interpretationText" class="interpretation-text"></div>
+  </div>
+</div>
 
   <script>
     const mazoTarot = [
@@ -344,7 +510,7 @@
       "As de Bastos", "2 de Bastos", "3 de Bastos", "4 de Bastos", "5 de Bastos", "6 de Bastos", "7 de Bastos", "8 de Bastos", "9 de Bastos", "10 de Bastos", "Sota de Bastos", "Caballero de Bastos", "Reina de Bastos", "Rey de Bastos",
       "As de Copas", "2 de Copas", "3 de Copas", "4 de Copas", "5 de Copas", "6 de Copas", "7 de Copas", "8 de Copas", "9 de Copas", "10 de Copas", "Sota de Copas", "Caballero de Copas", "Reina de Copas", "Rey de Copas",
       "As de Espadas", "2 de Espadas", "3 de Espadas", "4 de Espadas", "5 de Espadas", "6 de Espadas", "7 de Espadas", "8 de Espadas", "9 de Espadas", "10 de Espadas", "Sota de Espadas", "Caballero de Espadas", "Reina de Espadas", "Rey de Espadas",
-      "As de Pentáculos", "2 de Pentáculos", "3 de Pentáculos", "4 de Pentáculos", "5 de Pentáculos", "6 de Pentáculos", "7 de Pentáculos", "8 de Pentáculos", "9 de Pentáculos", "10 de Pentáculos", "Sota de Pentáculos", "Caballero de Pentáculos", "Reina de Pentáculos", "Rey de Pentáculos"
+      "As de Oros", "2 de Oros", "3 de Oros", "4 de Oros", "5 de Oros", "6 de Oros", "7 de Oros", "8 de Oros", "9 de Oros", "10 de Oros", "Sota de Oros", "Caballero de Oros", "Reina de Oros", "Rey de Oros"
     ];
 
     // Mapeo de nombres en español a nombres de archivos en inglés
@@ -416,21 +582,21 @@
       "Caballero de Espadas": "knightofswords",
       "Reina de Espadas": "queenofswords",
       "Rey de Espadas": "kingofswords",
-      // Pentáculos (Pentacles)
-      "As de Pentáculos": "aceofpentacles",
-      "2 de Pentáculos": "twoofpentacles",
-      "3 de Pentáculos": "threeofpentacles",
-      "4 de Pentáculos": "fourofpentacles",
-      "5 de Pentáculos": "fiveofpentacles",
-      "6 de Pentáculos": "sixofpentacles",
-      "7 de Pentáculos": "sevenofpentacles",
-      "8 de Pentáculos": "eightofpentacles",
-      "9 de Pentáculos": "nineofpentacles",
-      "10 de Pentáculos": "tenofpentacles",
-      "Sota de Pentáculos": "pageofpentacles",
-      "Caballero de Pentáculos": "knightofpentacles",
-      "Reina de Pentáculos": "queenofpentacles",
-      "Rey de Pentáculos": "kingofpentacles"
+      // Oros (Pentacles)
+      "As de Oros": "aceofpentacles",
+      "2 de Oros": "twoofpentacles",
+      "3 de Oros": "threeofpentacles",
+      "4 de Oros": "fourofpentacles",
+      "5 de Oros": "fiveofpentacles",
+      "6 de Oros": "sixofpentacles",
+      "7 de Oros": "sevenofpentacles",
+      "8 de Oros": "eightofpentacles",
+      "9 de Oros": "nineofpentacles",
+      "10 de Oros": "tenofpentacles",
+      "Sota de Oros": "pageofpentacles",
+      "Caballero de Oros": "knightofpentacles",
+      "Reina de Oros": "queenofpentacles",
+      "Rey de Oros": "kingofpentacles"
     };
 
     const descripciones = {
@@ -501,21 +667,21 @@
       "Caballero de Espadas": "Ambición, prisa y acción directa sin considerar consecuencias.",
       "Reina de Espadas": "Independencia, inteligencia aguda y comunicación clara y directa.",
       "Rey de Espadas": "Autoridad intelectual, verdad y juicio claro guían decisiones.",
-      // Pentáculos
-      "As de Pentáculos": "Nueva oportunidad financiera, manifestación y abundancia material.",
-      "2 de Pentáculos": "Balance múltiple, flexibilidad y malabarismo de responsabilidades.",
-      "3 de Pentáculos": "Colaboración, trabajo en equipo y construcción conjunta de proyectos.",
-      "4 de Pentáculos": "Conservación, seguridad y aferrarse demasiado a posesiones materiales.",
-      "5 de Pentáculos": "Pérdida financiera, pobreza y sensación de exclusión material.",
-      "6 de Pentáculos": "Generosidad, caridad y equilibrio entre dar y recibir recursos.",
-      "7 de Pentáculos": "Evaluación, paciencia y espera por los frutos del trabajo.",
-      "8 de Pentáculos": "Dedicación, maestría y perfeccionamiento de habilidades laborales.",
-      "9 de Pentáculos": "Abundancia, lujo y disfrute de logros materiales alcanzados.",
-      "10 de Pentáculos": "Riqueza, herencia familiar y seguridad financiera establecida permanentemente.",
-      "Sota de Pentáculos": "Manifestación, estudio y oportunidades prácticas para el crecimiento.",
-      "Caballero de Pentáculos": "Eficiencia, trabajo duro y progreso constante hacia metas.",
-      "Reina de Pentáculos": "Practicidad, generosidad y cuidado material del entorno familiar.",
-      "Rey de Pentáculos": "Abundancia, seguridad financiera y éxito empresarial consolidado."
+      // Oros
+      "As de Oros": "Nueva oportunidad financiera, manifestación y abundancia material.",
+      "2 de Oros": "Balance múltiple, flexibilidad y malabarismo de responsabilidades.",
+      "3 de Oros": "Colaboración, trabajo en equipo y construcción conjunta de proyectos.",
+      "4 de Oros": "Conservación, seguridad y aferrarse demasiado a posesiones materiales.",
+      "5 de Oros": "Pérdida financiera, pobreza y sensación de exclusión material.",
+      "6 de Oros": "Generosidad, caridad y equilibrio entre dar y recibir recursos.",
+      "7 de Oros": "Evaluación, paciencia y espera por los frutos del trabajo.",
+      "8 de Oros": "Dedicación, maestría y perfeccionamiento de habilidades laborales.",
+      "9 de Oros": "Abundancia, lujo y disfrute de logros materiales alcanzados.",
+      "10 de Oros": "Riqueza, herencia familiar y seguridad financiera establecida permanentemente.",
+      "Sota de Oros": "Manifestación, estudio y oportunidades prácticas para el crecimiento.",
+      "Caballero de Oros": "Eficiencia, trabajo duro y progreso constante hacia metas.",
+      "Reina de Oros": "Practicidad, generosidad y cuidado material del entorno familiar.",
+      "Rey de Oros": "Abundancia, seguridad financiera y éxito empresarial consolidado."
     };
 
     function barajarConSemilla(array, semilla) {
@@ -638,6 +804,140 @@
       
       contenedorDiario.appendChild(div);
     });
+	
+	
+// Configuración de la API (pon tu clave API en base64 aquí)
+const API_KEY_BASE64 = QUl6YVN5QW5NeHRhOUtBTVptREJVT0ROU2lGc0tRVWZLR2pXbTdR; // Reemplazar con tu clave
+
+// Función para decodificar la API key
+function decodeApiKey(encodedKey) {
+  try {
+    return atob(encodedKey);
+  } catch (e) {
+    console.error('Error decodificando la API key');
+    return null;
+  }
+}
+
+// Función para generar el prompt
+function crearPrompt(cartaSemanal, cartasDiarias) {
+  return `Eres un tarotista experto y místico. Proporciona una interpretación personalizada y profunda para esta lectura de tarot.
+
+CARTAS SELECCIONADAS:
+🌟 Carta de la Semana: ${cartaSemanal}
+🔮 Cartas del Día: ${cartasDiarias.join(', ')}
+
+INSTRUCCIONES:
+- Crea una interpretación cohesiva que conecte todas las cartas
+- Usa la carta semanal como contexto principal y las tres cartas diarias como aspectos específicos
+- Escribe en un tono místico pero accesible, en español
+- Estructura: introducción breve, interpretación de cada carta en contexto, mensaje final
+- Longitud: 200-300 palabras
+- Incluye consejos prácticos inspirados en las cartas
+- Usa emojis místicos ocasionalmente (🌙✨🔮⭐🌟)
+
+Responde solo con la interpretación, sin saludos ni despedidas.`;
+}
+
+// Función para hacer la llamada a la API de Gemini
+async function generarInterpretacion(cartaSemanal, cartasDiarias) {
+  const apiKey = decodeApiKey(API_KEY_BASE64);
+  if (!apiKey) {
+    throw new Error('Clave API no válida');
+  }
+
+  const prompt = crearPrompt(cartaSemanal, cartasDiarias);
+  
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      contents: [{
+        parts: [{
+          text: prompt
+        }]
+      }],
+      generationConfig: {
+        temperature: 0.7,
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 1000,
+      }
+    })
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error?.message || `Error HTTP: ${response.status}`);
+  }
+
+  const data = await response.json();
+  
+  // Verificar si hay contenido en la respuesta
+  if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+    throw new Error('Respuesta vacía de la API');
+  }
+  
+  return data.candidates[0].content.parts[0].text;
+}
+
+// Función para mostrar la interpretación
+function mostrarInterpretacion(texto) {
+  const container = document.getElementById('interpretationText');
+  container.innerHTML = formatearTexto(texto);
+  container.classList.add('show');
+}
+
+// Función para formatear el texto
+function formatearTexto(texto) {
+  return texto
+    .split('\n')
+    .filter(linea => linea.trim())
+    .map(linea => `<p>${linea.trim()}</p>`)
+    .join('');
+}
+
+// Función para manejar errores
+function mostrarError(mensaje) {
+  const errorEl = document.getElementById('errorMessage');
+  errorEl.textContent = `⚠️ ${mensaje}`;
+  errorEl.style.display = 'block';
+  setTimeout(() => {
+    errorEl.style.display = 'none';
+  }, 5000);
+}
+
+// Función para mostrar/ocultar elementos de carga
+function toggleCarga(mostrar) {
+  const btn = document.getElementById('generateBtn');
+  const spinner = document.getElementById('loadingSpinner');
+  
+  btn.disabled = mostrar;
+  btn.textContent = mostrar ? '🔮 Consultando las cartas...' : '✨ Generar Lectura con IA ✨';
+  spinner.style.display = mostrar ? 'block' : 'none';
+}
+
+// Event listener para el botón
+document.getElementById('generateBtn').addEventListener('click', async function() {
+  // Limpiar resultados anteriores
+  document.getElementById('interpretationText').classList.remove('show');
+  document.getElementById('errorMessage').style.display = 'none';
+  
+  toggleCarga(true);
+  
+  try {
+    const interpretacion = await generarInterpretacion(lecturas.cartaSemanal, lecturas.cartasDiarias);
+    mostrarInterpretacion(interpretacion);
+  } catch (error) {
+    console.error('Error generando interpretación:', error);
+    mostrarError('No se pudo generar la interpretación. Inténtalo de nuevo.');
+  } finally {
+    toggleCarga(false);
+  }
+});
+	
   </script>
 </body>
 </html>
