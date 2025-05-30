@@ -1,123 +1,423 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tarot of the Day</title>
+  <title>Tarot del Día</title>
   <style>
-    body {
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Crimson+Text:ital,wght@0,400;1,400&display=swap');
+    
+    * {
       margin: 0;
-      font-family: 'Georgia', serif;
-      background: linear-gradient(to right, #1f1c2c, #928dab);
-      color: #fff;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Crimson Text', serif;
+      background: radial-gradient(ellipse at center, #2c1810 0%, #1a0f0a 50%, #0d0504 100%);
+      color: #f4e4c1;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 3em 1em;
+      padding: 2em 1em;
       text-align: center;
+      position: relative;
+      overflow-x: hidden;
     }
 
-    h1, h2 {
-      font-weight: normal;
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffd700' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+      animation: twinkle 8s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 1;
     }
 
-    .card {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 1em;
-      padding: 1em 2em;
-      margin: 1em;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 0 20px rgba(255,255,255,0.1);
-      transition: transform 0.2s ease;
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.8; }
     }
 
-    .card:hover {
-      transform: scale(1.03);
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 3.5em;
+      font-weight: 600;
+      margin-bottom: 0.5em;
+      text-shadow: 0 0 20px #ffd700, 0 0 40px #ffd700;
+      background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: glow 3s ease-in-out infinite alternate;
+      z-index: 2;
+      position: relative;
     }
 
-    .cards {
+    @keyframes glow {
+      from { filter: drop-shadow(0 0 5px #ffd700); }
+      to { filter: drop-shadow(0 0 25px #ffd700); }
+    }
+
+    h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.8em;
+      margin: 1.5em 0 1em 0;
+      color: #d4af37;
+      text-shadow: 0 0 10px #d4af37;
+      z-index: 2;
+      position: relative;
+    }
+
+    .weekly-section {
+      margin: 2em 0 4em 0;
+      z-index: 2;
+      position: relative;
+    }
+
+    .weekly-card {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(255, 215, 0, 0.05) 100%);
+      border: 2px solid #d4af37;
+      border-radius: 20px;
+      padding: 2em;
+      margin: 1em auto;
+      max-width: 400px;
+      backdrop-filter: blur(15px);
+      box-shadow: 
+        0 10px 30px rgba(0,0,0,0.5),
+        0 0 50px rgba(212, 175, 55, 0.3),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .weekly-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent 30%, rgba(255,215,0,0.1) 50%, transparent 70%);
+      animation: shimmer 4s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    .weekly-card:hover {
+      transform: translateY(-10px) scale(1.05);
+      box-shadow: 
+        0 20px 40px rgba(0,0,0,0.7),
+        0 0 80px rgba(212, 175, 55, 0.5),
+        inset 0 1px 0 rgba(255,255,255,0.2);
+      border-color: #ffd700;
+    }
+
+    .daily-section {
+      z-index: 2;
+      position: relative;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .daily-cards {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
+      gap: 1.5em;
+      margin-top: 2em;
+    }
+
+    .daily-card {
+      background: linear-gradient(135deg, rgba(139, 69, 19, 0.2) 0%, rgba(160, 82, 45, 0.1) 100%);
+      border: 1px solid rgba(212, 175, 55, 0.6);
+      border-radius: 15px;
+      padding: 1.5em;
+      width: 280px;
+      backdrop-filter: blur(10px);
+      box-shadow: 
+        0 8px 25px rgba(0,0,0,0.4),
+        0 0 30px rgba(212, 175, 55, 0.2);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .daily-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,215,0,0.2), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .daily-card:hover::after {
+      left: 100%;
+    }
+
+    .daily-card:hover {
+      transform: translateY(-8px) rotate(1deg);
+      box-shadow: 
+        0 15px 35px rgba(0,0,0,0.6),
+        0 0 50px rgba(212, 175, 55, 0.4);
+      border-color: #ffd700;
+    }
+
+    .card-name {
+      font-family: 'Cinzel', serif;
+      font-size: 1.4em;
+      font-weight: 600;
+      margin-bottom: 0.8em;
+      color: #ffd700;
+      text-shadow: 0 0 10px #ffd700;
+    }
+
+    .daily-card .card-name {
+      font-size: 1.2em;
+    }
+
+    .card-description {
+      font-size: 1em;
+      line-height: 1.6;
+      color: #f4e4c1;
+      opacity: 0.9;
+      font-style: italic;
+    }
+
+    .daily-card .card-description {
+      font-size: 0.9em;
+    }
+
+    @media (max-width: 768px) {
+      h1 { font-size: 2.5em; }
+      .daily-cards { flex-direction: column; align-items: center; }
+      .daily-card { width: 90%; max-width: 350px; }
+      .weekly-card { max-width: 90%; }
+    }
+
+    .mystical-symbol {
+      position: absolute;
+      color: rgba(212, 175, 55, 0.1);
+      font-size: 8em;
+      animation: float 6s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .symbol-1 { top: 10%; left: 5%; animation-delay: 0s; }
+    .symbol-2 { top: 60%; right: 5%; animation-delay: 2s; }
+    .symbol-3 { bottom: 20%; left: 10%; animation-delay: 4s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
     }
   </style>
 </head>
 <body>
-  <h1>🔮 Tarot Reading</h1>
-  <h2>Card of the Week</h2>
-  <div id="weekly" class="card"></div>
+  <div class="mystical-symbol symbol-1">🌙</div>
+  <div class="mystical-symbol symbol-2">⭐</div>
+  <div class="mystical-symbol symbol-3">🔮</div>
 
-  <h2>Cards of the Day</h2>
-  <div id="daily" class="cards"></div>
+  <h1>🔮 Tarot Místico</h1>
+  
+  <div class="weekly-section">
+    <h2>✨ Carta de la Semana ✨</h2>
+    <div id="weekly" class="weekly-card">
+      <div class="card-name"></div>
+      <div class="card-description"></div>
+    </div>
+  </div>
+
+  <div class="daily-section">
+    <h2>🌟 Cartas del Día 🌟</h2>
+    <div id="daily" class="daily-cards"></div>
+  </div>
 
   <script>
-    const tarotDeck = [
-      "The Fool", "The Magician", "The High Priestess", "The Empress", "The Emperor", "The Hierophant",
-      "The Lovers", "The Chariot", "Strength", "The Hermit", "Wheel of Fortune", "Justice",
-      "The Hanged Man", "Death", "Temperance", "The Devil", "The Tower", "The Star",
-      "The Moon", "The Sun", "Judgement", "The World",
-      "Ace of Wands", "2 of Wands", "3 of Wands", "4 of Wands", "5 of Wands", "6 of Wands", "7 of Wands", "8 of Wands", "9 of Wands", "10 of Wands", "Page of Wands", "Knight of Wands", "Queen of Wands", "King of Wands",
-      "Ace of Cups", "2 of Cups", "3 of Cups", "4 of Cups", "5 of Cups", "6 of Cups", "7 of Cups", "8 of Cups", "9 of Cups", "10 of Cups", "Page of Cups", "Knight of Cups", "Queen of Cups", "King of Cups",
-      "Ace of Swords", "2 of Swords", "3 of Swords", "4 of Swords", "5 of Swords", "6 of Swords", "7 of Swords", "8 of Swords", "9 of Swords", "10 of Swords", "Page of Swords", "Knight of Swords", "Queen of Swords", "King of Swords",
-      "Ace of Pentacles", "2 of Pentacles", "3 of Pentacles", "4 of Pentacles", "5 of Pentacles", "6 of Pentacles", "7 of Pentacles", "8 of Pentacles", "9 of Pentacles", "10 of Pentacles", "Page of Pentacles", "Knight of Pentacles", "Queen of Pentacles", "King of Pentacles"
+    const mazoTarot = [
+      "El Loco", "El Mago", "La Suma Sacerdotisa", "La Emperatriz", "El Emperador", "El Hierofante",
+      "Los Enamorados", "El Carro", "La Fuerza", "El Ermitaño", "La Rueda de la Fortuna", "La Justicia",
+      "El Colgado", "La Muerte", "La Templanza", "El Diablo", "La Torre", "La Estrella",
+      "La Luna", "El Sol", "El Juicio", "El Mundo",
+      "As de Bastos", "2 de Bastos", "3 de Bastos", "4 de Bastos", "5 de Bastos", "6 de Bastos", "7 de Bastos", "8 de Bastos", "9 de Bastos", "10 de Bastos", "Sota de Bastos", "Caballero de Bastos", "Reina de Bastos", "Rey de Bastos",
+      "As de Copas", "2 de Copas", "3 de Copas", "4 de Copas", "5 de Copas", "6 de Copas", "7 de Copas", "8 de Copas", "9 de Copas", "10 de Copas", "Sota de Copas", "Caballero de Copas", "Reina de Copas", "Rey de Copas",
+      "As de Espadas", "2 de Espadas", "3 de Espadas", "4 de Espadas", "5 de Espadas", "6 de Espadas", "7 de Espadas", "8 de Espadas", "9 de Espadas", "10 de Espadas", "Sota de Espadas", "Caballero de Espadas", "Reina de Espadas", "Rey de Espadas",
+      "As de Pentáculos", "2 de Pentáculos", "3 de Pentáculos", "4 de Pentáculos", "5 de Pentáculos", "6 de Pentáculos", "7 de Pentáculos", "8 de Pentáculos", "9 de Pentáculos", "10 de Pentáculos", "Sota de Pentáculos", "Caballero de Pentáculos", "Reina de Pentáculos", "Rey de Pentáculos"
     ];
 
-    function seededShuffle(array, seed) {
+    const descripciones = {
+      "El Loco": "Nuevos comienzos, espontaneidad y fe en el futuro. Es momento de dar un salto de fe.",
+      "El Mago": "Manifestación, poder personal y habilidad. Tienes todas las herramientas que necesitas.",
+      "La Suma Sacerdotisa": "Intuición, misterio y sabiduría interior. Confía en tu voz interior.",
+      "La Emperatriz": "Feminidad, belleza, naturaleza y abundancia. Un tiempo de creatividad y crecimiento.",
+      "El Emperador": "Autoridad, estructura y control. Es momento de tomar las riendas de tu vida.",
+      "El Hierofante": "Tradición, conformidad y moralidad. Busca guía en las enseñanzas establecidas.",
+      "Los Enamorados": "Amor, armonía y relaciones. Una decisión importante sobre el corazón te espera.",
+      "El Carro": "Control, fuerza de voluntad y victoria. Mantén el rumbo hacia tus objetivos.",
+      "La Fuerza": "Fuerza interior, valentía y compasión. La gentileza puede ser más poderosa que la fuerza.",
+      "El Ermitaño": "Búsqueda interior, introspección y guía. Es tiempo de mirar hacia adentro.",
+      "La Rueda de la Fortuna": "Buena suerte, karma y ciclos de la vida. Los cambios están llegando.",
+      "La Justicia": "Justicia, equidad y verdad. Las acciones tendrán sus consecuencias apropiadas.",
+      "El Colgado": "Suspensión, restricción y sacrificio. A veces hay que soltar para avanzar.",
+      "La Muerte": "Finales, transformación y transición. Un ciclo termina para que otro comience.",
+      "La Templanza": "Balance, paciencia y propósito. La moderación traerá armonía a tu vida.",
+      "El Diablo": "Atadura, adicción y restricción. Es hora de liberarte de lo que te limita.",
+      "La Torre": "Cambio súbito, agitación y revelación. Las estructuras falsas deben caer.",
+      "La Estrella": "Esperanza, espiritualidad e inspiración. La luz al final del túnel aparece.",
+      "La Luna": "Ilusión, miedo y ansiedad. No todo es lo que parece en la superficie.",
+      "El Sol": "Alegría, éxito y celebración. Un momento de felicidad pura te aguarda.",
+      "El Juicio": "Juicio, renacimiento y despertar interior. Es hora de perdonar y seguir adelante.",
+      "El Mundo": "Cumplimiento, logro y viaje completado. Has alcanzado una meta importante.",
+      // Bastos
+      "As de Bastos": "Inspiración, nuevos proyectos y potencial creativo esperan manifestarse.",
+      "2 de Bastos": "Planificación futura y toma de decisiones. El mundo está en tus manos.",
+      "3 de Bastos": "Expansión, previsión y oportunidades en el horizonte se acercan.",
+      "4 de Bastos": "Celebración, armonía y estabilidad en el hogar traen alegría.",
+      "5 de Bastos": "Desacuerdo, competencia y conflicto requieren diplomacia para resolverse.",
+      "6 de Bastos": "Victoria, reconocimiento público y éxito bien merecido llegan.",
+      "7 de Bastos": "Desafío, perseverancia y defensa de tu posición con valentía.",
+      "8 de Bastos": "Velocidad, movimiento rápido y comunicación acelerada están en camino.",
+      "9 de Bastos": "Resistencia, persistencia y fuerza para el último empujón hacia la meta.",
+      "10 de Bastos": "Carga pesada, responsabilidad y el final de un ciclo agotador.",
+      "Sota de Bastos": "Exploración, emoción y la búsqueda aventurera de nuevas experiencias.",
+      "Caballero de Bastos": "Impulsividad, aventura y pasión ardiente guían tus acciones.",
+      "Reina de Bastos": "Coraje, determinación y liderazgo carismático inspiran a otros.",
+      "Rey de Bastos": "Liderazgo natural, visión empresarial y control de la situación.",
+      // Copas
+      "As de Copas": "Nuevo amor, compasión y abundancia emocional florecen en tu vida.",
+      "2 de Copas": "Amor mutuo, asociación y conexión profunda con otra persona.",
+      "3 de Copas": "Celebración, amistad y alegría compartida con seres queridos.",
+      "4 de Copas": "Apatía, contemplación y oportunidades perdidas por desinterés.",
+      "5 de Copas": "Tristeza, pérdida y lamento, pero la esperanza aún permanece.",
+      "6 de Copas": "Nostalgia, recuerdos dulces y reconexión con el pasado feliz.",
+      "7 de Copas": "Ilusiones, fantasías y demasiadas opciones crean confusión.",
+      "8 de Copas": "Abandono, búsqueda espiritual y dejar atrás lo insatisfactorio.",
+      "9 de Copas": "Satisfacción, placer y realización de deseos del corazón.",
+      "10 de Copas": "Felicidad, armonía familiar y realización emocional completa.",
+      "Sota de Copas": "Creatividad, intuición y mensajes del corazón llegan a ti.",
+      "Caballero de Copas": "Romance, encanto y la llegada de propuestas emocionales.",
+      "Reina de Copas": "Compasión, intuición y cuidado maternal nutren tu entorno.",
+      "Rey de Copas": "Control emocional, diplomacia y sabiduría del corazón guían.",
+      // Espadas
+      "As de Espadas": "Nueva claridad mental, verdad revelada y poder del pensamiento.",
+      "2 de Espadas": "Decisión difícil, equilibrio precario y conflicto interno por resolver.",
+      "3 de Espadas": "Desamor, dolor emocional y traición que requiere sanación.",
+      "4 de Espadas": "Descanso, meditación y pausa necesaria para recuperar fuerzas.",
+      "5 de Espadas": "Derrota, conflicto y victoria pírrica que deja cicatrices.",
+      "6 de Espadas": "Transición, mudanza y viaje hacia aguas más tranquilas.",
+      "7 de Espadas": "Engaño, estrategia y acciones sigilosas que requieren cuidado.",
+      "8 de Espadas": "Restricción, sentirse atrapado y limitaciones autoimpuestas.",
+      "9 de Espadas": "Ansiedad, pesadillas y preocupaciones que magnifican los miedos.",
+      "10 de Espadas": "Ruina, traición y final doloroso, pero también nuevo amanecer.",
+      "Sota de Espadas": "Vigilancia, curiosidad y energía mental juvenil explora ideas.",
+      "Caballero de Espadas": "Ambición, prisa y acción directa sin considerar consecuencias.",
+      "Reina de Espadas": "Independencia, inteligencia aguda y comunicación clara y directa.",
+      "Rey de Espadas": "Autoridad intelectual, verdad y juicio claro guían decisiones.",
+      // Pentáculos
+      "As de Pentáculos": "Nueva oportunidad financiera, manifestación y abundancia material.",
+      "2 de Pentáculos": "Balance múltiple, flexibilidad y malabarismo de responsabilidades.",
+      "3 de Pentáculos": "Colaboración, trabajo en equipo y construcción conjunta de proyectos.",
+      "4 de Pentáculos": "Conservación, seguridad y aferrarse demasiado a posesiones materiales.",
+      "5 de Pentáculos": "Pérdida financiera, pobreza y sensación de exclusión material.",
+      "6 de Pentáculos": "Generosidad, caridad y equilibrio entre dar y recibir recursos.",
+      "7 de Pentáculos": "Evaluación, paciencia y espera por los frutos del trabajo.",
+      "8 de Pentáculos": "Dedicación, maestría y perfeccionamiento de habilidades laborales.",
+      "9 de Pentáculos": "Abundancia, lujo y disfrute de logros materiales alcanzados.",
+      "10 de Pentáculos": "Riqueza, herencia familiar y seguridad financiera establecida permanentemente.",
+      "Sota de Pentáculos": "Manifestación, estudio y oportunidades prácticas para el crecimiento.",
+      "Caballero de Pentáculos": "Eficiencia, trabajo duro y progreso constante hacia metas.",
+      "Reina de Pentáculos": "Practicidad, generosidad y cuidado material del entorno familiar.",
+      "Rey de Pentáculos": "Abundancia, seguridad financiera y éxito empresarial consolidado."
+    };
+
+    function barajarConSemilla(array, semilla) {
       let a = array.slice();
-      let random = mulberry32(seed);
+      let aleatorio = mulberry32(semilla);
       for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(random() * (i + 1));
+        const j = Math.floor(aleatorio() * (i + 1));
         [a[i], a[j]] = [a[j], a[i]];
       }
       return a;
     }
 
-    function mulberry32(seed) {
+    function mulberry32(semilla) {
       return function() {
-        let t = seed += 0x6D2B79F5;
+        let t = semilla += 0x6D2B79F5;
         t = Math.imul(t ^ t >>> 15, t | 1);
         t ^= t + Math.imul(t ^ t >>> 7, t | 61);
         return ((t ^ t >>> 14) >>> 0) / 4294967296;
       }
     }
 
-    function getWeekNumber(date) {
-      const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-      const dayNum = d.getUTCDay() || 7;
-      d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-      const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-      return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+    function obtenerNumeroSemana(fecha) {
+      const d = new Date(Date.UTC(fecha.getFullYear(), fecha.getMonth(), fecha.getDate()));
+      const diaNum = d.getUTCDay() || 7;
+      d.setUTCDate(d.getUTCDate() + 4 - diaNum);
+      const inicioAno = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+      return Math.ceil((((d - inicioAno) / 86400000) + 1)/7);
     }
 
-    function getTarotReadings() {
-      const today = new Date();
-      const year = today.getFullYear();
-      const week = getWeekNumber(today);
-      const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000);
+    function obtenerLecturasTarot() {
+      const hoy = new Date();
+      const ano = hoy.getFullYear();
+      const semana = obtenerNumeroSemana(hoy);
+      const diaDelAno = Math.floor((hoy - new Date(hoy.getFullYear(), 0, 0)) / 86400000);
 
-      // Weekly card: seeded by year + week
-      const weekSeed = year * 100 + week;
-      const weeklyDeck = seededShuffle(tarotDeck, weekSeed);
-      const weeklyCard = weeklyDeck[week % weeklyDeck.length];
+      // Carta semanal: semilla por año + semana
+      const semillaSemana = ano * 100 + semana;
+      const mazoSemanal = barajarConSemilla(mazoTarot, semillaSemana);
+      const cartaSemanal = mazoSemanal[semana % mazoSemanal.length];
 
-      // Daily cards: seeded by year + day
-      const daySeed = year * 1000 + dayOfYear;
-      const dailyDeck = seededShuffle(tarotDeck, daySeed);
-      const dailyCards = dailyDeck.slice(0, 3);
+      // Cartas diarias: semilla por año + día
+      const semillaDia = ano * 1000 + diaDelAno;
+      const mazoDiario = barajarConSemilla(mazoTarot, semillaDia);
+      const cartasDiarias = mazoDiario.slice(0, 3);
 
-      return { weeklyCard, dailyCards };
+      return { cartaSemanal, cartasDiarias };
     }
 
-    const readings = getTarotReadings();
+    const lecturas = obtenerLecturasTarot();
 
-    document.getElementById("weekly").innerText = readings.weeklyCard;
-    const dailyContainer = document.getElementById("daily");
-    readings.dailyCards.forEach(card => {
+    // Carta semanal
+    const cartaSemanalEl = document.getElementById("weekly");
+    const nombreSemanal = cartaSemanalEl.querySelector('.card-name');
+    const descripcionSemanal = cartaSemanalEl.querySelector('.card-description');
+    nombreSemanal.textContent = lecturas.cartaSemanal;
+    descripcionSemanal.textContent = descripciones[lecturas.cartaSemanal] || "Una carta llena de misterio y sabiduría antigua.";
+
+    // Cartas diarias
+    const contenedorDiario = document.getElementById("daily");
+    lecturas.cartasDiarias.forEach(carta => {
       const div = document.createElement("div");
-      div.className = "card";
-      div.innerText = card;
-      dailyContainer.appendChild(div);
+      div.className = "daily-card";
+      
+      const nombre = document.createElement("div");
+      nombre.className = "card-name";
+      nombre.textContent = carta;
+      
+      const descripcion = document.createElement("div");
+      descripcion.className = "card-description";
+      descripcion.textContent = descripciones[carta] || "Una carta llena de misterio y sabiduría antigua.";
+      
+      div.appendChild(nombre);
+      div.appendChild(descripcion);
+      contenedorDiario.appendChild(div);
     });
   </script>
 </body>
