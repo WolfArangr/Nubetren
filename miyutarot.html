@@ -97,6 +97,67 @@
       cursor: pointer;
       position: relative;
       overflow: hidden;
+      perspective: 1000px;
+    }
+
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.8s;
+      transform-style: preserve-3d;
+    }
+
+    .card-inner.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 15px;
+    }
+
+    .card-back {
+      background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #ffd700;
+    }
+
+    .card-front {
+      transform: rotateY(180deg);
+    }
+
+    .card-back-pattern {
+      font-size: 4em;
+      margin-bottom: 0.2em;
+      text-shadow: 0 0 20px #ffd700;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .weekly-card .card-back-pattern {
+      font-size: 5em;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.1); opacity: 1; }
+    }
+
+    .card-back-text {
+      font-family: 'Cinzel', serif;
+      font-size: 1.2em;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .weekly-card .card-back-text {
+      font-size: 1.4em;
     }
 
     .weekly-card::before {
@@ -153,6 +214,7 @@
       cursor: pointer;
       position: relative;
       overflow: hidden;
+      perspective: 1000px;
     }
 
     .daily-card::after {
