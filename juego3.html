@@ -5,14 +5,19 @@
   <title>RPG - El liberador de gatitos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
-  background: radial-gradient(circle at center, #ff00cc 0%, #00ffcc 100%);
-  font-family: 'Courier New', Courier, monospace;
-  color: #00ffcc;
-  text-shadow: 0 0 10px #00ffcc, 0 0 20px #ff00cc;
-  margin: 0;
-  padding: 0;
-}
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: #000000; /* Fondo negro sólido */
+      font-family: 'Courier New', Courier, monospace;
+      color: #00ffcc;
+      text-shadow: 0 0 10px #00ffcc, 0 0 20px #ff00cc;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start; /* para que no centre verticalmente */
+      min-height: 100vh;
+    }
 
     #game {
       max-width: 100%;
@@ -23,13 +28,16 @@
       border: 4px double #00ffcc;
       border-radius: 10px;
       box-shadow: 0 0 20px #00ffcc;
-      margin: 0 auto;
+      margin: 15px auto 15px auto; /* solo arriba y abajo 15px, no margen gigante */
+      /* Para evitar espacios extra, no uses margin-bottom grande */
     }
+
     #controls {
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
+
     #controls button {
       background-color: #000;
       color: #00ffcc;
@@ -39,10 +47,12 @@
       font-weight: bold;
       width: 100%;
     }
+
     #controls button:hover {
       background-color: #00ffcc;
       color: #000;
     }
+
     #stats, #monsterStats {
       border: 2px solid #00ffcc;
       padding: 10px;
@@ -50,10 +60,12 @@
       background-color: #111;
       color: #00ffcc;
     }
+
     .stat {
       display: block;
       margin-bottom: 5px;
     }
+
     #text {
       background-color: #111;
       color: #00ffcc;
