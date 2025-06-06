@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gato en el Laberinto ☁️</title>
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      color: #fff;
+      font-family: 'Press Start 2P', cursive;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    canvas {
+      background: #222;
+      margin-top: 10px;
+    }
+    #controls {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 5px;
+    }
+    .btn {
+      width: 60px;
+      height: 60px;
+      background: #333;
+      border: 2px solid #fff;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 24px;
+      text-align: center;
+      line-height: 60px;
+      cursor: pointer;
+    }
+    .btn:active {
+      background: #555;
+    }
+    #level {
+      margin-top: 5px;
+      font-size: 14px;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+  <h1>🐱 Gato al Rescate de la Nube ☁️</h1>
+  <canvas id="gameCanvas" width="672" height="672"></canvas>
+  <div id="level">Nivel: <span id="levelCount">1</span></div>
+  <div id="controls">
+    <div></div>
+    <div class="btn" onclick="move('up')">⬆️</div>
+    <div></div>
+    <div class="btn" onclick="move('left')">⬅️</div>
+    <div class="btn" onclick="move('down')">⬇️</div>
+    <div class="btn" onclick="move('right')">➡️</div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const tileSize = 32;
+    const tilesX = canvas.width / tileSize;
+    const tilesY = canvas.height / tileSize;
+    let maze, player, goal, startTime, timerId;
+    const steps = { count: 0 };
+    let level = 1;
+
+    function generateMaze() {
+      const maze = Array.from({ length: tilesY }, (_, y) => 
+        Array.from({ length: tilesX }, (_, x) => 1)
+      );
+
+      function carve(x, y) {
+        const dirs = [
+          [0, -2], [2, 0], [0, 2], [-2, 0]
+        ].sort(() => Math.random() - 0.5);
+
+        maze[y][x] = 0;
+
+        for (let [dx, dy] of dirs) {
+          const nx = x + dx, ny = y + dy;
+          if (ny > 0 && ny < tilesY - 1 && nx > 0 && nx < tilesX - 1 && maze[ny][nx] === 1) {
+            maze[y + dy / 2][x + dx / 2] = 0;
+            carve(nx, ny);
+          }
+        }
+      }
+
+      carve(1, 1);
+
+      for (let x = 0; x < tilesX; x++) {
+        maze[0][x] = 1;
+        maze[tilesY - 1][x] = 1;
+      }
+      for (let y = 0; y < tilesY; y++) {
+        maze[y][0] = 1;
+        maze[y][tilesX - 1] = 1;
+      }
+
+      return maze;
+    }
+
+    function findEmptyTile(avoidX = null, avoidY = null) {
+      let x, y;
+      do {
+        x = Math.floor(Math.random() * (tilesX - 2)) + 1;
+        y = Math.floor(Math.random() * (tilesY - 2)) + 1;
+      } while (
+        maze[y][x] !== 0 ||
+        (x === avoidX && y === avoidY)
+      );
+      return { x, y };
+    }
+
+function findEmptyTile(avoidX = null, avoidY = null, minDistance = 0) {
+  let x, y;
+  do {
+    x = Math.floor(Math.random() * (tilesX - 2)) + 1;
+    y = Math.floor(Math.random() * (tilesY - 2)) + 1;
+  } while (
+    maze[y][x] !== 0 ||
+    (avoidX !== null && avoidY !== null && (
+      Math.abs(x - avoidX) + Math.abs(y - avoidY) < minDistance
+    ))
+  );
+  return { x, y };
+}
+
+function resetGame() {
+  maze = generateMaze();
+  player = findEmptyTile();
+  // Aquí pasamos la posición del jugador y una distancia mínima, por ejemplo 5
+  goal = findEmptyTile(player.x, player.y, 16);
+  steps.count = 0;
+  startTime = Date.now();
+  clearInterval(timerId);
+  timerId = setInterval(draw, 100);
+  draw();
+}
+
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let y = 0; y < tilesY; y++) {
+        for (let x = 0; x < tilesX; x++) {
+          if (maze[y][x] === 1) {
+            ctx.fillStyle = '#444';
+            ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+          }
+        }
+      }
+
+      ctx.font = '24px serif';
+      ctx.fillText('☁️', goal.x * tileSize + 4, goal.y * tileSize + 26);
+      ctx.fillText('🐱', player.x * tileSize + 4, player.y * tileSize + 26);
+
+      const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+      ctx.fillStyle = 'white';
+      ctx.font = '12px sans-serif';
+      ctx.fillText(`⏱️ ${elapsed}s`, 10, 16);
+      ctx.fillText(`👣 ${steps.count}`, 10, 30);
+    }
+
+    function move(dir) {
+      const dx = { left: -1, right: 1, up: 0, down: 0 }[dir];
+      const dy = { left: 0, right: 0, up: -1, down: 1 }[dir];
+      const nx = player.x + dx;
+      const ny = player.y + dy;
+
+      if (maze[ny] && maze[ny][nx] === 0) {
+        player.x = nx;
+        player.y = ny;
+        steps.count++;
+        draw();
+        if (player.x === goal.x && player.y === goal.y) {
+          const totalTime = ((Date.now() - startTime) / 1000).toFixed(1);
+          const totalSteps = steps.count;
+          setTimeout(() => {
+            level++;
+            document.getElementById('levelCount').textContent = level;
+            alert(`¡Has encontrado la nube! ☁️😺\nTiempo: ${totalTime}s\nPasos: ${totalSteps}\n¡Nivel ${level}!`);
+            resetGame();
+          }, 100);
+        }
+      }
+    }
+
+    resetGame();
+  </script>
+</body>
+</html>
