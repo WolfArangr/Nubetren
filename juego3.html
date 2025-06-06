@@ -2,39 +2,41 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>RPG - Repelente de Dragones</title>
+  <title>RPG - El liberador de gatitos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       background: radial-gradient(circle at center, #1a1a1a 0%, #000033 100%);
       font-family: 'Courier New', Courier, monospace;
       color: #00ffcc;
       text-shadow: 0 0 5px #00ffcc;
-    }
-    #text {
-      background-color: #111;
-      color: #00ffcc;
-      padding: 10px;
-      border: 2px solid #00ffcc;
-      margin-top: 10px;
-      white-space: pre-line;
+      margin: 0;
+      padding: 0;
     }
     #game {
-      max-width: 600px;
-      background: linear-gradient(#222, #111);
-      margin: 20px auto;
+      max-width: 100%;
+      width: 100%;
       padding: 15px;
+      box-sizing: border-box;
+      background: linear-gradient(#222, #111);
       border: 4px double #00ffcc;
       border-radius: 10px;
       box-shadow: 0 0 20px #00ffcc;
+      margin: 0 auto;
+    }
+    #controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
     #controls button {
       background-color: #000;
       color: #00ffcc;
       border: 2px solid #00ffcc;
       padding: 10px;
-      margin: 5px;
       cursor: pointer;
       font-weight: bold;
+      width: 100%;
     }
     #controls button:hover {
       background-color: #00ffcc;
@@ -48,8 +50,16 @@
       color: #00ffcc;
     }
     .stat {
-      display: inline-block;
-      width: 32%;
+      display: block;
+      margin-bottom: 5px;
+    }
+    #text {
+      background-color: #111;
+      color: #00ffcc;
+      padding: 10px;
+      border: 2px solid #00ffcc;
+      margin-top: 10px;
+      white-space: pre-line;
     }
   </style>
 </head>
@@ -63,59 +73,83 @@
     <div id="controls">
       <button id="button1">Ir a la tienda</button>
       <button id="button2">Entrar a la cueva</button>
-      <button id="button3">Luchar al dragón</button>
+      <button id="button3">Luchar contra el dragón</button>
     </div>
     <div id="monsterStats" style="display:none">
       <span class="stat">Enemigo: <strong><span id="monsterName"></span></strong></span>
       <span class="stat">Salud: <strong><span id="monsterHealth"></span></strong></span>
     </div>
-    <div id="text">Bienvenido a Repelente de Dragones. Debes derrotar al dragón que impide a la gente salir del pueblo. Estás en la plaza. ¿Adónde quieres ir? Usa los botones de arriba.</div>
+    <div id="text">Bienvenido al liberador de gatitos. Debes derrotar al dragón que impide a la gente tener gatitos en el pueblo. Estás en la plaza. ¿Adónde quieres ir? Usa los botones de arriba.</div>
   </div>
 
   <script>
     let xp = 0, salud = 100, oro = 50, armaActual = 0, luchando, saludMonstruo;
     let inventario = ["palo"];
     const armas = [
-      { name: "palo", power: 5 },
-      { name: "daga", power: 30 },
-      { name: "martillo", power: 50 },
-      { name: "espada", power: 100 }
+      { name: "palo medio roto", power: 5 },
+      { name: "navaja oxidada", power: 30 },
+      { name: "martillo de la caja de herramientas", power: 50 },
+      { name: "espada de Wulflund sin filo", power: 100 }
+    ];
+    const insectos = [
+      "mosca molesta",
+      "mosquito mamón",
+      "escarabajo radiactivo",
+      "avispa hiperactiva",
+      "cucaracha hambrienta",
+      "hormiga vengativa",
+      "grillo sarcástico",
+      "libélula maniaca",
+      "chinche letal",
+      "mantis filosófica"
+    ];
+    const secuaces = [
+      "votante del PSOE",
+      "cocinero de restaurante chino",
+      "propietario de un loro muy caro",
+      "niño alérgico a los gatos",
+      "anciano que odia los maullidos",
+      "tiktoker de perros",
+      "influencer sin alma",
+      "dueño de tienda de peces",
+      "experto en bonsáis carnívoros",
+      "peluquero que prefiere caniches"
     ];
     const monstruos = [
-      { name: "limo", level: 2, health: 15 },
-      { name: "bestia colmuda", level: 8, health: 60 },
-      { name: "dragón", level: 20, health: 300 }
+      { name: insectos[Math.floor(Math.random() * insectos.length)], level: 2, health: 15 },
+      { name: secuaces[Math.floor(Math.random() * secuaces.length)], level: 8, health: 60 },
+      { name: "dragón", level: 20, health: 3000 }
     ];
     const ubicaciones = [
       {
         name: "plaza",
-        "button text": ["Ir a tienda", "Entrar cueva", "Luchar dragón"],
+        "button text": ["Ir a la tienda", "Entrar a la cueva", "Luchar contra el dragón"],
         "button functions": [irTienda, irCueva, pelearDragon],
         text: 'Estás en la plaza del pueblo. Ves un cartel que dice "Tienda".'
       },
       {
         name: "tienda",
-        "button text": ["Comprar +10 Salud (10 oro)", "Comprar arma (30 oro)", "Volver plaza"],
+        "button text": ["Comprar +10 Salud (10 premios de gato)", "Comprar arma (30 premios de gato)", "Volver plaza"],
         "button functions": [comprarSalud, comprarArma, irPlaza],
         text: "Has entrado en la tienda."
       },
       {
         name: "cueva",
-        "button text": ["Pelear limo", "Pelear bestia", "Volver plaza"],
+        "button text": ["Pelear contra un bicho", "Pelear contra un secuaz", "Volver plaza"],
         "button functions": [pelearLimo, pelearBestia, irPlaza],
-        text: "Entras en la cueva. Ves algunos monstruos."
+        text: "Entras en la cueva. Ves algunos enemigos que odian a los gatos."
       },
       {
         name: "pelea",
         "button text": ["Atacar", "Esquivar", "Huir"],
         "button functions": [atacar, esquivar, irPlaza],
-        text: "Estás luchando contra un monstruo."
+        text: "Estás luchando contra un enemigo."
       },
       {
         name: "victoria",
         "button text": ["Volver plaza", "Volver plaza", "Volver plaza"],
         "button functions": [irPlaza, irPlaza, huevoDePascua],
-        text: 'El monstruo grita "¡Arg!" al morir. Ganas experiencia y encuentras oro.'
+        text: 'El enemigo grita "¡Arg!" al morir. Ganas experiencia y encuentras premios de gato.'
       },
       {
         name: "derrota",
@@ -137,7 +171,6 @@
       }
     ];
 
-    // Elementos del DOM
     const btn1 = document.querySelector("#button1"),
           btn2 = document.querySelector("#button2"),
           btn3 = document.querySelector("#button3"),
@@ -149,7 +182,6 @@
           nombreMon = document.querySelector("#monsterName"),
           saludMonTxt = document.querySelector("#monsterHealth");
 
-    // Eventos iniciales
     btn1.onclick = irTienda;
     btn2.onclick = irCueva;
     btn3.onclick = pelearDragon;
@@ -176,10 +208,10 @@
           inventario.push(arma);
           txt.innerText = `Ahora tienes una ${arma}. En tu inventario: ${inventario.join(", ")}`;
           oroTxt.innerText = oro;
-        } else txt.innerText = "No tienes suficiente oro para comprar un arma.";
+        } else txt.innerText = "No tienes suficientes premios de gato para comprar un arma.";
       } else {
         txt.innerText = "¡Ya tienes el arma más poderosa!";
-        btn2.innerText = "Vender arma por 15 oro";
+        btn2.innerText = "Vender arma por 15 premios de gato";
         btn2.onclick = venderArma;
       }
     }
@@ -239,7 +271,7 @@
       oroTxt.innerText = oro;
       saludTxt.innerText = salud;
       xpTxt.innerText = xp;
-      irPlaza();
+      location.reload();
     }
     function huevoDePascua() { actualizar(ubicaciones[7]); }
     function eligeDos() { elegir(2); }
@@ -250,7 +282,7 @@
       if (nums.includes(guess)) {
         oro += 20;
         oroTxt.innerText = oro;
-        txt.innerText += "\n¡Acertaste! Ganas 20 oro.";
+        txt.innerText += "\n¡Acertaste! Ganas 20 premios de gato.";
       } else {
         salud -= 10;
         saludTxt.innerText = salud;
