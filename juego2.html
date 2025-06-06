@@ -14,36 +14,50 @@
       -ms-user-select: none;
       touch-action: manipulation;
       background: linear-gradient(to top, #000428, #004e92);
+      height: 100%;
+      width: 100%;
     }
     canvas {
       display: block;
       width: 100vw;
       height: 100vh;
+      background: transparent;
     }
     #controls {
       position: fixed;
       bottom: 0;
       width: 100%;
       display: flex;
-      justify-content: space-around;
+      justify-content: space-between;
       padding: 10px;
+      background: rgba(0,0,0,0.3);
+      user-select: none;
+    }
+    #left-controls {
+      display: flex;
+      gap: 10px;
     }
     button {
-      font-size: 24px;
+      font-size: 28px;
       padding: 10px 20px;
       border: none;
       border-radius: 10px;
       background: #fff;
-      opacity: 0.8;
+      opacity: 0.9;
+      user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
     }
   </style>
 </head>
 <body>
   <canvas id="game"></canvas>
   <div id="controls">
-    <button onclick="moveLeft()">⬅️</button>
+    <div id="left-controls">
+      <button onclick="moveLeft()">⬅️</button>
+      <button onclick="moveRight()">➡️</button>
+    </div>
     <button onclick="jump()">⬆️</button>
-    <button onclick="moveRight()">➡️</button>
   </div>
   <audio id="bgm" loop autoplay>
     <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_a5804b9279.mp3?filename=arcade-game-loop-144135.mp3" type="audio/mpeg">
@@ -51,15 +65,19 @@
   <script>
     const canvas = document.getElementById("game");
     const ctx = canvas.getContext("2d");
-    let W = innerWidth, H = innerHeight;
+    let W = window.innerWidth;
+    let H = window.innerHeight;
     canvas.width = W;
     canvas.height = H;
 
     let platforms = [];
     let camY = 0;
+
+    const groundHeight = 40;
+
     const cat = {
-      x: W/2,
-      y: H - 60,
+      x: W / 2,
+      y: H - groundHeight - 40,
       vx: 0,
       vy: 0,
       dir: 'right',
@@ -78,7 +96,8 @@
     }
 
     function generatePlatforms() {
-      for (let y = H; y > -3000; y -= 120) {
+      platforms = [];
+      for (let y = H - groundHeight - 60; y > -3000; y -= 120) {
         platforms.push(randPlatform(y));
       }
     }
@@ -86,9 +105,10 @@
     generatePlatforms();
 
     function drawCat() {
-      ctx.font = "30px Arial";
+      ctx.font = "40px Arial";
       ctx.textAlign = "center";
-      ctx.fillText(cat.dir === 'right' ? '🐈' : '🐈‍⬅️', cat.x, cat.y - camY);
+      const emoji = cat.dir === 'right' ? "🐈" : "🐈‍⬅️";
+      ctx.fillText(emoji, cat.x + cat.width / 2, cat.y + cat.height);
     }
 
     function drawPlatforms() {
@@ -98,39 +118,56 @@
       });
     }
 
+    function drawGround() {
+      ctx.fillStyle = "#222";
+      ctx.fillRect(0, H - groundHeight, W, groundHeight);
+    }
+
     function drawCloudGoal() {
-      ctx.font = "40px Arial";
+      ctx.font = "50px Arial";
       ctx.fillText('☁️', W / 2, platforms[platforms.length - 1].y - camY - 100);
     }
 
     function physics() {
-      cat.vy += 0.5;
+      cat.vy += 0.5; // gravedad
       cat.x += cat.vx;
       cat.y += cat.vy;
 
+      // Limites horizontales
       if (cat.x < 0) cat.x = 0;
       if (cat.x > W - cat.width) cat.x = W - cat.width;
 
       cat.grounded = false;
-      platforms.forEach(p => {
-        if (
-          cat.x + cat.width > p.x &&
-          cat.x < p.x + p.width &&
-          cat.y + cat.height > p.y &&
-          cat.y + cat.height < p.y + 10 &&
-          cat.vy > 0
-        ) {
-          cat.y = p.y - cat.height;
-          cat.vy = 0;
-          cat.grounded = true;
-        }
-      });
 
+      // Plataforma suelo sólida
+      if (cat.y + cat.height > H - groundHeight) {
+        cat.y = H - groundHeight - cat.height;
+        cat.vy = 0;
+        cat.grounded = true;
+      } else {
+        // Revisar colisiones con plataformas
+        platforms.forEach(p => {
+          if (
+            cat.x + cat.width > p.x &&
+            cat.x < p.x + p.width &&
+            cat.y + cat.height > p.y &&
+            cat.y + cat.height < p.y + p.height + 10 &&
+            cat.vy >= 0
+          ) {
+            cat.y = p.y - cat.height;
+            cat.vy = 0;
+            cat.grounded = true;
+          }
+        });
+      }
+
+      // Cámara sigue al gato solo si sube
       if (cat.y < camY + H / 2) camY = cat.y - H / 2;
 
+      // Caída mortal (muy abajo)
       if (cat.y - camY > H + 200) reset();
 
-      // win condition
+      // Condición de victoria
       if (cat.y < platforms[platforms.length - 1].y - 100) {
         alert("¡Nivel completado!");
         reset();
@@ -139,16 +176,16 @@
 
     function reset() {
       cat.x = W / 2;
-      cat.y = H - 60;
+      cat.y = H - groundHeight - cat.height;
       cat.vx = 0;
       cat.vy = 0;
       camY = 0;
-      platforms = [];
       generatePlatforms();
     }
 
     function render() {
       ctx.clearRect(0, 0, W, H);
+      drawGround();
       drawPlatforms();
       drawCloudGoal();
       drawCat();
@@ -173,12 +210,18 @@
     }
 
     function jump() {
-      if (cat.grounded) cat.vy = -10;
+      if (cat.grounded) cat.vy = -12;
     }
 
-    // stop horizontal motion when not pressing
     window.addEventListener("touchend", () => {
       cat.vx = 0;
+    });
+
+    window.addEventListener("resize", () => {
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = W;
+      canvas.height = H;
     });
   </script>
 </body>
