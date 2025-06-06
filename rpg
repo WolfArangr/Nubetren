@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>RPG - El liberador de gatitos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: #000000; /* Fondo negro sólido */
+      font-family: 'Courier New', Courier, monospace;
+      color: #00ffcc;
+      text-shadow: 0 0 10px #00ffcc, 0 0 20px #ff00cc;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start; /* para que no centre verticalmente */
+      min-height: 100vh;
+    }
+
+    #game {
+      max-width: 100%;
+      width: 100%;
+      padding: 15px;
+      box-sizing: border-box;
+      background: linear-gradient(#222, #111);
+      border: 4px double #00ffcc;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #00ffcc;
+      margin: 15px auto 15px auto; /* solo arriba y abajo 15px, no margen gigante */
+      /* Para evitar espacios extra, no uses margin-bottom grande */
+    }
+
+    #controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    #controls button {
+      background-color: #000;
+      color: #00ffcc;
+      border: 2px solid #00ffcc;
+      padding: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 100%;
+    }
+
+    #controls button:hover {
+      background-color: #00ffcc;
+      color: #000;
+    }
+
+    #stats, #monsterStats {
+      border: 2px solid #00ffcc;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #111;
+      color: #00ffcc;
+    }
+
+    .stat {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    #text {
+      background-color: #111;
+      color: #00ffcc;
+      padding: 10px;
+      border: 2px solid #00ffcc;
+      margin-top: 10px;
+      white-space: pre-line;
+    }
+
+    /* Estilos para el laberinto */
+    #laberintoContainer {
+      display: none;
+      margin-top: 10px;
+    }
+
+    #laberinto {
+      display: grid;
+      grid-template-columns: repeat(5, 40px);
+      grid-template-rows: repeat(5, 40px);
+      gap: 2px;
+      margin: 10px auto;
+      justify-content: center;
+      background-color: #111;
+      padding: 10px;
+      border: 2px solid #00ffcc;
+    }
+
+    .celda {
+      width: 40px;
+      height: 40px;
+      background-color: #333;
+      border: 1px solid #00ffcc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+    }
+
+    .jugador {
+      background-color: #00ffcc !important;
+      box-shadow: 0 0 10px #00ffcc;
+    }
+
+    .objeto {
+      background-color: #444;
+    }
+
+    /* Cruceta de controles */
+    #cruceta {
+      display: grid;
+      grid-template-columns: 40px 40px 40px;
+      grid-template-rows: 40px 40px 40px;
+      gap: 2px;
+      margin: 10px auto;
+      justify-content: center;
+    }
+
+    .boton-cruceta {
+      width: 40px;
+      height: 40px;
+      background-color: #000;
+      border: 2px solid #00ffcc;
+      color: #00ffcc;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .boton-cruceta:hover {
+      background-color: #00ffcc;
+      color: #000;
+      box-shadow: 0 0 10px #00ffcc;
+    }
+
+    .boton-cruceta:active {
+      background-color: #ff00cc;
+      border-color: #ff00cc;
+    }
+
+    #boton-arriba { grid-column: 2; grid-row: 1; }
+    #boton-izq { grid-column: 1; grid-row: 2; }
+    #boton-centro { grid-column: 2; grid-row: 2; }
+    #boton-der { grid-column: 3; grid-row: 2; }
+    #boton-abajo { grid-column: 2; grid-row: 3; }
+  </style>
+</head>
+<body>
+  <div id="game">
+    <div id="stats">
+      <span class="stat">XP: <strong><span id="xpText">0</span></strong></span>
+      <span class="stat">Salud: <strong><span id="healthText">100</span></strong></span>
+      <span class="stat">Premios de gato: <strong><span id="goldText">50</span></strong></span>
+    </div>
+    <div id="controls">
+      <button id="button1">Ir a la tienda</button>
+      <button id="button2">Patrullar las calles</button>
+      <button id="button3">Luchar contra el dragón</button>
+    </div>
+    <div id="monsterStats" style="display:none">
+      <span class="stat">Enemigo: <strong><span id="monsterName"></span></strong></span>
+      <span class="stat">Salud: <strong><span id="monsterHealth"></span></strong></span>
+    </div>
+    
+    <!-- Laberinto para robar en casa -->
+    <div id="laberintoContainer">
+      <div id="laberinto"></div>
+      <div id="cruceta">
+        <div class="boton-cruceta" id="boton-arriba">▲</div>
+        <div class="boton-cruceta" id="boton-izq">◄</div>
+        <div class="boton-cruceta" id="boton-centro">EXIT</div>
+        <div class="boton-cruceta" id="boton-der">►</div>
+        <div class="boton-cruceta" id="boton-abajo">▼</div>
+      </div>
+    </div>
+    
+    <div id="text">Bienvenido al liberador de gatitos. Debes derrotar al dragón que impide a la gente tener gatitos en el pueblo. Estás en la plaza. ¿Adónde quieres ir? Usa los botones de arriba.</div>
+  </div>
+
+  <script>
+    let xp = 0, salud = 100, saludMaxima = 100, oro = 50, armaActual = 0, armaduraActual = -1, luchando, saludMonstruo;
+    let inventario = ["palo medio roto"];
+    let inventarioArmaduras = [];
+    
+    // Variables del laberinto
+    let jugadorX = 0, jugadorY = 0;
+    let mapaLaberinto = [];
+    
+    const armas = [
+      { name: "palo medio roto", power: 5 },
+      { name: "navaja oxidada desafilada", power: 30 },
+      { name: "martillo de la caja de herramientas", power: 50 },
+      { name: "bayoneta de la primera guerra mundial casi afilada", power: 100 },
+      { name: "espada de Wulflund sin filo", power: 120 },
+      { name: "katana de gato muy afilada", power: 140 }
+    ];
+    
+    const armaduras = [
+      { name: "casco de cartón", defense: 2 },
+      { name: "chaleco antibalas usado", defense: 5 },
+      { name: "armadura de placas oxidada", defense: 8 },
+      { name: "exoesqueleto de gato cibernético", defense: 12 }
+    ];
+    
+    const insectos = [
+      "mosca molesta",
+      "mosquito mamón",
+      "cucaracha de son gotleu",
+      "avispa con ganas de tocar los huevos",
+      "rata ladrona",
+      "mendigo de la boutique del gelato",
+      "araña con moho",
+      "libélula maniaca homicida con transtorno de personalidad múltiple, bipolar y psicópata",
+      "mapache terrible",
+      "mantis atea"
+    ];
+    
+    const secuaces = [
+      "votante del PSOE",
+      "cocinero de restaurante chino",
+      "propietario de un loro muy caro",
+      "niño alérgico a los gatos",
+      "anciano que odia los maullidos",
+      "tiktoker de perros",
+      "influencer sin alma",
+      "dueño de tienda de peces",
+      "experto en bonsáis carnívoros",
+      "peluquero que prefiere caniches"
+    ];
+    
+    const monstruos = [
+      { name: insectos[Math.floor(Math.random() * insectos.length)], level: 2, health: 15 },
+      { name: secuaces[Math.floor(Math.random() * secuaces.length)], level: 8, health: 50 },
+      { name: "dragón", level: 20, health: 3000 }
+    ];
+    
+    const ubicaciones = [
+      {
+        name: "plaza",
+        "button text": ["Ir a la tienda", "Patrullar las calles", "Luchar contra el dragón"],
+        "button functions": [irTienda, irCalles, pelearDragon],
+        text: 'Estás en la plaza del pueblo. Ves un cartel que dice "Tienda".'
+      },
+      {
+        name: "tienda",
+        "button text": ["Curar al 100% (10 premios de gato)", "Comprar arma (30 premios de gato)", "Volver plaza"],
+        "button functions": [comprarSalud, comprarArma, irPlaza],
+        text: "Has entrado en la tienda."
+      },
+      {
+        name: "calles",
+        "button text": ["Patrullar las cloacas", "Ir a por un secuaz", "Robar en una casa"],
+        "button functions": [pelearLimo, pelearBestia, robarCasa],
+        text: "Patrullas las calles. Ves algunos enemigos que odian a los gatos y casas para robar."
+      },
+      {
+        name: "pelea",
+        "button text": ["Atacar", "Esquivar", "Huir"],
+        "button functions": [atacar, esquivar, irPlaza],
+        text: "Estás luchando contra un enemigo."
+      },
+      {
+        name: "victoria",
+        "button text": ["Patrullar las cloacas", "Ir a por un secuaz", "Robar en una casa"],
+        "button functions": [pelearLimo, pelearBestia, robarCasa],
+        text: 'El enemigo grita "¡Arg! ¡Es culpa de la ultraderecha!" al morir. Ganas experiencia y encuentras premios de gato.'
+      },
+      {
+        name: "derrota",
+        "button text": ["¿REJUGAR?", "¿REJUGAR?", "¿REJUGAR?"],
+        "button functions": [reiniciar, reiniciar, reiniciar],
+        text: "Has muerto. ☠️"
+      },
+      {
+        name: "gana",
+        "button text": ["¿REJUGAR?", "¿REJUGAR?", "¿REJUGAR?"],
+        "button functions": [reiniciar, reiniciar, reiniciar],
+        text: "¡Derrotaste a Pedro Sánchez! ¡GANAS EL JUEGO! 🎉"
+      },
+      {
+        name: "huevoDePascua",
+        "button text": ["2", "8", "Volver plaza"],
+        "button functions": [eligeDos, eligeOcho, irPlaza],
+        text: "Encuentras un juego secreto. Elige un número..."
+      },
+      {
+        name: "laberinto",
+        "button text": ["Salir de la casa", "", ""],
+        "button functions": [salirLaberinto, function(){}, function(){}],
+        text: "Estás robando en una casa. Muévete con la cruceta para explorar las habitaciones."
+      }
+    ];
+
+    const btn1 = document.querySelector("#button1"),
+          btn2 = document.querySelector("#button2"),
+          btn3 = document.querySelector("#button3"),
+          txt = document.querySelector("#text"),
+          xpTxt = document.querySelector("#xpText"),
+          saludTxt = document.querySelector("#healthText"),
+          oroTxt = document.querySelector("#goldText"),
+          statsMon = document.querySelector("#monsterStats"),
+          nombreMon = document.querySelector("#monsterName"),
+          saludMonTxt = document.querySelector("#monsterHealth"),
+          laberintoContainer = document.querySelector("#laberintoContainer"),
+          laberinto = document.querySelector("#laberinto");
+
+    btn1.onclick = irTienda;
+    btn2.onclick = irCalles;
+    btn3.onclick = pelearDragon;
+
+    // Configurar controles del laberinto
+    document.querySelector("#boton-arriba").onclick = () => moverJugador(0, -1);
+    document.querySelector("#boton-abajo").onclick = () => moverJugador(0, 1);
+    document.querySelector("#boton-izq").onclick = () => moverJugador(-1, 0);
+    document.querySelector("#boton-der").onclick = () => moverJugador(1, 0);
+    document.querySelector("#boton-centro").onclick = salirLaberinto;
+
+    function actualizar(loc) {
+      statsMon.style.display = "none";
+      laberintoContainer.style.display = "none";
+      [btn1.innerText, btn2.innerText, btn3.innerText] = loc["button text"];
+      [btn1.onclick, btn2.onclick, btn3.onclick] = loc["button functions"];
+      txt.innerText = loc.text;
+    }
+    
+    function irPlaza() { actualizar(ubicaciones[0]); }
+    function irTienda() { actualizar(ubicaciones[1]); }
+    function irCalles() { actualizar(ubicaciones[2]); }
+    
+    function comprarSalud() {
+      if (oro >= 10) { 
+        oro -= 10; 
+        salud = saludMaxima; 
+        oroTxt.innerText = oro; 
+        saludTxt.innerText = salud; 
+        txt.innerText = "¡Te has curado completamente!";
+      } else txt.innerText = "¡No tienes suficientes premios de gato!";
+    }
+    
+    function comprarArma() {
+      if (armaActual < armas.length-1) {
+        if (oro >= 30) {
+          oro -= 30;
+          armaActual++;
+          const arma = armas[armaActual].name;
+          inventario.push(arma);
+          txt.innerText = `Ahora tienes una ${arma}. En tu inventario: ${inventario.join(", ")}`;
+          oroTxt.innerText = oro;
+        } else txt.innerText = "No tienes suficientes premios de gato para comprar un arma.";
+      } else {
+        txt.innerText = "¡Ya tienes el arma más poderosa!";
+        btn2.innerText = "Vender arma por 15 premios de gato";
+        btn2.onclick = venderArma;
+      }
+    }
+    
+    function venderArma() {
+      if (inventario.length > 1) {
+        const vendida = inventario.pop();
+        oro += 15;
+        armaActual--;
+        txt.innerText = `Vendiste un ${vendida}. Inventario: ${inventario.join(", ")}`;
+        oroTxt.innerText = oro;
+      } else txt.innerText = "¡No vendas tu única arma!";
+    }
+    
+    function pelearLimo() { 
+      monstruos[0] = { 
+        name: insectos[Math.floor(Math.random() * insectos.length)], 
+        level: 2, 
+        health: 15 
+      };
+      pelearCon(0); 
+    }
+    
+    function pelearBestia() { 
+      monstruos[1] = { 
+        name: secuaces[Math.floor(Math.random() * secuaces.length)], 
+        level: 8, 
+        health: 50 
+      };
+      pelearCon(1); 
+    }
+    
+    function pelearDragon() { pelearCon(2); }
+    
+    function pelearCon(i) {
+      luchando = i;
+      actualizar(ubicaciones[3]);
+      saludMonstruo = monstruos[i].health;
+      statsMon.style.display = "block";
+      nombreMon.innerText = monstruos[i].name;
+      saludMonTxt.innerText = saludMonstruo;
+    }
+    
+    function atacar() {
+      txt.innerText = `El ${monstruos[luchando].name} ataca.\nAtacas con tu ${armas[armaActual].name}.`;
+      
+      let dañoRecibido = ataquesMonstruo(monstruos[luchando].level);
+      
+      // Aplicar defensa de armadura
+      if (armaduraActual >= 0) {
+        const defensa = armaduras[armaduraActual].defense;
+        dañoRecibido = Math.max(0, dañoRecibido - defensa);
+        txt.innerText += `\nTu ${armaduras[armaduraActual].name} reduce el daño en ${defensa}.`;
+      }
+      
+      if (Math.random() > .2 || salud < 20) {
+        salud -= dañoRecibido;
+      } else {
+        txt.innerText += "\n¡Fallaste!";
+      }
+      
+      saludMonstruo -= armas[armaActual].power + Math.floor(Math.random()*xp) + 1;
+      saludTxt.innerText = salud;
+      saludMonTxt.innerText = saludMonstruo;
+      
+      if (salud <= 0) derrota();
+      else if (saludMonstruo <= 0)
+        luchando === 2 ? victoriaFinal() : victoria();
+      
+      // 5% de probabilidad de que se rompa el arma
+      if (Math.random() <= .05 && inventario.length > 1) {
+        const roto = inventario.pop();
+        armaActual--;
+        txt.innerText += `\nTu ${roto} se rompe.`;
+      }
+      
+      // 3% de probabilidad de que se rompa la armadura
+      if (Math.random() <= .03 && armaduraActual >= 0) {
+        const armaduraRota = inventarioArmaduras.splice(armaduraActual, 1)[0];
+        armaduraActual = inventarioArmaduras.length > 0 ? inventarioArmaduras.length - 1 : -1;
+        txt.innerText += `\nTu ${armaduraRota} se rompe.`;
+      }
+    }
+    
+    function ataquesMonstruo(nivel) {
+      return (nivel * 5) - Math.floor(Math.random() * xp);
+    }
+    
+    function esquivar() {
+      txt.innerText = `Esquivas el ataque del ${monstruos[luchando].name}.`;
+    }
+    
+    function victoria() {
+      const xpAnterior = xp;
+      oro += Math.floor(monstruos[luchando].level * 6.7);
+      xp += monstruos[luchando].level;
+      
+      const nivelAnterior = Math.floor(xpAnterior / 10);
+      const nivelActual = Math.floor(xp / 10);
+      
+      if (nivelActual > nivelAnterior) {
+        saludMaxima += 25;
+        salud = saludMaxima;
+        txt.innerText += `\n¡Subiste de nivel! Tu salud máxima ahora es ${saludMaxima}.`;
+      }
+      
+      oroTxt.innerText = oro;
+      xpTxt.innerText = xp;
+      saludTxt.innerText = salud;
+      actualizar(ubicaciones[4]);
+    }
+    
+    function derrota() { actualizar(ubicaciones[5]); }
+    function victoriaFinal() { actualizar(ubicaciones[6]); }
+    
+    function reiniciar() {
+      xp = 0; salud = 100; saludMaxima = 100; oro = 50; armaActual = 0; armaduraActual = -1;
+      inventario = ["palo medio roto"];
+      inventarioArmaduras = [];
+      oroTxt.innerText = oro;
+      saludTxt.innerText = salud;
+      xpTxt.innerText = xp;
+      location.reload();
+    }
+    
+    function huevoDePascua() { actualizar(ubicaciones[7]); }
+    function eligeDos() { elegir(2); }
+    function eligeOcho() { elegir(8); }
+    
+    function elegir(guess) {
+      const nums = Array.from({length:10},()=>Math.floor(Math.random()*11));
+      txt.innerText = `Elegiste ${guess}.\nNúmeros: ${nums.join(", ")}`;
+      if (nums.includes(guess)) {
+        oro += 20;
+        oroTxt.innerText = oro;
+        txt.innerText += "\n¡Acertaste! Ganas 20 premios de gato.";
+      } else {
+        salud -= 10;
+        saludTxt.innerText = salud;
+        txt.innerText += "\n¡Fallaste! Pierdes 10 salud.";
+        if (salud <= 0) derrota();
+      }
+    }
+    
+    // Funciones del laberinto
+    function robarCasa() {
+      actualizar(ubicaciones[8]);
+      laberintoContainer.style.display = "block";
+      generarLaberinto();
+    }
+    
+    function generarLaberinto() {
+      // Crear mapa 5x5
+      mapaLaberinto = [];
+      for (let y = 0; y < 5; y++) {
+        mapaLaberinto[y] = [];
+        for (let x = 0; x < 5; x++) {
+          mapaLaberinto[y][x] = null;
+        }
+      }
+      
+      // Colocar objetos aleatorios
+      const objetos = ["❤️", "⚔️", "🍖", "🛡️"];
+      const numObjetos = Math.floor(Math.random() * 4) + 2; // 2-5 objetos
+      
+      for (let i = 0; i < numObjetos; i++) {
+        let x, y;
+        do {
+          x = Math.floor(Math.random() * 5);
+          y = Math.floor(Math.random() * 5);
+        } while (mapaLaberinto[y][x] !== null || (x === 0 && y === 0));
+        
+        mapaLaberinto[y][x] = objetos[Math.floor(Math.random() * objetos.length)];
+      }
+      
+      jugadorX = 0;
+      jugadorY = 0;
+      dibujarLaberinto();
+    }
+    
+    function dibujarLaberinto() {
+      laberinto.innerHTML = "";
+      
+      for (let y = 0; y < 5; y++) {
+        for (let x = 0; x < 5; x++) {
+          const celda = document.createElement("div");
+          celda.className = "celda";
+          
+          if (x === jugadorX && y === jugadorY) {
+            celda.className += " jugador";
+            celda.textContent = "🐈";
+          } else if (mapaLaberinto[y][x]) {
+            celda.className += " objeto";
+            celda.textContent = mapaLaberinto[y][x];
+          }
+          
+          laberinto.appendChild(celda);
+        }
+      }
+    }
+    
+    function moverJugador(dx, dy) {
+      const nuevoX = jugadorX + dx;
+      const nuevoY = jugadorY + dy;
+      
+      if (nuevoX >= 0 && nuevoX < 5 && nuevoY >= 0 && nuevoY < 5) {
+        jugadorX = nuevoX;
+        jugadorY = nuevoY;
+        
+        // Verificar si hay un objeto en esta posición
+        const objeto = mapaLaberinto[jugadorY][jugadorX];
+        if (objeto) {
+          recogerObjeto(objeto);
+          mapaLaberinto[jugadorY][jugadorX] = null;
+        }
+        
+        dibujarLaberinto();
+      }
+    }
+    
+    function recogerObjeto(objeto) {
+      switch (objeto) {
+        case "❤️":
+          salud = saludMaxima;
+          saludTxt.innerText = salud;
+          txt.innerText = "¡Encontraste un corazón! Te has curado al 100%.";
+          break;
+        case "⚔️":
+          if (armaActual < armas.length - 1) {
+            armaActual++;
+            const arma = armas[armaActual].name;
+            inventario.push(arma);
+            txt.innerText = `¡Encontraste una espada! Ahora tienes una ${arma}.`;
+          } else {
+            oro += 20;
+            oroTxt.innerText = oro;
+            txt.innerText = "¡Encontraste una espada! Como ya tienes la mejor, la vendes por 20 premios de gato.";
+          }
+          break;
+        case "🍖":
+          const premiosEncontrados = Math.floor(Math.random() * 30) + 1;
+          oro += premiosEncontrados;
+          oroTxt.innerText = oro;
+          txt.innerText = `¡Encontraste pienso de gato! Obtienes ${premiosEncontrados} premios de gato.`;
+          break;
+        case "🛡️":
+          if (armaduraActual < armaduras.length - 1) {
+            armaduraActual++;
+            const armadura = armaduras[armaduraActual].name;
+            inventarioArmaduras.push(armadura);
+            txt.innerText = `¡Encontraste un casco! Ahora tienes una ${armadura} (defensa: ${armaduras[armaduraActual].defense}).`;
+          } else {
+            oro += 25;
+            oroTxt.innerText = oro;
+            txt.innerText = "¡Encontraste un casco! Como ya tienes la mejor armadura, lo vendes por 25 premios de gato.";
+          }
+          break;
+      }
+    }
+    
+    function salirLaberinto() {
+      irCalles();
+    }
+  </script>
+</body>
+</html>
