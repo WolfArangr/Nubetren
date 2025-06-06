@@ -1,228 +1,237 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <meta charset="UTF-8">
-  <title>Climb the Cloud</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      user-select: none;
-      touch-action: none;
-      background: linear-gradient(to top, #000428, #004e92);
-      height: 100%;
-      width: 100%;
-    }
-    canvas {
-      display: block;
-      width: 100vw;
-      height: 100vh;
-      background: transparent;
-    }
-    #controls {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      padding: 10px;
-      background: rgba(0,0,0,0.3);
-    }
-    #left-controls {
-      display: flex;
-      gap: 10px;
-    }
-    button {
-      font-size: 28px;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 10px;
-      background: #fff;
-      opacity: 0.9;
-      user-select: none;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
+<title>Catmon Retro</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    font-family: monospace;
+  }
+  html, body {
+    background: black;
+    color: white;
+    height: 100%;
+    overflow: hidden;
+  }
+  #game {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+  .screen {
+    flex: 1;
+    border: 2px solid white;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    overflow-y: auto;
+    background-color: #111;
+    font-size: 1.1rem;
+    white-space: pre-wrap;
+  }
+  .hud {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+  .bar {
+    background: red;
+    height: 10px;
+    flex: 1;
+    margin: 0 5px;
+  }
+  .bar.green {
+    background: limegreen;
+  }
+  button {
+    width: 48%;
+    padding: 1rem;
+    background: #222;
+    color: white;
+    font-size: 1rem;
+    border: 1px solid white;
+  }
+  #btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4%;
+    justify-content: space-between;
+  }
+</style>
 </head>
 <body>
-  <canvas id="game"></canvas>
-  <div id="controls">
-    <div id="left-controls">
-      <button id="btn-left">⬅️</button>
-      <button id="btn-right">➡️</button>
-    </div>
-    <button id="btn-jump">⬆️</button>
+<audio id="music" src="https://upload.wikimedia.org/wikipedia/commons/4/4e/8bit_battle_theme.ogg" loop autoplay></audio>
+<div id="game">
+  <div class="screen" id="log">🐱 Bienvenido a Catmon Retro!</div>
+  <div class="hud">
+    <div>🐱 HP:</div>
+    <div class="bar green" id="playerHP"></div>
+    <div id="enemyName">💀</div>
+    <div class="bar" id="enemyHP"></div>
   </div>
-  <audio id="bgm" loop autoplay>
-    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_a5804b9279.mp3?filename=arcade-game-loop-144135.mp3" type="audio/mpeg">
-  </audio>
-  <script>
-    const canvas = document.getElementById("game");
-    const ctx = canvas.getContext("2d");
-    let W = window.innerWidth;
-    let H = window.innerHeight;
-    canvas.width = W;
-    canvas.height = H;
+  <div id="btns">
+    <button onclick="attack()">Atacar</button>
+    <button onclick="heal()">Curar</button>
+    <button onclick="train()">Entrenar</button>
+    <button onclick="save()">Guardar</button>
+  </div>
+</div>
 
-    let platforms = [];
-    let camY = 0;
-    const groundHeight = 40;
+<script>
+const log = document.getElementById('log');
+const playerBar = document.getElementById('playerHP');
+const enemyBar = document.getElementById('enemyHP');
+const enemyName = document.getElementById('enemyName');
 
-    const cat = {
-      x: W / 2,
-      y: H - groundHeight - 40,
-      vx: 0,
-      vy: 0,
-      dir: 'right',
-      width: 40,
-      height: 40,
-      grounded: false
-    };
+const enemies = [
+  { name: '🦅 Águila', type: 'picotazo' },
+  { name: '🐍 Serpiente', type: 'veneno' },
+  { name: '🐸 Rana', type: 'salto' },
+  { name: '🐻 Oso', type: 'zarpa' },
+  { name: '🦊 Zorro', type: 'mordisco' },
+  { name: '🐦 Pájaro', type: 'picotazo' },
+  { name: '🐱 Gato oscuro', type: 'garra' },
+  { name: '🐔 Gallo furioso', type: 'espolón' },
+  { name: '🦉 Búho', type: 'vista penetrante' },
+  { name: '🐗 Jabalí', type: 'cornada' }
+];
 
-    function randPlatform(y) {
-      return {
-        x: Math.random() * (W - 80),
-        y: y,
-        width: 80,
-        height: 10
-      };
+let state = {
+  playerHP: 100,
+  enemyHP: 100,
+  power: 10,
+  level: 1,
+  xp: 0,
+  enemy: {}
+};
+
+function pickEnemy() {
+  const e = enemies[Math.floor(Math.random() * enemies.length)];
+  state.enemy = { ...e };
+  state.enemyHP = 100;
+  enemyName.textContent = e.name;
+}
+
+function load() {
+  const saved = localStorage.getItem('catmon');
+  if (saved) state = JSON.parse(saved);
+  if (!state.enemy || !state.enemy.name) pickEnemy();
+  updateBars();
+  logMessage(`🐱 Nivel ${state.level} vs ${state.enemy.name}`);
+}
+function save() {
+  localStorage.setItem('catmon', JSON.stringify(state));
+  logMessage("💾 Partida guardada.");
+}
+function updateBars() {
+  playerBar.style.width = Math.max(state.playerHP, 0) + '%';
+  playerBar.classList.toggle('green', state.playerHP > 20);
+  enemyBar.style.width = Math.max(state.enemyHP, 0) + '%';
+  enemyName.textContent = state.enemy.name;
+}
+function logMessage(msg) {
+  log.textContent = msg;
+}
+function attack() {
+  let dmg = Math.floor(Math.random() * state.power) + 5;
+  state.enemyHP -= dmg;
+  logMessage(`🐱 atacó: -${dmg} HP al ${state.enemy.name}\n`);
+  if (state.enemyHP <= 0) {
+    logMessage(`🎉 ¡Derrotaste a ${state.enemy.name}!\n+10 XP`);
+    state.xp += 10;
+    pickEnemy();
+    if (state.xp >= 30) {
+      state.level++;
+      state.power += 5;
+      state.xp = 0;
+      logMessage(`⬆️ Subiste a nivel ${state.level}!`);
     }
+  } else {
+    enemyAttack();
+  }
+  updateBars();
+}
+function enemyAttack() {
+  let type = state.enemy.type;
+  let dmg = 0;
+  let txt = "";
 
-    function generatePlatforms() {
-      platforms = [];
-      for (let y = H - groundHeight - 60; y > -3000; y -= 120) {
-        platforms.push(randPlatform(y));
-      }
-    }
+  switch(type) {
+    case 'picotazo':
+      dmg = Math.floor(Math.random() * 10) + 5;
+      txt = "picoteó con furia";
+      break;
+    case 'veneno':
+      dmg = Math.floor(Math.random() * 8) + 7;
+      txt = "inyectó veneno";
+      break;
+    case 'zarpa':
+      dmg = Math.floor(Math.random() * 15) + 5;
+      txt = "zarpó brutalmente";
+      break;
+    case 'mordisco':
+      dmg = Math.floor(Math.random() * 12) + 6;
+      txt = "mordió con rapidez";
+      break;
+    case 'salto':
+      dmg = Math.floor(Math.random() * 10) + 3;
+      txt = "saltó y te golpeó";
+      break;
+    case 'garra':
+      dmg = Math.floor(Math.random() * 10) + 5;
+      txt = "arañó ferozmente";
+      break;
+    case 'espolón':
+      dmg = Math.floor(Math.random() * 12) + 4;
+      txt = "te espoloneó";
+      break;
+    case 'vista penetrante':
+      dmg = Math.floor(Math.random() * 6) + 3;
+      txt = "te hipnotizó con su mirada";
+      break;
+    case 'cornada':
+      dmg = Math.floor(Math.random() * 15) + 10;
+      txt = "embistió como un rayo";
+      break;
+    default:
+      dmg = 10;
+      txt = "te atacó";
+  }
 
-    generatePlatforms();
-
-    function drawCat() {
-      ctx.font = "40px Arial";
-      ctx.textAlign = "center";
-      const emoji = cat.dir === 'right' ? "🐈‍⬛" : "⬅️🐈‍⬛";
-      ctx.fillText(emoji, cat.x + cat.width / 2, cat.y + cat.height);
-    }
-
-    function drawPlatforms() {
-      ctx.fillStyle = "#fff";
-      platforms.forEach(p => {
-        ctx.fillRect(p.x, p.y - camY, p.width, p.height);
-      });
-    }
-
-    function drawGround() {
-      ctx.fillStyle = "#222";
-      ctx.fillRect(0, H - groundHeight, W, groundHeight);
-    }
-
-    function drawCloudGoal() {
-      ctx.font = "50px Arial";
-      ctx.fillText('☁️', W / 2, platforms[platforms.length - 1].y - camY - 100);
-    }
-
-    function physics() {
-      cat.vy += 0.5;
-      cat.x += cat.vx;
-      cat.y += cat.vy;
-
-      if (cat.x < 0) cat.x = 0;
-      if (cat.x > W - cat.width) cat.x = W - cat.width;
-
-      cat.grounded = false;
-
-      if (cat.y + cat.height > H - groundHeight) {
-        cat.y = H - groundHeight - cat.height;
-        cat.vy = 0;
-        cat.grounded = true;
-      } else {
-        platforms.forEach(p => {
-          if (
-            cat.x + cat.width > p.x &&
-            cat.x < p.x + p.width &&
-            cat.y + cat.height > p.y &&
-            cat.y + cat.height < p.y + p.height + 10 &&
-            cat.vy >= 0
-          ) {
-            cat.y = p.y - cat.height;
-            cat.vy = 0;
-            cat.grounded = true;
-          }
-        });
-      }
-
-      if (cat.y < camY + H / 2) camY = cat.y - H / 2;
-      if (cat.y - camY > H + 200) reset();
-      if (cat.y < platforms[platforms.length - 1].y - 100) {
-        alert("¡Nivel completado!");
-        reset();
-      }
-    }
-
-    function reset() {
-      cat.x = W / 2;
-      cat.y = H - groundHeight - cat.height;
-      cat.vx = 0;
-      cat.vy = 0;
-      camY = 0;
-      generatePlatforms();
-    }
-
-    function render() {
-      ctx.clearRect(0, 0, W, H);
-      drawGround();
-      drawPlatforms();
-      drawCloudGoal();
-      drawCat();
-    }
-
-    function gameLoop() {
-      physics();
-      render();
-      requestAnimationFrame(gameLoop);
-    }
-
-    gameLoop();
-
-    let leftHeld = false;
-    let rightHeld = false;
-    let jumpHeld = false;
-
-    function updateMovement() {
-      cat.vx = 0;
-      if (leftHeld) {
-        cat.vx = -4;
-        cat.dir = 'left';
-      }
-      if (rightHeld) {
-        cat.vx = 4;
-        cat.dir = 'right';
-      }
-      if (jumpHeld && cat.grounded) {
-        cat.vy = -12;
-      }
-    }
-
-    setInterval(updateMovement, 20);
-
-    const btnLeft = document.getElementById('btn-left');
-    const btnRight = document.getElementById('btn-right');
-    const btnJump = document.getElementById('btn-jump');
-
-    btnLeft.addEventListener('pointerdown', () => leftHeld = true);
-    btnLeft.addEventListener('pointerup', () => leftHeld = false);
-    btnRight.addEventListener('pointerdown', () => rightHeld = true);
-    btnRight.addEventListener('pointerup', () => rightHeld = false);
-    btnJump.addEventListener('pointerdown', () => jumpHeld = true);
-    btnJump.addEventListener('pointerup', () => jumpHeld = false);
-
-    window.addEventListener("resize", () => {
-      W = window.innerWidth;
-      H = window.innerHeight;
-      canvas.width = W;
-      canvas.height = H;
-    });
-  </script>
+  state.playerHP -= dmg;
+  logMessage(log.textContent + `\n${state.enemy.name} ${txt}: -${dmg} HP`);
+  if (state.playerHP <= 0) {
+    logMessage("💀 ¡Has sido derrotado! Reinicio...");
+    state.playerHP = 100;
+    state.xp = 0;
+    pickEnemy();
+  }
+}
+function heal() {
+  if (state.playerHP < 100) {
+    state.playerHP += 20;
+    if (state.playerHP > 100) state.playerHP = 100;
+    logMessage("🍗 Curado 20 HP.");
+    enemyAttack();
+    updateBars();
+  } else {
+    logMessage("🧘 Ya estás al máximo.");
+  }
+}
+function train() {
+  state.power += 2;
+  logMessage("🏋️ Entrenaste. Poder +2.");
+}
+load();
+</script>
 </body>
 </html>
