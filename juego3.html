@@ -68,7 +68,7 @@
     <div id="stats">
       <span class="stat">XP: <strong><span id="xpText">0</span></strong></span>
       <span class="stat">Salud: <strong><span id="healthText">100</span></strong></span>
-      <span class="stat">Oro: <strong><span id="goldText">50</span></strong></span>
+      <span class="stat">Premios de gato: <strong><span id="goldText">50</span></strong></span>
     </div>
     <div id="controls">
       <button id="button1">Ir a la tienda</button>
@@ -87,21 +87,23 @@
     let inventario = ["palo"];
     const armas = [
       { name: "palo medio roto", power: 5 },
-      { name: "navaja oxidada", power: 30 },
+      { name: "navaja oxidada desafilada", power: 30 },
       { name: "martillo de la caja de herramientas", power: 50 },
-      { name: "espada de Wulflund sin filo", power: 100 }
+      { name: "bayoneta de la primera guerra mundial casi afilada", power: 100 }
+      { name: "espada de Wulflund sin filo", power: 120 }
+      { name: "katana de gato muy afilada", power: 140 }
     ];
     const insectos = [
       "mosca molesta",
       "mosquito mamón",
-      "escarabajo radiactivo",
-      "avispa hiperactiva",
-      "cucaracha hambrienta",
-      "hormiga vengativa",
-      "grillo sarcástico",
-      "libélula maniaca",
-      "chinche letal",
-      "mantis filosófica"
+      "cucaracha de son gotleu",
+      "avispa con ganas de tocar los huevos",
+      "rata ladrona",
+      "mendigo de la boutique del gelato",
+      "araña con moho",
+      "libélula maniaca homicida con transtorno de personalidad múltiple, bipolar y psicópata",
+      "mapache terrible",
+      "mantis atea"
     ];
     const secuaces = [
       "votante del PSOE",
@@ -149,19 +151,19 @@
         name: "victoria",
         "button text": ["Volver plaza", "Volver plaza", "Volver plaza"],
         "button functions": [irPlaza, irPlaza, huevoDePascua],
-        text: 'El enemigo grita "¡Arg!" al morir. Ganas experiencia y encuentras premios de gato.'
+        text: 'El enemigo grita "¡Arg! ¡Es culpa de la ultraderecha!" al morir. Ganas experiencia y encuentras premios de gato.'
       },
       {
         name: "derrota",
-        "button text": ["REJUGAR?", "REJUGAR?", "REJUGAR?"],
+        "button text": ["¿REJUGAR?", "¿REJUGAR?", "¿REJUGAR?"],
         "button functions": [reiniciar, reiniciar, reiniciar],
         text: "Has muerto. ☠️"
       },
       {
         name: "gana",
-        "button text": ["REJUGAR?", "REJUGAR?", "REJUGAR?"],
+        "button text": ["¿REJUGAR?", "¿REJUGAR?", "¿REJUGAR?"],
         "button functions": [reiniciar, reiniciar, reiniciar],
-        text: "¡Derrotas al dragón! ¡GANAS EL JUEGO! 🎉"
+        text: "¡Derrotaste a Pedro Sánchez! ¡GANAS EL JUEGO! 🎉"
       },
       {
         name: "huevoDePascua",
@@ -197,7 +199,7 @@
     function irCueva() { actualizar(ubicaciones[2]); }
     function comprarSalud() {
       if (oro >= 10) { oro -= 10; salud += 10; oroTxt.innerText = oro; saludTxt.innerText = salud; }
-      else txt.innerText = "¡No tienes suficiente oro!";
+      else txt.innerText = "¡No tienes suficientes premios de gato!";
     }
     function comprarArma() {
       if (armaActual < armas.length-1) {
