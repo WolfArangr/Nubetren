@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gato en el Laberinto ☁️</title>
   <style>
     body {
@@ -14,43 +14,73 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      min-height: 100vh;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 1.2rem;
     }
     canvas {
       background: #222;
-      margin-top: 10px;
+      display: block;
+      width: 90vw;      /* Escala el canvas al 90% del ancho de la pantalla */
+      max-width: 672px; /* Pero nunca más de 672px */
+      height: auto;     /* Mantiene la proporción */
+      border-radius: 8px;
+    }
+    #level {
+      margin-top: 5px;
+      font-size: 1rem;
+      user-select: none;
     }
     #controls {
-      margin-top: 10px;
+      margin-top: 15px;
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
       grid-template-rows: 1fr 1fr;
-      gap: 5px;
+      gap: 10px;
+      width: 200px;
+      max-width: 90vw;
+      user-select: none;
     }
     .btn {
-      width: 60px;
-      height: 60px;
       background: #333;
       border: 2px solid #fff;
       border-radius: 8px;
       color: #fff;
-      font-size: 24px;
+      font-size: 1.8rem; /* Tamaño más razonable */
       text-align: center;
-      line-height: 60px;
+      line-height: 1;
       cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      aspect-ratio: 1 / 1; /* Cuadrados */
+      transition: background 0.2s;
+      user-select: none;
     }
     .btn:active {
       background: #555;
     }
-    #level {
-      margin-top: 5px;
-      font-size: 14px;
+    /* Opcional: más pequeño en pantallas muy pequeñas */
+    @media (max-width: 350px) {
+      #controls {
+        width: 150px;
+        gap: 6px;
+      }
+      .btn {
+        font-size: 1.3rem;
+      }
     }
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
 </head>
 <body>
   <h1>🐱 Gato al Rescate de la Nube ☁️</h1>
-  <canvas id="gameCanvas" width="672" height="672"></canvas>
+  <canvas id="gameCanvas"></canvas>
   <div id="level">Nivel: <span id="levelCount">1</span></div>
   <div id="controls">
     <div></div>
@@ -64,28 +94,52 @@
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
-    const tileSize = 32;
-    const tilesX = canvas.width / tileSize;
-    const tilesY = canvas.height / tileSize;
+
+    // Tamaño fijo base del laberinto
+    const baseTileSize = 32;
+    const tilesX = 21; // 672 / 32 = 21 tiles
+    const tilesY = 21;
+
+    let tileSize;
     let maze, player, goal, startTime, timerId;
     const steps = { count: 0 };
     let level = 1;
 
+    // Ajusta tamaño del canvas y tileSize según ancho actual de canvas en pantalla
+    function resizeCanvas() {
+      // El canvas CSS hace width responsive, pero para que el dibujo se vea nítido,
+      // necesitamos adaptar el canvas real (width y height atributos) a ese tamaño.
+      const displayWidth = canvas.clientWidth;
+      const scale = displayWidth / (baseTileSize * tilesX);
+      tileSize = baseTileSize * scale;
+
+      canvas.width = tileSize * tilesX;
+      canvas.height = tileSize * tilesY;
+    }
+
     function generateMaze() {
-      const maze = Array.from({ length: tilesY }, (_, y) => 
-        Array.from({ length: tilesX }, (_, x) => 1)
-      );
+      const maze = Array.from({ length: tilesY }, () => Array(tilesX).fill(1));
 
       function carve(x, y) {
         const dirs = [
-          [0, -2], [2, 0], [0, 2], [-2, 0]
+          [0, -2],
+          [2, 0],
+          [0, 2],
+          [-2, 0]
         ].sort(() => Math.random() - 0.5);
 
         maze[y][x] = 0;
 
         for (let [dx, dy] of dirs) {
-          const nx = x + dx, ny = y + dy;
-          if (ny > 0 && ny < tilesY - 1 && nx > 0 && nx < tilesX - 1 && maze[ny][nx] === 1) {
+          const nx = x + dx,
+            ny = y + dy;
+          if (
+            ny > 0 &&
+            ny < tilesY - 1 &&
+            nx > 0 &&
+            nx < tilesX - 1 &&
+            maze[ny][nx] === 1
+          ) {
             maze[y + dy / 2][x + dx / 2] = 0;
             carve(nx, ny);
           }
@@ -106,44 +160,31 @@
       return maze;
     }
 
-    function findEmptyTile(avoidX = null, avoidY = null) {
+    function findEmptyTile(avoidX = null, avoidY = null, minDistance = 0) {
       let x, y;
       do {
         x = Math.floor(Math.random() * (tilesX - 2)) + 1;
         y = Math.floor(Math.random() * (tilesY - 2)) + 1;
       } while (
         maze[y][x] !== 0 ||
-        (x === avoidX && y === avoidY)
+        (avoidX !== null &&
+          avoidY !== null &&
+          Math.abs(x - avoidX) + Math.abs(y - avoidY) < minDistance)
       );
       return { x, y };
     }
 
-function findEmptyTile(avoidX = null, avoidY = null, minDistance = 0) {
-  let x, y;
-  do {
-    x = Math.floor(Math.random() * (tilesX - 2)) + 1;
-    y = Math.floor(Math.random() * (tilesY - 2)) + 1;
-  } while (
-    maze[y][x] !== 0 ||
-    (avoidX !== null && avoidY !== null && (
-      Math.abs(x - avoidX) + Math.abs(y - avoidY) < minDistance
-    ))
-  );
-  return { x, y };
-}
-
-function resetGame() {
-  maze = generateMaze();
-  player = findEmptyTile();
-  // Aquí pasamos la posición del jugador y una distancia mínima, por ejemplo 5
-  goal = findEmptyTile(player.x, player.y, 16);
-  steps.count = 0;
-  startTime = Date.now();
-  clearInterval(timerId);
-  timerId = setInterval(draw, 100);
-  draw();
-}
-
+    function resetGame() {
+      resizeCanvas();
+      maze = generateMaze();
+      player = findEmptyTile();
+      goal = findEmptyTile(player.x, player.y, 16);
+      steps.count = 0;
+      startTime = Date.now();
+      clearInterval(timerId);
+      timerId = setInterval(draw, 100);
+      draw();
+    }
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -157,15 +198,15 @@ function resetGame() {
         }
       }
 
-      ctx.font = '24px serif';
-      ctx.fillText('☁️', goal.x * tileSize + 4, goal.y * tileSize + 26);
-      ctx.fillText('🐱', player.x * tileSize + 4, player.y * tileSize + 26);
+      ctx.font = `${tileSize * 0.8}px serif`;
+      ctx.fillText('☁️', goal.x * tileSize + tileSize * 0.12, goal.y * tileSize + tileSize * 0.8);
+      ctx.fillText('🐱', player.x * tileSize + tileSize * 0.12, player.y * tileSize + tileSize * 0.8);
 
       const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
       ctx.fillStyle = 'white';
-      ctx.font = '12px sans-serif';
-      ctx.fillText(`⏱️ ${elapsed}s`, 10, 16);
-      ctx.fillText(`👣 ${steps.count}`, 10, 30);
+      ctx.font = `${tileSize * 0.35}px sans-serif`;
+      ctx.fillText(`⏱️ ${elapsed}s`, 10, tileSize * 0.4);
+      ctx.fillText(`👣 ${steps.count}`, 10, tileSize * 0.75);
     }
 
     function move(dir) {
@@ -191,6 +232,11 @@ function resetGame() {
         }
       }
     }
+
+    // Ajustar canvas si la ventana cambia de tamaño
+    window.addEventListener('resize', () => {
+      resetGame();
+    });
 
     resetGame();
   </script>
