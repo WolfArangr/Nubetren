@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Pixel Hopper</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      touch-action: manipulation;
+      background: #1a1c2c;
+      user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+    }
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      image-rendering: pixelated;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="game"></canvas>
+  <audio id="bgm" src="https://files.catbox.moe/hk4t6z.mp3" loop autoplay></audio>
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+    let W = window.innerWidth;
+    let H = window.innerHeight;
+    canvas.width = W;
+    canvas.height = H;
+
+    let gravity = 0.5;
+    let jump = -10;
+    let player = {
+      x: 50,
+      y: H/2,
+      w: 16,
+      h: 16,
+      vy: 0,
+      color: "#ff004d"
+    };
+
+    let pipes = [];
+    let frame = 0;
+    let score = 0;
+
+    function drawRect(o) {
+      ctx.fillStyle = o.color;
+      ctx.fillRect(o.x, o.y, o.w, o.h);
+    }
+
+    function reset() {
+      player.y = H/2;
+      player.vy = 0;
+      pipes = [];
+      frame = 0;
+      score = 0;
+    }
+
+    function spawnPipe() {
+      let gap = 120;
+      let top = Math.random() * (H - gap - 100) + 50;
+      pipes.push({ x: W, y: 0, w: 32, h: top, color: "#00e436" });
+      pipes.push({ x: W, y: top + gap, w: 32, h: H - (top + gap), color: "#00e436" });
+    }
+
+    function update() {
+      ctx.clearRect(0, 0, W, H);
+      player.vy += gravity;
+      player.y += player.vy;
+      drawRect(player);
+
+      if (frame % 90 === 0) spawnPipe();
+
+      pipes.forEach(p => {
+        p.x -= 3;
+        drawRect(p);
+        if (
+          player.x < p.x + p.w &&
+          player.x + player.w > p.x &&
+          player.y < p.y + p.h &&
+          player.y + player.h > p.y
+        ) reset();
+        if (p.x + p.w === player.x) score++;
+      });
+      pipes = pipes.filter(p => p.x + p.w > 0);
+
+      if (player.y > H || player.y < 0) reset();
+
+      ctx.fillStyle = "#fff";
+      ctx.font = "20px monospace";
+      ctx.fillText("SCORE: " + score, 10, 30);
+      frame++;
+      requestAnimationFrame(update);
+    }
+
+    function tap() {
+      player.vy = jump;
+    }
+
+    window.addEventListener("touchstart", tap);
+    window.addEventListener("resize", () => {
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = W;
+      canvas.height = H;
+    });
+
+    document.getElementById("bgm").volume = 0.2;
+    update();
+  </script>
+</body>
+</html>
