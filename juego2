@@ -1,118 +1,185 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Pixel Hopper</title>
+  <meta charset="UTF-8">
+  <title>Climb the Cloud</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       overflow: hidden;
-      touch-action: manipulation;
-      background: #1a1c2c;
       user-select: none;
       -webkit-user-select: none;
       -ms-user-select: none;
+      touch-action: manipulation;
+      background: linear-gradient(to top, #000428, #004e92);
     }
     canvas {
       display: block;
       width: 100vw;
       height: 100vh;
-      image-rendering: pixelated;
+    }
+    #controls {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px;
+    }
+    button {
+      font-size: 24px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background: #fff;
+      opacity: 0.8;
     }
   </style>
 </head>
 <body>
   <canvas id="game"></canvas>
-  <audio id="bgm" src="https://files.catbox.moe/hk4t6z.mp3" loop autoplay></audio>
+  <div id="controls">
+    <button onclick="moveLeft()">⬅️</button>
+    <button onclick="jump()">⬆️</button>
+    <button onclick="moveRight()">➡️</button>
+  </div>
+  <audio id="bgm" loop autoplay>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_a5804b9279.mp3?filename=arcade-game-loop-144135.mp3" type="audio/mpeg">
+  </audio>
   <script>
     const canvas = document.getElementById("game");
     const ctx = canvas.getContext("2d");
-    let W = window.innerWidth;
-    let H = window.innerHeight;
+    let W = innerWidth, H = innerHeight;
     canvas.width = W;
     canvas.height = H;
 
-    let gravity = 0.5;
-    let jump = -10;
-    let player = {
-      x: 50,
-      y: H/2,
-      w: 16,
-      h: 16,
+    let platforms = [];
+    let camY = 0;
+    const cat = {
+      x: W/2,
+      y: H - 60,
+      vx: 0,
       vy: 0,
-      color: "#ff004d"
+      dir: 'right',
+      width: 40,
+      height: 40,
+      grounded: false
     };
 
-    let pipes = [];
-    let frame = 0;
-    let score = 0;
+    function randPlatform(y) {
+      return {
+        x: Math.random() * (W - 80),
+        y: y,
+        width: 80,
+        height: 10
+      };
+    }
 
-    function drawRect(o) {
-      ctx.fillStyle = o.color;
-      ctx.fillRect(o.x, o.y, o.w, o.h);
+    function generatePlatforms() {
+      for (let y = H; y > -3000; y -= 120) {
+        platforms.push(randPlatform(y));
+      }
+    }
+
+    generatePlatforms();
+
+    function drawCat() {
+      ctx.font = "30px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText(cat.dir === 'right' ? '🐈' : '🐈‍⬅️', cat.x, cat.y - camY);
+    }
+
+    function drawPlatforms() {
+      ctx.fillStyle = "#fff";
+      platforms.forEach(p => {
+        ctx.fillRect(p.x, p.y - camY, p.width, p.height);
+      });
+    }
+
+    function drawCloudGoal() {
+      ctx.font = "40px Arial";
+      ctx.fillText('☁️', W / 2, platforms[platforms.length - 1].y - camY - 100);
+    }
+
+    function physics() {
+      cat.vy += 0.5;
+      cat.x += cat.vx;
+      cat.y += cat.vy;
+
+      if (cat.x < 0) cat.x = 0;
+      if (cat.x > W - cat.width) cat.x = W - cat.width;
+
+      cat.grounded = false;
+      platforms.forEach(p => {
+        if (
+          cat.x + cat.width > p.x &&
+          cat.x < p.x + p.width &&
+          cat.y + cat.height > p.y &&
+          cat.y + cat.height < p.y + 10 &&
+          cat.vy > 0
+        ) {
+          cat.y = p.y - cat.height;
+          cat.vy = 0;
+          cat.grounded = true;
+        }
+      });
+
+      if (cat.y < camY + H / 2) camY = cat.y - H / 2;
+
+      if (cat.y - camY > H + 200) reset();
+
+      // win condition
+      if (cat.y < platforms[platforms.length - 1].y - 100) {
+        alert("¡Nivel completado!");
+        reset();
+      }
     }
 
     function reset() {
-      player.y = H/2;
-      player.vy = 0;
-      pipes = [];
-      frame = 0;
-      score = 0;
+      cat.x = W / 2;
+      cat.y = H - 60;
+      cat.vx = 0;
+      cat.vy = 0;
+      camY = 0;
+      platforms = [];
+      generatePlatforms();
     }
 
-    function spawnPipe() {
-      let gap = 120;
-      let top = Math.random() * (H - gap - 100) + 50;
-      pipes.push({ x: W, y: 0, w: 32, h: top, color: "#00e436" });
-      pipes.push({ x: W, y: top + gap, w: 32, h: H - (top + gap), color: "#00e436" });
-    }
-
-    function update() {
+    function render() {
       ctx.clearRect(0, 0, W, H);
-      player.vy += gravity;
-      player.y += player.vy;
-      drawRect(player);
-
-      if (frame % 90 === 0) spawnPipe();
-
-      pipes.forEach(p => {
-        p.x -= 3;
-        drawRect(p);
-        if (
-          player.x < p.x + p.w &&
-          player.x + player.w > p.x &&
-          player.y < p.y + p.h &&
-          player.y + player.h > p.y
-        ) reset();
-        if (p.x + p.w === player.x) score++;
-      });
-      pipes = pipes.filter(p => p.x + p.w > 0);
-
-      if (player.y > H || player.y < 0) reset();
-
-      ctx.fillStyle = "#fff";
-      ctx.font = "20px monospace";
-      ctx.fillText("SCORE: " + score, 10, 30);
-      frame++;
-      requestAnimationFrame(update);
+      drawPlatforms();
+      drawCloudGoal();
+      drawCat();
     }
 
-    function tap() {
-      player.vy = jump;
+    function gameLoop() {
+      physics();
+      render();
+      requestAnimationFrame(gameLoop);
     }
 
-    window.addEventListener("touchstart", tap);
-    window.addEventListener("resize", () => {
-      W = window.innerWidth;
-      H = window.innerHeight;
-      canvas.width = W;
-      canvas.height = H;
+    gameLoop();
+
+    function moveLeft() {
+      cat.vx = -4;
+      cat.dir = 'left';
+    }
+
+    function moveRight() {
+      cat.vx = 4;
+      cat.dir = 'right';
+    }
+
+    function jump() {
+      if (cat.grounded) cat.vy = -10;
+    }
+
+    // stop horizontal motion when not pressing
+    window.addEventListener("touchend", () => {
+      cat.vx = 0;
     });
-
-    document.getElementById("bgm").volume = 0.2;
-    update();
   </script>
 </body>
 </html>
