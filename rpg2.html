@@ -261,7 +261,7 @@
 <body>
   <div id="game">
     <div id="stats">
-      <span class="stat">Nivel: <strong><span id="levelText">1</span></strong></span>
+      <span class="stat">Nivel de maullido: <strong><span id="levelText">1</span></strong></span>
       <span class="stat">XP: <strong><span id="xpText">0</span> / <span id="xpRequiredText">100</span></strong></span>
       <span class="stat">Salud: <strong><span id="healthText">100</span></strong></span>
       <span class="stat">Ataque: <strong><span id="attackText">5</span></strong></span>
@@ -297,22 +297,22 @@
   <!-- Pantalla de subida de nivel -->
   <div id="levelUpScreen">
     <div id="levelUpModal">
-      <h2>🎉 ¡NIVEL SUPERIOR! 🎉</h2>
+      <h2>🎉 ¡Miau! ¡Subes tu nivel de Maullido! 🎉</h2>
       <p>Has alcanzado el nivel <span id="newLevelText">2</span></p>
       <p>Elige tu mejora:</p>
       
       <button class="levelup-button" onclick="elegirMejora('salud')">
-        💗 Aumentar Vida Máxima (+25)
+        💗 Aumentar Vida Máxima
         <div class="levelup-description">Más resistencia en combate</div>
       </button>
       
       <button class="levelup-button" onclick="elegirMejora('ataque')">
-        ⚔️ Aumentar Ataque (+10)
+        ⚔️ Aumentar Ataque
         <div class="levelup-description">Más daño con todas las armas</div>
       </button>
       
       <button class="levelup-button" onclick="elegirMejora('defensa')">
-        🛡️ Aumentar Defensa (+1)
+        🛡️ Aumentar Defensa
         <div class="levelup-description">Reduces el daño recibido</div>
       </button>
     </div>
@@ -339,11 +339,11 @@
     
     const armas = [
       { name: "garrita de gato", power: 5 },
-      { name: "navaja oxidada desafilada", power: 30 },
-      { name: "martillo de la caja de herramientas", power: 50 },
-      { name: "bayoneta de la primera guerra mundial casi afilada", power: 100 },
-      { name: "espada de Wulflund sin filo", power: 120 },
-      { name: "katana de gato muy afilada", power: 140 }
+      { name: "navaja oxidada desafilada", power: 10 },
+      { name: "martillo de la caja de herramientas", power: 20 },
+      { name: "bayoneta de la primera guerra mundial casi afilada", power: 40 },
+      { name: "espada de Wulflund sin filo", power: 60 },
+      { name: "katana de gato muy afilada", power: 100 }
     ];
     
     const armaduras = [
