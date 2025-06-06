@@ -24,52 +24,63 @@
     flex-direction: column;
     justify-content: space-between;
     height: 100vh;
-    padding: 1rem;
+    padding: 1vh 2vw;
     box-sizing: border-box;
   }
   .screen {
     flex: 1;
     border: 2px solid white;
-    margin-bottom: 1rem;
-    padding: 1rem;
+    margin-bottom: 1vh;
+    padding: 1vh;
     overflow-y: auto;
     background-color: #111;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     white-space: pre-wrap;
+    max-height: 30vh;
   }
   .hud {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
+    align-items: center;
+    margin: 1vh 0;
+    font-size: 1rem;
+    height: 3vh;
   }
   .bar {
     background: red;
     height: 10px;
     flex: 1;
     margin: 0 5px;
+    border: 1px solid white;
   }
   .bar.green {
     background: limegreen;
   }
+  #btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1vh 2vw;
+  }
   button {
-    width: 48%;
-    padding: 1rem;
+    padding: 2vh;
     background: #222;
     color: white;
     font-size: 1rem;
     border: 1px solid white;
+    width: 100%;
   }
-  #btns {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4%;
-    justify-content: space-between;
+  #musicBtn {
+    margin-top: 1vh;
+    padding: 1vh;
+    font-size: 0.9rem;
+    background: #444;
+    color: white;
+    border: 1px solid white;
   }
 </style>
 </head>
 <body>
-<audio id="music" src="https://upload.wikimedia.org/wikipedia/commons/4/4e/8bit_battle_theme.ogg" loop autoplay></audio>
+<audio id="music" src="https://cdn.pixabay.com/audio/2022/03/15/audio_5f83f3c28b.mp3" loop></audio>
 <div id="game">
   <div class="screen" id="log">🐱 Bienvenido a Catmon Retro!</div>
   <div class="hud">
@@ -84,6 +95,7 @@
     <button onclick="train()">Entrenar</button>
     <button onclick="save()">Guardar</button>
   </div>
+  <button id="musicBtn" onclick="toggleMusic()">🔊 Activar Música</button>
 </div>
 
 <script>
@@ -91,6 +103,7 @@ const log = document.getElementById('log');
 const playerBar = document.getElementById('playerHP');
 const enemyBar = document.getElementById('enemyHP');
 const enemyName = document.getElementById('enemyName');
+const music = document.getElementById('music');
 
 const enemies = [
   { name: '🦅 Águila', type: 'picotazo' },
@@ -102,7 +115,12 @@ const enemies = [
   { name: '🐱 Gato oscuro', type: 'garra' },
   { name: '🐔 Gallo furioso', type: 'espolón' },
   { name: '🦉 Búho', type: 'vista penetrante' },
-  { name: '🐗 Jabalí', type: 'cornada' }
+  { name: '🐗 Jabalí', type: 'cornada' },
+  { name: '🦇 Murciélago', type: 'eco sónico' },
+  { name: '🦘 Canguro', type: 'patada' },
+  { name: '🦝 Mapache', type: 'arañazo' },
+  { name: '🦓 Cebra', type: 'coz' },
+  { name: '🦢 Cisne', type: 'aletazo' }
 ];
 
 let state = {
@@ -164,49 +182,23 @@ function enemyAttack() {
   let type = state.enemy.type;
   let dmg = 0;
   let txt = "";
-
   switch(type) {
-    case 'picotazo':
-      dmg = Math.floor(Math.random() * 10) + 5;
-      txt = "picoteó con furia";
-      break;
-    case 'veneno':
-      dmg = Math.floor(Math.random() * 8) + 7;
-      txt = "inyectó veneno";
-      break;
-    case 'zarpa':
-      dmg = Math.floor(Math.random() * 15) + 5;
-      txt = "zarpó brutalmente";
-      break;
-    case 'mordisco':
-      dmg = Math.floor(Math.random() * 12) + 6;
-      txt = "mordió con rapidez";
-      break;
-    case 'salto':
-      dmg = Math.floor(Math.random() * 10) + 3;
-      txt = "saltó y te golpeó";
-      break;
-    case 'garra':
-      dmg = Math.floor(Math.random() * 10) + 5;
-      txt = "arañó ferozmente";
-      break;
-    case 'espolón':
-      dmg = Math.floor(Math.random() * 12) + 4;
-      txt = "te espoloneó";
-      break;
-    case 'vista penetrante':
-      dmg = Math.floor(Math.random() * 6) + 3;
-      txt = "te hipnotizó con su mirada";
-      break;
-    case 'cornada':
-      dmg = Math.floor(Math.random() * 15) + 10;
-      txt = "embistió como un rayo";
-      break;
-    default:
-      dmg = 10;
-      txt = "te atacó";
+    case 'picotazo': dmg = rand(10, 15); txt = "picoteó con furia"; break;
+    case 'veneno': dmg = rand(8, 14); txt = "inyectó veneno"; break;
+    case 'zarpa': dmg = rand(10, 18); txt = "zarpó brutalmente"; break;
+    case 'mordisco': dmg = rand(8, 16); txt = "mordió con rapidez"; break;
+    case 'salto': dmg = rand(6, 12); txt = "saltó y te golpeó"; break;
+    case 'garra': dmg = rand(10, 15); txt = "arañó ferozmente"; break;
+    case 'espolón': dmg = rand(10, 16); txt = "te espoloneó"; break;
+    case 'vista penetrante': dmg = rand(4, 10); txt = "te hipnotizó con su mirada"; break;
+    case 'cornada': dmg = rand(12, 20); txt = "embistió como un rayo"; break;
+    case 'eco sónico': dmg = rand(5, 12); txt = "emitió un chillido sónico"; break;
+    case 'patada': dmg = rand(10, 18); txt = "te dio una patada brutal"; break;
+    case 'arañazo': dmg = rand(7, 14); txt = "te arañó con astucia"; break;
+    case 'coz': dmg = rand(10, 17); txt = "te lanzó una coz potente"; break;
+    case 'aletazo': dmg = rand(6, 13); txt = "te golpeó con las alas"; break;
+    default: dmg = 10; txt = "te atacó";
   }
-
   state.playerHP -= dmg;
   logMessage(log.textContent + `\n${state.enemy.name} ${txt}: -${dmg} HP`);
   if (state.playerHP <= 0) {
@@ -230,6 +222,13 @@ function heal() {
 function train() {
   state.power += 2;
   logMessage("🏋️ Entrenaste. Poder +2.");
+}
+function rand(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function toggleMusic() {
+  music.play();
+  document.getElementById('musicBtn').innerText = '🎵 Música Activada';
 }
 load();
 </script>
