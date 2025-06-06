@@ -209,7 +209,7 @@
       <div id="cruceta">
         <div class="boton-cruceta" id="boton-arriba">▲</div>
         <div class="boton-cruceta" id="boton-izq">◄</div>
-        <div class="boton-cruceta" id="boton-centro">EXIT</div>
+        <div class="boton-cruceta" id="boton-centro">MIAU</div>
         <div class="boton-cruceta" id="boton-der">►</div>
         <div class="boton-cruceta" id="boton-abajo">▼</div>
       </div>
@@ -294,9 +294,9 @@
       },
       {
         name: "calles",
-        "button text": ["Patrullar las cloacas", "Ir a por un secuaz", "Robar en una casa", "Volver a tu madriguera"],
-        "button functions": [pelearLimo, pelearBestia, robarCasa, irPlaza],
-        text: "Patrullas las calles. Ves algunos enemigos que odian a los gatos y casas perfectas para mangar."
+        "button text": ["Patrullar las cloacas", "Ir a por un secuaz", "Volver a tu madriguera"],
+        "button functions": [pelearLimo, pelearBestia, irPlaza],
+        text: "Patrullas las calles. Ves algunos enemigos que odian a los gatos y casas perfectas para mangar si te cargas a los que las vigilan."
       },
       {
         name: "pelea",
@@ -306,8 +306,8 @@
       },
       {
         name: "victoria",
-        "button text": ["Patrullar las cloacas", "Ir a por un secuaz", "Robar en una casa", "Volver a tu madriguera"],
-        "button functions": [pelearLimo, pelearBestia, robarCasa, irPlaza],
+        "button text": ["Patrullar más", "Volver a tu madriguera", "Robar en su casa"],
+        "button functions": [irCalles, irPlaza, robarCasa,],
         text: 'El enemigo grita "¡Arg! ¡Es culpa de la ultraderecha!" al morir. Ganas experiencia y encuentras premios de gato.'
       },
       {
@@ -324,14 +324,14 @@
       },
       {
         name: "huevoDePascua",
-        "button text": ["2", "8", "Volver a tu madriguera plaza"],
+        "button text": ["2", "8", "Volver a tu madriguera"],
         "button functions": [eligeDos, eligeOcho, irPlaza],
         text: "Encuentras un juego secreto. Elige un número..."
       },
       {
         name: "laberinto",
-        "button text": ["Salir de la casa", "", ""],
-        "button functions": [salirLaberinto, function(){}, function(){}],
+        "button text": ["Miau", "Miau", "Miau"],
+        "button functions": [function(){}, function(){}, function(){}],
         text: "Estás chorimangando en una casa. Muévete con la cruceta para explorar."
       }
     ];
@@ -359,7 +359,7 @@
     document.querySelector("#boton-abajo").onclick = () => moverJugador(0, 1);
     document.querySelector("#boton-izq").onclick = () => moverJugador(-1, 0);
     document.querySelector("#boton-der").onclick = () => moverJugador(1, 0);
-    document.querySelector("#boton-centro").onclick = salirLaberinto;
+    document.querySelector("#boton-centro").onclick = function(){};
 
     function actualizar(loc) {
       statsMon.style.display = "none";
