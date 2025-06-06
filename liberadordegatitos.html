@@ -95,8 +95,8 @@
     <div id="text">Bienvenido al liberador de gatitos. Debes derrotar al dragón que impide a la gente tener gatitos en el pueblo. Estás en la plaza. ¿Adónde quieres ir? Usa los botones de arriba.</div>
   </div>
 
-<script>
-    let xp = 0, salud = 100, oro = 50, armaActual = 0, luchando, saludMonstruo;
+  <script>
+    let xp = 0, salud = 100, saludMaxima = 100, oro = 50, armaActual = 0, luchando, saludMonstruo;
     let inventario = ["palo medio roto"];
     const armas = [
       { name: "palo medio roto", power: 5 },
@@ -130,8 +130,11 @@
       "experto en bonsáis carnívoros",
       "peluquero que prefiere caniches"
     ];
-    let monstruos = [];
-
+    const monstruos = [
+      { name: insectos[Math.floor(Math.random() * insectos.length)], level: 2, health: 15 },
+      { name: secuaces[Math.floor(Math.random() * secuaces.length)], level: 8, health: 50 },
+      { name: "dragón", level: 20, health: 3000 }
+    ];
     const ubicaciones = [
       {
         name: "plaza",
@@ -141,7 +144,7 @@
       },
       {
         name: "tienda",
-        "button text": ["Comprar +10 Salud (10 premios de gato)", "Comprar arma (30 premios de gato)", "Volver plaza"],
+        "button text": ["Curar al 100% (10 premios de gato)", "Comprar arma (30 premios de gato)", "Volver plaza"],
         "button functions": [comprarSalud, comprarArma, irPlaza],
         text: "Has entrado en la tienda."
       },
@@ -192,8 +195,7 @@
           oroTxt = document.querySelector("#goldText"),
           statsMon = document.querySelector("#monsterStats"),
           nombreMon = document.querySelector("#monsterName"),
-          saludMonTxt = document.querySelector("#monsterHealth"),
-          opciones = document.querySelector("#opciones");
+          saludMonTxt = document.querySelector("#monsterHealth");
 
     btn1.onclick = irTienda;
     btn2.onclick = irCueva;
@@ -201,7 +203,6 @@
 
     function actualizar(loc) {
       statsMon.style.display = "none";
-      opciones.innerHTML = "";
       [btn1.innerText, btn2.innerText, btn3.innerText] = loc["button text"];
       [btn1.onclick, btn2.onclick, btn3.onclick] = loc["button functions"];
       txt.innerText = loc.text;
@@ -210,8 +211,13 @@
     function irTienda() { actualizar(ubicaciones[1]); }
     function irCueva() { actualizar(ubicaciones[2]); }
     function comprarSalud() {
-      if (oro >= 10) { oro -= 10; salud += 10; oroTxt.innerText = oro; saludTxt.innerText = salud; }
-      else txt.innerText = "¡No tienes suficientes premios de gato!";
+      if (oro >= 10) { 
+        oro -= 10; 
+        salud = saludMaxima; 
+        oroTxt.innerText = oro; 
+        saludTxt.innerText = salud; 
+        txt.innerText = "¡Te has curado completamente!";
+      } else txt.innerText = "¡No tienes suficientes premios de gato!";
     }
     function comprarArma() {
       if (armaActual < armas.length-1) {
@@ -233,31 +239,37 @@
       if (inventario.length > 1) {
         const vendida = inventario.pop();
         oro += 15;
+        armaActual--;
         txt.innerText = `Vendiste un ${vendida}. Inventario: ${inventario.join(", ")}`;
         oroTxt.innerText = oro;
-        armaActual = Math.max(armaActual - 1, 0);
       } else txt.innerText = "¡No vendas tu única arma!";
     }
-    function pelearAleatorio() {
-      const i = Math.floor(Math.random() * 2);
-      pelearCon(i);
+    function pelearLimo() { 
+      // Elegir insecto aleatorio
+      monstruos[0] = { 
+        name: insectos[Math.floor(Math.random() * insectos.length)], 
+        level: 2, 
+        health: 15 
+      };
+      pelearCon(0); 
     }
+    function pelearBestia() { 
+      // Elegir secuaz aleatorio
+      monstruos[1] = { 
+        name: secuaces[Math.floor(Math.random() * secuaces.length)], 
+        level: 8, 
+        health: 50 
+      };
+      pelearCon(1); 
+    }
+    function pelearDragon() { pelearCon(2); }
     function pelearCon(i) {
       luchando = i;
-      generarMonstruo(i);
       actualizar(ubicaciones[3]);
-      saludMonstruo = monstruos[luchando].health;
+      saludMonstruo = monstruos[i].health;
       statsMon.style.display = "block";
-      nombreMon.innerText = monstruos[luchando].name;
+      nombreMon.innerText = monstruos[i].name;
       saludMonTxt.innerText = saludMonstruo;
-    }
-    function generarMonstruo(i) {
-      if(i === 0){
-        monstruos[0] = { name: insectos[Math.floor(Math.random() * insectos.length)], level: 2, health: 15 };
-      } else if(i === 1){
-        monstruos[1] = { name: secuaces[Math.floor(Math.random() * secuaces.length)], level: 8, health: 50 };
-      }
-      monstruos[2] = { name: "dragón", level: 20, health: 3000 };
     }
     function atacar() {
       txt.innerText = `El ${monstruos[luchando].name} ataca.\nAtacas con tu ${armas[armaActual].name}.`;
@@ -269,10 +281,12 @@
       if (salud <= 0) derrota();
       else if (saludMonstruo <= 0)
         luchando === 2 ? victoriaFinal() : victoria();
-      if (Math.random() <= .1 && inventario.length > 1) {
+      
+      // 5% de probabilidad de que se rompa el arma
+      if (Math.random() <= .05 && inventario.length > 1) {
         const roto = inventario.pop();
+        armaActual--;
         txt.innerText += `\nTu ${roto} se rompe.`;
-        armaActual = Math.max(armaActual - 1, 0);
       }
     }
     function ataquesMonstruo(nivel) {
@@ -282,16 +296,29 @@
       txt.innerText = `Esquivas el ataque del ${monstruos[luchando].name}.`;
     }
     function victoria() {
+      const xpAnterior = xp;
       oro += Math.floor(monstruos[luchando].level * 6.7);
       xp += monstruos[luchando].level;
+      
+      // Verificar si subió de nivel (cada 10 puntos de XP)
+      const nivelAnterior = Math.floor(xpAnterior / 10);
+      const nivelActual = Math.floor(xp / 10);
+      
+      if (nivelActual > nivelAnterior) {
+        saludMaxima += 25;
+        salud = saludMaxima; // Curar al subir de nivel
+        txt.innerText += `\n¡Subiste de nivel! Tu salud máxima ahora es ${saludMaxima}.`;
+      }
+      
       oroTxt.innerText = oro;
       xpTxt.innerText = xp;
+      saludTxt.innerText = salud;
       actualizar(ubicaciones[4]);
     }
     function derrota() { actualizar(ubicaciones[5]); }
     function victoriaFinal() { actualizar(ubicaciones[6]); }
     function reiniciar() {
-      xp = 0; salud = 100; oro = 50; armaActual = 0;
+      xp = 0; salud = 100; saludMaxima = 100; oro = 50; armaActual = 0;
       inventario = ["palo medio roto"];
       oroTxt.innerText = oro;
       saludTxt.innerText = salud;
@@ -315,16 +342,6 @@
         if (salud <= 0) derrota();
       }
     }
-    function pelearLimo() { pelearCon(0); }
-    function pelearBestia() { pelearCon(1); }
-    function pelearDragon() {
-      luchando = 2;
-      actualizar(ubicaciones[3]);
-      saludMonstruo = monstruos[2].health;
-      statsMon.style.display = "block";
-      nombreMon.innerText = monstruos[2].name;
-      saludMonTxt.innerText = saludMonstruo;
-    }
-  <script>
+  </script>
 </body>
 </html>
