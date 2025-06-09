@@ -379,68 +379,461 @@
       "peluquero que prefiere caniches"
     ];
     
-    const monstruos = [
-      { name: insectos[Math.floor(Math.random() * insectos.length)], level: 2, health: 15 },
-      { name: secuaces[Math.floor(Math.random() * secuaces.length)], level: 8, health: 50 },
-      { name: "Perro Sánchez", level: 20, health: 3000 }
-    ];
+const monstruos = [
+  { name: insectos[Math.floor(Math.random() * insectos.length)], level: 2, health: 15 },
+  { name: secuaces[Math.floor(Math.random() * secuaces.length)], level: 8, health: 50 },
+  { name: "Perro Sánchez", level: 20, health: 3000 }
+];
+
+// Nuevos monstruos para la aventura
+const monstruosAventura = [
+  { name: "Lobo Salvaje", level: 12, health: 80 },
+  { name: "Oso del Bosque", level: 15, health: 120 },
+  { name: "Araña Gigante", level: 18, health: 150 },
+  { name: "Bandido", level: 20, health: 180 },
+  { name: "Troll del Puente", level: 25, health: 250 },
+  { name: "Golem de Piedra", level: 30, health: 400 },
+  { name: "Dragón Menor", level: 35, health: 500 },
+  { name: "Jefe Bandido", level: 40, health: 600 }
+];
+
+const ubicaciones = [
+  {
+    name: "madriguera",
+    "button text": ["Ir a la tienda", "Patrullar las calles", "Luchar contra el dragón"],
+    "button functions": [irTienda, irCalles, pelearDragon],
+    text: 'Estás en tu madriguera. Escrito en idioma Gatés, ves un cartel que dice "Tienda clandestina".'
+  },
+  {
+    name: "tienda",
+    "button text": ["Curar al 100% (10 premios de gato)", "Comprar arma (30 premios de gato)", "Volver a tu madriguera"],
+    "button functions": [comprarSalud, comprarArma, irPlaza],
+    text: "Has entrado en la tienda."
+  },
+  {
+    name: "calles",
+    "button text": ["Patrullar las cloacas", "Ir a por un secuaz", "Volver a tu madriguera"],
+    "button functions": [pelearLimo, pelearBestia, irPlaza],
+    text: "Patrullas las calles. Ves algunos enemigos que odian a los gatos y casas perfectas para mangar si te cargas a los que las vigilan."
+  },
+  {
+    name: "pelea",
+    "button text": ["Atacar", "Esquivar", "Huir"],
+    "button functions": [atacar, esquivar, irPlaza],
+    text: "Estás luchando contra un enemigo."
+  },
+  {
+    name: "victoria",
+    "button text": ["Patrullar más", "Volver a tu madriguera", "Robar en su casa"],
+    "button functions": [irCalles, irPlaza, robarCasa,],
+    text: 'El enemigo grita "¡Arg! ¡Es culpa de la ultraderecha!" al morir. Ganas experiencia y encuentras premios de gato.'
+  },
+  {
+    name: "derrota",
+    "button text": ["¿REJUGAR?", "¿REJUGAR?", "¿REJUGAR?"],
+    "button functions": [reiniciar, reiniciar, reiniciar],
+    text: "Has morido. ☠️"
+  },
+  // NUEVA UBICACIÓN MODIFICADA PARA GANAR
+  {
+    name: "gana",
+    "button text": ["¿REJUGAR?", "Volver a la madriguera", "Salir de la aldea"],
+    "button functions": [reiniciar, irPlaza, salirAldea],
+    text: "¡Derrotaste a Perro Sánchez! ¡GANAS EL JUEGO! 🎉 ¿Qué quieres hacer ahora?"
+  },
+  {
+    name: "huevoDePascua",
+    "button text": ["2", "8", "Volver a tu madriguera"],
+    "button functions": [eligeDos, eligeOcho, irPlaza],
+    text: "Encuentras un juego secreto. Elige un número..."
+  },
+  {
+    name: "laberinto",
+    "button text": ["Miau", "Miau", "Miau"],
+    "button functions": [function(){}, function(){}, function(){}],
+    text: "Estás chorimangando en una casa. Muévete con la cruceta para explorar."
+  },
+  
+  // NUEVAS UBICACIONES PARA LA AVENTURA
+  {
+    name: "salidaAldea",
+    "button text": ["Ir al Bosque Oscuro", "Explorar el Río", "Descansar un poco"],
+    "button functions": [irBosque, irRio, descansarCamino],
+    text: "Sales de la aldea y te encuentras en un cruce de caminos. El aire huele a aventura y peligro. Tu pelaje se eriza de emoción."
+  },
+  {
+    name: "bosqueOscuro",
+    "button text": ["Cazar en el bosque", "Buscar refugio", "Seguir adelante"],
+    "button functions": [cazarBosque, buscarRefugio, avanzarBosque],
+    text: "Entras en un bosque denso y oscuro. Los árboles son tan altos que apenas se ve el cielo. Escuchas ruidos extraños entre la maleza."
+  },
+  {
+    name: "rio",
+    "button text": ["Pescar", "Cruzar nadando", "Seguir la orilla"],
+    "button functions": [pescarRio, cruzarRio, seguirOrilla],
+    text: "Llegas a un río cristalino. El agua fluye rápidamente y puedes ver peces nadando. Hay un puente de madera viejo más adelante."
+  },
+  {
+    name: "campamento",
+    "button text": ["Dormir", "Preparar comida", "Entrenar"],
+    "button functions": [dormirCampamento, prepararComida, entrenar],
+    text: "Montas un pequeño campamento. Las estrellas brillan sobre ti y sientes la tranquilidad de la naturaleza."
+  },
+  {
+    name: "cueva",
+    "button text": ["Explorar profundo", "Buscar tesoros", "Salir de la cueva"],
+    "button functions": [explorarCueva, buscarTesoro, salirCueva],
+    text: "Encuentras una cueva misteriosa. Hay cristales brillantes en las paredes y un eco extraño resuena en las profundidades."
+  },
+  {
+    name: "puente",
+    "button text": ["Cruzar sigilosamente", "Confrontar al guardián", "Buscar otro camino"],
+    "button functions": [cruzarSigiloso, confrontarTroll, buscarOtroCamino],
+    text: "Te acercas a un puente de piedra antiguo. Un Troll enorme bloquea el paso, pero parece estar dormitando."
+  },
+  {
+    name: "montaña",
+    "button text": ["Escalar la montaña", "Rodear por el valle", "Acampar aquí"],
+    "button functions": [escalarMontaña, rodearValle, acamparMontaña],
+    text: "Llegas al pie de una montaña imponente. El camino hacia la cima es traicionero, pero desde arriba podrías ver la próxima aldea."
+  },
+  {
+    name: "aldea2",
+    "button text": ["Hablar con aldeanos", "Ir a la posada", "Explorar la aldea"],
+    "button functions": [hablarAldeanos, irPosada, explorarAldea2],
+    text: "¡Por fin! Llegas a una nueva aldea. Los habitantes te miran con curiosidad. Huele a pan fresco y aventuras por descubrir."
+  },
+  {
+    name: "peleaAventura",
+    "button text": ["Atacar", "Esquivar", "Usar habilidad especial"],
+    "button functions": [atacarAventura, esquivarAventura, usarHabilidadEspecial],
+    text: "Te enfrentas a un enemigo en tu aventura."
+  },
+  {
+    name: "victoriaAventura",
+    "button text": ["Continuar aventura", "Descansar", "Buscar más enemigos"],
+    "button functions": [continuarAventura, descansarVictoria, buscarEnemigos],
+    text: "¡Victoria! Tu enemigo cae derrotado. Sientes que te haces más fuerte con cada batalla."
+  }
+];
+
+// NUEVAS VARIABLES PARA LA AVENTURA
+let aventuraIniciada = false;
+let ubicacionAnterior = "";
+let enemigosAventuraDerrotados = 0;
+
+// FUNCIÓN PARA SALIR DE LA ALDEA
+function salirAldea() {
+  aventuraIniciada = true;
+  enemigosAventuraDerrotados = 0;
+  actualizar("salidaAldea");
+}
+
+// FUNCIONES DEL BOSQUE
+function irBosque() {
+  ubicacionAnterior = "salidaAldea";
+  actualizar("bosqueOscuro");
+}
+
+function cazarBosque() {
+  if (Math.random() < 0.6) {
+    // Encuentro con enemigo
+    fighting = Math.floor(Math.random() * 3); // Lobo, Oso, o Araña
+    goFightAventura();
+  } else {
+    // Encuentra comida
+    health = Math.min(health + 20, 100);
+    text.innerText = "Cazas un conejo salvaje y recuperas 20 puntos de salud. Te sientes renovado.";
+    setTimeout(() => actualizar("bosqueOscuro"), 2000);
+  }
+}
+
+function buscarRefugio() {
+  actualizar("cueva");
+}
+
+function avanzarBosque() {
+  if (Math.random() < 0.7) {
+    // Encuentro con bandido
+    fighting = 3; // Bandido
+    goFightAventura();
+  } else {
+    actualizar("puente");
+  }
+}
+
+// FUNCIONES DEL RÍO
+function irRio() {
+  ubicacionAnterior = "salidaAldea";
+  actualizar("rio");
+}
+
+function pescarRio() {
+  if (Math.random() < 0.5) {
+    gold += 15;
+    text.innerText = "Pescas un pez dorado y encuentras 15 premios de gato en su interior. ¡Qué suerte!";
+  } else {
+    text.innerText = "Pescas durante un rato pero no tienes suerte. Al menos te relajas.";
+  }
+  setTimeout(() => actualizar("rio"), 2000);
+}
+
+function cruzarRio() {
+  if (Math.random() < 0.3) {
+    health -= 10;
+    text.innerText = "La corriente es fuerte y pierdes 10 puntos de salud, pero logras cruzar.";
+    if (health <= 0) {
+      health = 1;
+    }
+  } else {
+    text.innerText = "Cruzas el río sin problemas. Tus habilidades felinas te han salvado.";
+  }
+  setTimeout(() => actualizar("montaña"), 2000);
+}
+
+function seguirOrilla() {
+  actualizar("puente");
+}
+
+// FUNCIONES DE DESCANSO
+function descansarCamino() {
+  actualizar("campamento");
+}
+
+function dormirCampamento() {
+  health = Math.min(health + 30, 100);
+  text.innerText = "Duermes profundamente bajo las estrellas. Recuperas 30 puntos de salud.";
+  setTimeout(() => actualizar("campamento"), 2000);
+}
+
+function prepararComida() {
+  gold += 5;
+  text.innerText = "Preparas una deliciosa comida con hierbas del bosque. Encuentras 5 premios de gato.";
+  setTimeout(() => actualizar("campamento"), 2000);
+}
+
+function entrenar() {
+  xp += 10;
+  text.innerText = "Entrenas tus habilidades de combate. Ganas 10 puntos de experiencia.";
+  setTimeout(() => actualizar("campamento"), 2000);
+}
+
+// FUNCIONES DE LA CUEVA
+function explorarCueva() {
+  if (Math.random() < 0.4) {
+    fighting = 2; // Araña Gigante
+    goFightAventura();
+  } else {
+    text.innerText = "Exploras la cueva y encuentras hermosos cristales, pero nada más.";
+    setTimeout(() => actualizar("cueva"), 2000);
+  }
+}
+
+function buscarTesoro() {
+  if (Math.random() < 0.6) {
+    gold += 25;
+    text.innerText = "¡Encuentras un cofre escondido con 25 premios de gato!";
+  } else {
+    text.innerText = "Buscas por toda la cueva pero no encuentras nada valioso.";
+  }
+  setTimeout(() => actualizar("cueva"), 2000);
+}
+
+function salirCueva() {
+  actualizar("bosqueOscuro");
+}
+
+// FUNCIONES DEL PUENTE
+function cruzarSigiloso() {
+  if (Math.random() < 0.7) {
+    text.innerText = "Cruzas sigilosamente sin despertar al Troll. ¡Bien hecho!";
+    setTimeout(() => actualizar("montaña"), 2000);
+  } else {
+    fighting = 4; // Troll del Puente
+    text.innerText = "¡El Troll se despierta! ¡Prepárate para luchar!";
+    setTimeout(() => goFightAventura(), 2000);
+  }
+}
+
+function confrontarTroll() {
+  fighting = 4; // Troll del Puente
+  goFightAventura();
+}
+
+function buscarOtroCamino() {
+  actualizar("montaña");
+}
+
+// FUNCIONES DE LA MONTAÑA
+function escalarMontaña() {
+  if (Math.random() < 0.5) {
+    fighting = 5; // Golem de Piedra
+    text.innerText = "¡Un Golem de Piedra te bloquea el camino!";
+    setTimeout(() => goFightAventura(), 2000);
+  } else {
+    text.innerText = "Escalas con éxito hasta la cima. ¡Puedes ver la aldea a lo lejos!";
+    setTimeout(() => actualizar("aldea2"), 2000);
+  }
+}
+
+function rodearValle() {
+  if (Math.random() < 0.6) {
+    fighting = 6; // Dragón Menor
+    text.innerText = "¡Un Dragón Menor aparece volando desde el valle!";
+    setTimeout(() => goFightAventura(), 2000);
+  } else {
+    actualizar("aldea2");
+  }
+}
+
+function acamparMontaña() {
+  health = Math.min(health + 25, 100);
+  text.innerText = "Acampas en la montaña. El aire fresco te revitaliza. Recuperas 25 puntos de salud.";
+  setTimeout(() => actualizar("montaña"), 2000);
+}
+
+// FUNCIONES DE LA SEGUNDA ALDEA
+function hablarAldeanos() {
+  if (enemigosAventuraDerrotados >= 3) {
+    text.innerText = "Los aldeanos te reconocen como un héroe. Te dan la bienvenida con honores.";
+    gold += 50;
+    xp += 25;
+  } else {
+    text.innerText = "Los aldeanos te miran con curiosidad pero son amigables contigo.";
+    gold += 10;
+  }
+  setTimeout(() => actualizar("aldea2"), 2000);
+}
+
+function irPosada() {
+  health = 100;
+  gold -= 20;
+  text.innerText = "Descansas en la posada. Te curas completamente pero pagas 20 premios de gato.";
+  setTimeout(() => actualizar("aldea2"), 2000);
+}
+
+function explorarAldea2() {
+  if (Math.random() < 0.3) {
+    fighting = 7; // Jefe Bandido
+    text.innerText = "¡Te topas con el Jefe de los Bandidos en las afueras de la aldea!";
+    setTimeout(() => goFightAventura(), 2000);
+  } else {
+    text.innerText = "Exploras la aldea y conoces a gente interesante. Tu aventura continúa...";
+    gold += 15;
+    setTimeout(() => actualizar("aldea2"), 2000);
+  }
+}
+
+// FUNCIONES DE COMBATE DE AVENTURA
+function goFightAventura() {
+  currentWeaponIndex = 0;
+  monsterHealth = monstruosAventura[fighting].health;
+  monsterStats.style.display = "block";
+  monsterName.innerText = monstruosAventura[fighting].name;
+  monsterHealthText.innerText = monsterHealth;
+  actualizar("peleaAventura");
+}
+
+function atacarAventura() {
+  text.innerText = "Atacas al " + monstruosAventura[fighting].name + ".";
+  text.innerText += " Le haces " + (weapons[currentWeaponIndex].power + Math.floor(Math.random() * xp) + 1) + " puntos de daño.";
+  
+  monsterHealth -= weapons[currentWeaponIndex].power + Math.floor(Math.random() * xp) + 1;
+  
+  if (monsterHealth <= 0) {
+    defeatMonsterAventura();
+  } else {
+    text.innerText += " El " + monstruosAventura[fighting].name + " te ataca.";
+    text.innerText += " Pierdes " + getMonsterAttackValueAventura(monstruosAventura[fighting].level) + " puntos de vida.";
+    health -= getMonsterAttackValueAventura(monstruosAventura[fighting].level);
+    if (health <= 0) {
+      lose();
+    }
+  }
+  healthText.innerText = health;
+  monsterHealthText.innerText = monsterHealth;
+}
+
+function esquivarAventura() {
+  if (Math.random() < 0.5) {
+    text.innerText = "Esquivas el ataque del " + monstruosAventura[fighting].name;
+  } else {
+    text.innerText = "Intentas esquivar pero fallas.";
+    text.innerText += " El " + monstruosAventura[fighting].name + " te ataca.";
+    text.innerText += " Pierdes " + getMonsterAttackValueAventura(monstruosAventura[fighting].level) + " puntos de vida.";
+    health -= getMonsterAttackValueAventura(monstruosAventura[fighting].level);
+    if (health <= 0) {
+      lose();
+    }
+    healthText.innerText = health;
+  }
+}
+
+function usarHabilidadEspecial() {
+  if (xp >= 20) {
+    let damage = Math.floor(Math.random() * 50) + 25;
+    text.innerText = "Usas tu habilidad especial felina. ¡Golpe crítico de " + damage + " puntos!";
+    monsterHealth -= damage;
+    xp -= 20;
+    xpText.innerText = xp;
     
-    const ubicaciones = [
-      {
-        name: "madriguera",
-        "button text": ["Ir a la tienda", "Patrullar las calles", "Luchar contra el dragón"],
-        "button functions": [irTienda, irCalles, pelearDragon],
-        text: 'Estás en tu madriguera. Escrito en idioma Gatés, ves un cartel que dice "Tienda clandestina".'
-      },
-      {
-        name: "tienda",
-        "button text": ["Curar al 100% (10 premios de gato)", "Comprar arma (30 premios de gato)", "Volver a tu madriguera"],
-        "button functions": [comprarSalud, comprarArma, irPlaza],
-        text: "Has entrado en la tienda."
-      },
-      {
-        name: "calles",
-        "button text": ["Patrullar las cloacas", "Ir a por un secuaz", "Volver a tu madriguera"],
-        "button functions": [pelearLimo, pelearBestia, irPlaza],
-        text: "Patrullas las calles. Ves algunos enemigos que odian a los gatos y casas perfectas para mangar si te cargas a los que las vigilan."
-      },
-      {
-        name: "pelea",
-        "button text": ["Atacar", "Esquivar", "Huir"],
-        "button functions": [atacar, esquivar, irPlaza],
-        text: "Estás luchando contra un enemigo."
-      },
-      {
-        name: "victoria",
-        "button text": ["Patrullar más", "Volver a tu madriguera", "Robar en su casa"],
-        "button functions": [irCalles, irPlaza, robarCasa,],
-        text: 'El enemigo grita "¡Arg! ¡Es culpa de la ultraderecha!" al morir. Ganas experiencia y encuentras premios de gato.'
-      },
-      {
-        name: "derrota",
-        "button text": ["¿REJUGAR?", "¿REJUGAR?", "¿REJUGAR?"],
-        "button functions": [reiniciar, reiniciar, reiniciar],
-        text: "Has morido. ☠️"
-      },
-      {
-        name: "gana",
-        "button text": ["¿REJUGAR?", "¿REJUGAR?", "¿REJUGAR?"],
-        "button functions": [reiniciar, reiniciar, reiniciar],
-        text: "¡Derrotaste a Perro Sánchez! ¡GANAS EL JUEGO! 🎉"
-      },
-      {
-        name: "huevoDePascua",
-        "button text": ["2", "8", "Volver a tu madriguera"],
-        "button functions": [eligeDos, eligeOcho, irPlaza],
-        text: "Encuentras un juego secreto. Elige un número..."
-      },
-      {
-        name: "laberinto",
-        "button text": ["Miau", "Miau", "Miau"],
-        "button functions": [function(){}, function(){}, function(){}],
-        text: "Estás chorimangando en una casa. Muévete con la cruceta para explorar."
+    if (monsterHealth <= 0) {
+      defeatMonsterAventura();
+    } else {
+      text.innerText += " El " + monstruosAventura[fighting].name + " contraataca.";
+      text.innerText += " Pierdes " + getMonsterAttackValueAventura(monstruosAventura[fighting].level) + " puntos de vida.";
+      health -= getMonsterAttackValueAventura(monstruosAventura[fighting].level);
+      if (health <= 0) {
+        lose();
       }
-    ];
+      healthText.innerText = health;
+    }
+    monsterHealthText.innerText = monsterHealth;
+  } else {
+    text.innerText = "No tienes suficiente experiencia para usar tu habilidad especial. Necesitas 20 XP.";
+  }
+}
+
+function getMonsterAttackValueAventura(level) {
+  const hit = (level * 5) - (Math.floor(Math.random() * xp));
+  return hit > 0 ? hit : 0;
+}
+
+function defeatMonsterAventura() {
+  gold += Math.floor(monstruosAventura[fighting].level * 6.7);
+  xp += monstruosAventura[fighting].level;
+  goldText.innerText = gold;
+  xpText.innerText = xp;
+  enemigosAventuraDerrotados++;
+  actualizar("victoriaAventura");
+}
+
+function continuarAventura() {
+  // Vuelve a la ubicación anterior o avanza según la lógica
+  if (ubicacionAnterior === "salidaAldea") {
+    actualizar("salidaAldea");
+  } else {
+    actualizar("bosqueOscuro");
+  }
+}
+
+function descansarVictoria() {
+  health = Math.min(health + 15, 100);
+  healthText.innerText = health;
+  text.innerText = "Descansas después de la batalla y recuperas 15 puntos de salud.";
+  setTimeout(() => continuarAventura(), 2000);
+}
+
+function buscarEnemigos() {
+  if (Math.random() < 0.8) {
+    fighting = Math.floor(Math.random() * monstruosAventura.length);
+    text.innerText = "¡Encuentras otro enemigo!";
+    setTimeout(() => goFightAventura(), 1500);
+  } else {
+    text.innerText = "No encuentras más enemigos por ahora.";
+    setTimeout(() => continuarAventura(), 2000);
+  }
+}
 
     const btn1 = document.querySelector("#button1"),
           btn2 = document.querySelector("#button2"),
