@@ -183,13 +183,89 @@
       margin: 10px 0;
       text-shadow: 0 0 10px #ff00cc;
     }
+
+    /* Estilos para la pantalla de subida de nivel */
+    #levelUpScreen {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #levelUpModal {
+      background: linear-gradient(#333, #222);
+      border: 4px double #ffcc00;
+      border-radius: 15px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 0 30px #ffcc00;
+      max-width: 400px;
+      width: 90%;
+      animation: levelUpPulse 2s infinite;
+    }
+
+    @keyframes levelUpPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+
+    #levelUpModal h2 {
+      color: #ffcc00;
+      font-size: 24px;
+      margin-bottom: 20px;
+      text-shadow: 0 0 15px #ffcc00;
+      animation: levelUpGlow 1s infinite alternate;
+    }
+
+    @keyframes levelUpGlow {
+      0% { text-shadow: 0 0 15px #ffcc00; }
+      100% { text-shadow: 0 0 25px #ffcc00, 0 0 35px #ffcc00; }
+    }
+
+    .levelup-button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 15px;
+      background: #000;
+      color: #00ffcc;
+      border: 2px solid #00ffcc;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .levelup-button:hover {
+      background: #00ffcc;
+      color: #000;
+      box-shadow: 0 0 15px #00ffcc;
+      transform: translateY(-2px);
+    }
+
+    .levelup-description {
+      color: #ccc;
+      font-size: 14px;
+      margin-top: 5px;
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
   <div id="game">
     <div id="stats">
-      <span class="stat">XP: <strong><span id="xpText">0</span></strong></span>
+      <span class="stat">Nivel de maullido: <strong><span id="levelText">1</span></strong></span>
+      <span class="stat">XP: <strong><span id="xpText">0</span> / <span id="xpRequiredText">100</span></strong></span>
       <span class="stat">Salud: <strong><span id="healthText">100</span></strong></span>
+      <span class="stat">Ataque: <strong><span id="attackText">5</span></strong></span>
+      <span class="stat">Defensa: <strong><span id="defenseText">0</span></strong></span>
       <span class="stat">Premios de gato: <strong><span id="goldText">50</span></strong></span>
     </div>
     <div id="controls">
@@ -218,8 +294,33 @@
     <div id="text">Bienvenido al liberador de gatitos. Debes derrotar al Perro que impide a la gente tener gatitos en el pueblo. Estás en tu guarida. ¿Adónde quieres ir? Usa los botones de arriba.</div>
   </div>
 
+  <!-- Pantalla de subida de nivel -->
+  <div id="levelUpScreen">
+    <div id="levelUpModal">
+      <h2>🎉 ¡Miau! ¡Subes tu nivel de Maullido! 🎉</h2>
+      <p>Has alcanzado el nivel <span id="newLevelText">2</span></p>
+      <p>Elige tu mejora:</p>
+      
+      <button class="levelup-button" onclick="elegirMejora('salud')">
+        💗 Aumentar Vida Máxima
+        <div class="levelup-description">Más resistencia en combate</div>
+      </button>
+      
+      <button class="levelup-button" onclick="elegirMejora('ataque')">
+        ⚔️ Aumentar Ataque
+        <div class="levelup-description">Más daño con todas las armas</div>
+      </button>
+      
+      <button class="levelup-button" onclick="elegirMejora('defensa')">
+        🛡️ Aumentar Defensa
+        <div class="levelup-description">Reduces el daño recibido</div>
+      </button>
+    </div>
+  </div>
+
   <script>
     let xp = 0, salud = 100, saludMaxima = 100, oro = 50, armaActual = 0, armaduraActual = -1, luchando, saludMonstruo;
+    let nivel = 1, ataqueExtra = 0, defensaExtra = 0;
     let inventario = ["garrita de gato"];
     let inventarioArmaduras = [];
     
@@ -231,13 +332,18 @@
     let tiempoLimite = 30000; // 30 segundos en milisegundos
     let temporizador = null;
     
+    // Función para calcular XP requerida para el siguiente nivel (curva exponencial)
+    function calcularXPRequerida(nivel) {
+      return Math.floor(100 * Math.pow(1.5, nivel - 1));
+    }
+    
     const armas = [
       { name: "garrita de gato", power: 5 },
-      { name: "navaja oxidada desafilada", power: 30 },
-      { name: "martillo de la caja de herramientas", power: 50 },
-      { name: "bayoneta de la primera guerra mundial casi afilada", power: 100 },
-      { name: "espada de Wulflund sin filo", power: 120 },
-      { name: "katana de gato muy afilada", power: 140 }
+      { name: "navaja oxidada desafilada", power: 10 },
+      { name: "martillo de la caja de herramientas", power: 20 },
+      { name: "bayoneta de la primera guerra mundial casi afilada", power: 40 },
+      { name: "espada de Wulflund sin filo", power: 60 },
+      { name: "katana de gato muy afilada", power: 100 }
     ];
     
     const armaduras = [
@@ -282,7 +388,7 @@
     const ubicaciones = [
       {
         name: "madriguera",
-        "button text": ["Ir a la tienda", "Patrullar las calles", "Luchar contra el Perro"],
+        "button text": ["Ir a la tienda", "Patrullar las calles", "Luchar contra el dragón"],
         "button functions": [irTienda, irCalles, pelearDragon],
         text: 'Estás en tu madriguera. Escrito en idioma Gatés, ves un cartel que dice "Tienda clandestina".'
       },
@@ -340,15 +446,21 @@
           btn2 = document.querySelector("#button2"),
           btn3 = document.querySelector("#button3"),
           txt = document.querySelector("#text"),
+          levelTxt = document.querySelector("#levelText"),
           xpTxt = document.querySelector("#xpText"),
+          xpRequiredTxt = document.querySelector("#xpRequiredText"),
           saludTxt = document.querySelector("#healthText"),
+          attackTxt = document.querySelector("#attackText"),
+          defenseTxt = document.querySelector("#defenseText"),
           oroTxt = document.querySelector("#goldText"),
           statsMon = document.querySelector("#monsterStats"),
           nombreMon = document.querySelector("#monsterName"),
           saludMonTxt = document.querySelector("#monsterHealth"),
           laberintoContainer = document.querySelector("#laberintoContainer"),
           laberinto = document.querySelector("#laberinto"),
-          temporizadorDiv = document.querySelector("#temporizador");
+          temporizadorDiv = document.querySelector("#temporizador"),
+          levelUpScreen = document.querySelector("#levelUpScreen"),
+          newLevelText = document.querySelector("#newLevelText");
 
     btn1.onclick = irTienda;
     btn2.onclick = irCalles;
@@ -360,6 +472,57 @@
     document.querySelector("#boton-izq").onclick = () => moverJugador(-1, 0);
     document.querySelector("#boton-der").onclick = () => moverJugador(1, 0);
     document.querySelector("#boton-centro").onclick = function(){};
+
+    // Inicializar estadísticas
+    function actualizarEstadisticas() {
+      levelTxt.innerText = nivel;
+      xpTxt.innerText = xp;
+      xpRequiredTxt.innerText = calcularXPRequerida(nivel);
+      saludTxt.innerText = salud;
+      attackTxt.innerText = armas[armaActual].power + ataqueExtra;
+      defenseTxt.innerText = (armaduraActual >= 0 ? armaduras[armaduraActual].defense : 0) + defensaExtra;
+      oroTxt.innerText = oro;
+    }
+
+    // Función para mostrar pantalla de subida de nivel
+    function mostrarPantallaSubidaNivel() {
+      newLevelText.innerText = nivel;
+      levelUpScreen.style.display = "flex";
+    }
+
+    // Función para elegir mejora al subir de nivel
+    function elegirMejora(tipo) {
+      switch(tipo) {
+        case 'salud':
+          saludMaxima += 25;
+          salud = saludMaxima; // Curar completamente al subir de nivel
+          txt.innerText += `\n🎉 ¡Vida máxima aumentada a ${saludMaxima}! Te has curado completamente.`;
+          break;
+        case 'ataque':
+          ataqueExtra += 10;
+          txt.innerText += `\n🎉 ¡Ataque aumentado en 10! Ahora tienes ${armas[armaActual].power + ataqueExtra} de ataque.`;
+          break;
+        case 'defensa':
+          defensaExtra += 1;
+          txt.innerText += `\n🎉 ¡Defensa aumentada en 1! Ahora tienes ${(armaduraActual >= 0 ? armaduras[armaduraActual].defense : 0) + defensaExtra} de defensa.`;
+          break;
+      }
+      
+      levelUpScreen.style.display = "none";
+      actualizarEstadisticas();
+    }
+
+    // Función para verificar subida de nivel
+    function verificarSubidaNivel() {
+      const xpRequerida = calcularXPRequerida(nivel);
+      if (xp >= xpRequerida) {
+        nivel++;
+        xp -= xpRequerida; // Mantener XP sobrante
+        mostrarPantallaSubidaNivel();
+        return true;
+      }
+      return false;
+    }
 
     function actualizar(loc) {
       statsMon.style.display = "none";
@@ -377,8 +540,7 @@
       if (oro >= 10) { 
         oro -= 10; 
         salud = saludMaxima; 
-        oroTxt.innerText = oro; 
-        saludTxt.innerText = salud; 
+        actualizarEstadisticas();
         txt.innerText = "¡Te has curado completamente!";
       } else txt.innerText = "¡No tienes suficientes premios de gato!";
     }
@@ -391,7 +553,7 @@
           const arma = armas[armaActual].name;
           inventario.push(arma);
           txt.innerText = `Ahora tienes una ${arma}. En tu inventario: ${inventario.join(", ")}`;
-          oroTxt.innerText = oro;
+          actualizarEstadisticas();
         } else txt.innerText = "No tienes suficientes premios de gato para comprar un arma.";
       } else {
         txt.innerText = "¡Ya tienes el arma más poderosa!";
@@ -406,7 +568,7 @@
         oro += 15;
         armaActual--;
         txt.innerText = `Vendiste un ${vendida}. Inventario: ${inventario.join(", ")}`;
-        oroTxt.innerText = oro;
+        actualizarEstadisticas();
       } else txt.innerText = "¡No puedes vender tu garrita de gato!";
     }
     
@@ -444,11 +606,12 @@
       
       let dañoRecibido = ataquesMonstruo(monstruos[luchando].level);
       
-      // Aplicar defensa de armadura
-      if (armaduraActual >= 0) {
-        const defensa = armaduras[armaduraActual].defense;
-        dañoRecibido = Math.max(0, dañoRecibido - defensa);
-        txt.innerText += `\nTu ${armaduras[armaduraActual].name} reduce el daño en ${defensa}.`;
+      // Aplicar defensa total (armadura + extra)
+      const defensaTotal = (armaduraActual >= 0 ? armaduras[armaduraActual].defense : 0) + defensaExtra;
+      dañoRecibido = Math.max(0, dañoRecibido - defensaTotal);
+      
+      if (defensaTotal > 0) {
+        txt.innerText += `\nTu defensa (${defensaTotal}) reduce el daño.`;
       }
       
       if (Math.random() > .2 || salud < 20) {
@@ -457,8 +620,11 @@
         txt.innerText += "\n¡Fallaste!";
       }
       
-      saludMonstruo -= armas[armaActual].power + Math.floor(Math.random()*xp) + 1;
-      saludTxt.innerText = salud;
+      // Calcular daño total (arma + extra + aleatorio basado en XP)
+      const ataqueTotal = armas[armaActual].power + ataqueExtra + Math.floor(Math.random() * (nivel * 2)) + 1;
+      saludMonstruo -= ataqueTotal;
+      
+      actualizarEstadisticas();
       saludMonTxt.innerText = saludMonstruo;
       
       if (salud <= 0) derrota();
@@ -481,7 +647,7 @@
     }
     
     function ataquesMonstruo(nivel) {
-      return (nivel * 5) - Math.floor(Math.random() * xp);
+      return (nivel * 5) - Math.floor(Math.random() * (xp / 10));
     }
     
     function esquivar() {
@@ -489,22 +655,14 @@
     }
     
     function victoria() {
-      const xpAnterior = xp;
       oro += Math.floor(monstruos[luchando].level * 6.7);
-      xp += monstruos[luchando].level;
+      xp += monstruos[luchando].level * 10; // Más XP por victoria
       
-      const nivelAnterior = Math.floor(xpAnterior / 10);
-      const nivelActual = Math.floor(xp / 10);
-      
-      if (nivelActual > nivelAnterior) {
-        saludMaxima += 25;
-        salud = saludMaxima;
-        txt.innerText += `\n¡Subiste de nivel! Tu salud máxima ahora es ${saludMaxima}.`;
+      // Verificar si sube de nivel
+      if (!verificarSubidaNivel()) {
+        actualizarEstadisticas();
       }
       
-      oroTxt.innerText = oro;
-      xpTxt.innerText = xp;
-      saludTxt.innerText = salud;
       actualizar(ubicaciones[4]);
     }
     
@@ -513,11 +671,10 @@
     
     function reiniciar() {
       xp = 0; salud = 100; saludMaxima = 100; oro = 50; armaActual = 0; armaduraActual = -1;
-      inventario = ["palo medio roto"];
+      nivel = 1; ataqueExtra = 0; defensaExtra = 0;
+      inventario = ["garrita de gato"];
       inventarioArmaduras = [];
-      oroTxt.innerText = oro;
-      saludTxt.innerText = salud;
-      xpTxt.innerText = xp;
+      actualizarEstadisticas();
       location.reload();
     }
     
@@ -525,7 +682,7 @@
     function eligeDos() { elegir(2); }
     function eligeOcho() { elegir(8); }
     
-    function elegir(guess) {
+     function elegir(guess) {
       const nums = Array.from({length:10},()=>Math.floor(Math.random()*11));
       txt.innerText = `Elegiste ${guess}.\nNúmeros: ${nums.join(", ")}`;
       if (nums.includes(guess)) {
