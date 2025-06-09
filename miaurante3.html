@@ -427,31 +427,26 @@
             50% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
 
-        .phase-indicator {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            color: #ffff00;
-            padding: 10px;
-            border-radius: 10px;
-            border: 2px solid #ffff00;
-            box-shadow: 0 0 15px rgba(255, 255, 0, 0.6);
-            font-size: 8px;
-            z-index: 100;
-        }
+.phase-indicator {
+    position: fixed;
+    top: 90px; /* Movido más abajo para evitar superposición */
+    right: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #ffff00;
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid #ffff00;
+    box-shadow: 0 0 15px rgba(255, 255, 0, 0.6);
+    font-size: 8px;
+    z-index: 100;
+}
 
-        @media (max-height: 600px) {
-            .trash-map {
-                max-height: 150px;
-            }
-            .header {
-                min-height: 60px;
-            }
-            .stats {
-                font-size: 10px;
-            }
-        }
+@media (max-height: 600px) {
+    .phase-indicator {
+        top: 70px; /* Ajuste para pantallas pequeñas */
+        font-size: 7px;
+    }
+}
     </style>
 </head>
 <body>
@@ -919,35 +914,46 @@ elements.money.addEventListener('dblclick', () => {
             playNote();
         }
 
-        // Loop principal del juego
-        function gameLoop() {
-            if (!gameState.isPlaying) return;
+// Loop principal del juego
+function gameLoop() {
+    if (!gameState.isPlaying) return;
+    
+    if (gameState.currentPhase === 'day') {
+        gameState.dayTime++;
+        
+        // Cada 24 segundos = 1 hora de juego
+        if (gameState.dayTime % 576 === 0) { // 24 * 24 = 576 frames (asumiendo 60fps)
+            gameState.gameTime++;
             
-            if (gameState.currentPhase === 'day') {
-                gameState.dayTime++;
-                
-                // Cada 24 segundos = 1 hora de juego
-                if (gameState.dayTime % 576 === 0) { // 24 * 24 = 576 frames (asumiendo 60fps)
-                    gameState.gameTime++;
-                    
-                    // Añadir nuevos clientes cada hora
-                    const newCustomers = 1 + Math.floor(gameState.upgrades.advertising / 2);
-                    for (let i = 0; i < newCustomers; i++) {
-                        gameState.customers.push(generateCustomer());
-                    }
-                    
-                    updateCustomerQueue();
-                    updateUI();
-                    
-                    // Fin del día (después de 10 horas, 18:00)
-                    if (gameState.gameTime >= 18) {
-                        switchPhase();
-                    }
-                }
+            // Añadir nuevos clientes cada hora
+            const newCustomers = 1 + Math.floor(gameState.upgrades.advertising / 2);
+            for (let i = 0; i < newCustomers; i++) {
+                gameState.customers.push(generateCustomer());
             }
             
-            requestAnimationFrame(gameLoop);
+            updateCustomerQueue();
+            updateUI();
+            
+            // Fin del día (después de 10 horas, 18:00)
+            if (gameState.gameTime >= 18) {
+                switchPhase();
+            }
         }
+    } else if (gameState.currentPhase === 'night') {
+        // Manejar la fase nocturna
+        if (!gameState.nightStartTime) {
+            gameState.nightStartTime = Date.now();
+        }
+        
+        // La noche dura 30 segundos
+        if (Date.now() - gameState.nightStartTime > 30000) {
+            gameState.nightStartTime = 0;
+            switchPhase();
+        }
+    }
+    
+    requestAnimationFrame(gameLoop);
+}
 
         // Inicializar juego
         function initGame() {
