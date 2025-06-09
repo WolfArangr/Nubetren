@@ -400,7 +400,7 @@ const monstruosAventura = [
 const ubicaciones = [
   {
     name: "madriguera",
-    "button text": ["Ir a la tienda", "Patrullar las calles", "Luchar contra El Perro"],
+    "button text": ["Ir a la tienda", "Patrullar las calles", "Luchar contra el dragón"],
     "button functions": [irTienda, irCalles, antesDragon],
     text: 'Estás en tu madriguera. Escrito en idioma Gatés, ves un cartel que dice "Tienda clandestina".'
   },
@@ -434,7 +434,13 @@ const ubicaciones = [
     "button functions": [reiniciar, reiniciar, reiniciar],
     text: "Has morido. ☠️"
   },
-  // NUEVA UBICACIÓN INTERMEDIA PARA PELEAR CONTRA EL PERRO
+  // NUEVA UBICACIÓN MODIFICADA PARA GANAR
+  {
+    name: "gana",
+    "button text": ["¿REJUGAR?", "Volver a la madriguera", "Salir de la aldea"],
+    "button functions": [reiniciar, irPlaza, salirAldea],
+    text: "¡Derrotaste a Perro Sánchez! ¡GANAS EL JUEGO! 🎉 ¿Qué quieres hacer ahora?"
+  },
   {
     name: "antesDragon",
     "button text": ["Sí, pelear contra El Perro", "No, quiero volver a la madriguera", "Organizo una manifestación contra El Perro"],
@@ -446,13 +452,7 @@ const ubicaciones = [
     name: "debate",
     "button text": ["Es verdad, ¡fuera los fascistas!", "El socialismo sanchista es un claro ejemplo de tiranía que llevará necesariamente al neofascismo", "Ostras, otro apagón, nada, todos a casa..."],
     "button functions": [respuestaFascistas, respuestaTirania, respuestaApagon],
-    text: 'Organizas una manifestación y Perro Sánchez sale a confrontarte. Te mira fijamente y dice: "¡La prohibición de los gatitos en la aldea es culpa de la ultraderecha y son todo bulos!"'
-  },
-  {
-    name: "gana",
-    "button text": ["¿REJUGAR?", "Volver a la madriguera", "Salir de la aldea"],
-    "button functions": [reiniciar, irPlaza, salirAldea],
-    text: "¡Derrotaste a Perro Sánchez! ¡GANAS EL JUEGO! 🎉 ¿Qué quieres hacer ahora?"
+    text: 'Organizas una manifestación y Perro Sánchez sale a confrontarte. Te mira fijamente y dice: "¡La prohibición de los gatitos en la aldea es culpa de la ultraderecha y son todo bulos. ¡Debáteme si te atreves!"'
   },
   {
     name: "huevoDePascua",
@@ -546,28 +546,6 @@ function salirAldea() {
   actualizar("salidaAldea");
 }
 
-// FUNCIÓN PARA ORGANIZAR MANIFESTACIÓN
-function organizarManifestacion() {
-  actualizar("debate");
-}
-
-// FUNCIONES DEL DEBATE
-function respuestaFascistas() {
-  text.innerText = "¡Has caído en la trampa! El pueblo te apalea por traidor. Has sido derrotado por el populismo.";
-  health = 0;
-  setTimeout(() => actualizar("derrota"), 2000);
-}
-
-function respuestaTirania() {
-  text.innerText = "¡Tu respuesta intelectualmente superior despierta al pueblo! Los aldeanos se levantan en revuelta contra la tiranía. Perro Sánchez huye despavorido. ¡Has ganado con el poder de la razón!";
-  setTimeout(() => actualizar("gana"), 2000);
-}
-
-function respuestaApagon() {
-  text.innerText = "Misteriosamente se va la luz en toda la aldea. Todos se van a casa confusos. Perro Sánchez desaparece en la oscuridad. Has evitado el conflicto... por ahora.";
-  setTimeout(() => irPlaza(), 2000);
-}
-
 // FUNCIONES DEL BOSQUE
 function irBosque() {
   ubicacionAnterior = "salidaAldea";
@@ -633,7 +611,9 @@ function cruzarRio() {
 function seguirOrilla() {
   actualizar("puente");
 }
-
+function organizarManifestacion() {
+  actualizar("debate");
+}
 // FUNCIONES DE DESCANSO
 function descansarCamino() {
   actualizar("campamento");
@@ -855,7 +835,21 @@ function continuarAventura() {
     actualizar("bosqueOscuro");
   }
 }
+function respuestaFascistas() {
+  text.innerText = "¡Has caído en la trampa! El pueblo te apalea por traidor. Has sido derrotado por el populismo.";
+  health = 0;
+  setTimeout(() => actualizar("derrota"), 2000);
+}
 
+function respuestaTirania() {
+  text.innerText = "¡Tu respuesta intelectualmente superior despierta al pueblo! Los aldeanos se levantan en revuelta contra la tiranía. Perro Sánchez huye despavorido. ¡Has ganado con el poder de la razón!";
+  setTimeout(() => actualizar("gana"), 2000);
+}
+
+function respuestaApagon() {
+  text.innerText = "Misteriosamente se va la luz en toda la aldea. Todos se van a casa confusos. Perro Sánchez desaparece en la oscuridad. Has evitado el conflicto... por ahora.";
+  setTimeout(() => irPlaza(), 2000);
+}
 function descansarVictoria() {
   health = Math.min(health + 15, 100);
   healthText.innerText = health;
@@ -873,7 +867,6 @@ function buscarEnemigos() {
     setTimeout(() => continuarAventura(), 2000);
   }
 }
-
     const btn1 = document.querySelector("#button1"),
           btn2 = document.querySelector("#button2"),
           btn3 = document.querySelector("#button3"),
