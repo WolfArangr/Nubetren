@@ -1,281 +1,244 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
   <title>Restaurante Gatuno</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"/>
   <style>
     html, body {
-      margin: 0;
-      padding: 0;
-      background: #0d001a;
-      color: #00ffff;
-      font-family: 'Press Start 2P', monospace;
-      user-select: none;
-      -webkit-user-select: none;
-      touch-action: manipulation;
+      margin:0; padding:0;
+      background:#0d001a; color:#0ff;
+      font-family:'Press Start 2P', monospace;
+      user-select:none; touch-action:manipulation;
+      height:100vh; overflow:hidden;
     }
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      overflow: hidden;
-      height: 100vh;
+    #menu, #shopModal, #game {
+      position:absolute; top:0; left:0;
+      width:100%; height:100%;
+      display:flex; align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      background:#000022;
+      z-index:10;
     }
-    h1 {
-      font-size: 14px;
-      margin: 8px 0;
-      text-shadow: 0 0 5px #0ff;
-    }
-    #topBar {
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      padding: 4px 12px;
-      background: #111;
-      box-shadow: 0 0 10px #0ff;
-      font-size: 10px;
-    }
-    #game, #map, #queue {
-      width: 100%;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    #map {
-      max-width: 384px;
-    }
-    .tile {
-      width: calc(100% / 16);
-      text-align: center;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    #queue {
-      border-top: 2px solid #0ff;
-      padding: 4px;
-      height: 64px;
-      overflow-x: auto;
-      background: #111;
-    }
-    .cat {
-      display: inline-block;
-      text-align: center;
-      margin: 0 4px;
-    }
-    .cat span {
-      display: block;
-      font-size: 18px;
-    }
+    #menu.hidden, #shopModal.hidden { display:none; }
     button {
-      background: black;
-      color: #0ff;
-      border: 2px solid #0ff;
-      font-family: 'Press Start 2P', monospace;
-      font-size: 10px;
-      padding: 6px;
-      margin: 4px;
-      text-shadow: 0 0 4px #0ff;
-      box-shadow: 0 0 10px #0ff;
-      cursor: pointer;
+      background:#000; color:#0ff;
+      border:2px solid #0ff;
+      font-family:'Press Start 2P'; font-size:12px;
+      padding:10px 20px;
+      margin:10px;
+      box-shadow:0 0 10px #0ff;
+      cursor:pointer;
     }
-    #shopModal {
-      position: fixed;
-      top: 10%;
-      left: 10%;
-      width: 80%;
-      background: #000022;
-      border: 2px solid #0ff;
-      box-shadow: 0 0 20px #0ff;
-      padding: 10px;
-      display: none;
-      z-index: 10;
+    h1 { font-size:20px; margin-bottom:10px; text-shadow:0 0 10px #0ff;}
+    p { font-size:12px; margin:10px; text-align:center;}
+    #topBar {
+      position:absolute; top:0; left:0;
+      width:100%; padding:6px 12px;
+      background:#111; box-shadow:0 0 10px #0ff;
+      display:flex; justify-content:space-between; font-size:12px;
+      z-index:5;
     }
-    #shopModal h2 {
-      font-size: 12px;
-      color: #fff;
-      text-align: center;
+    #map, #inventory {
+      display:grid; gap:4px;
+      background:#111;
+      box-shadow:0 0 10px #0ff;
     }
-    .upgrade {
-      margin: 6px 0;
-      padding: 4px;
-      border-bottom: 1px solid #0ff;
+    #map { grid-template-columns:repeat(16,1fr); width:96%; max-width:600px; flex:1; padding:4px;}
+    .tile { font-size:24px; text-align:center; padding:6px; border-radius:4px; cursor:pointer; background:#222;}
+    #queue {
+      position:absolute; bottom:0; left:0;
+      width:100%; height:80px;
+      border-top:2px solid #0ff;
+      background:#111;
+      display:flex; align-items:center;
+      overflow-x:auto; padding:4px;
     }
-    .hidden {
-      display: none;
+    .cat { font-size:24px; text-align:center; margin:0 6px; }
+    .cat small { display:block; font-size:14px; }
+    #inventory {
+      position:absolute; right:0; bottom:90px;
+      width:120px; background:#111;
+      padding:6px; font-size:12px;
+      z-index:5;
     }
-    #musicToggle {
-      position: absolute;
-      right: 12px;
-      bottom: 12px;
-    }
+    #inventory div { margin:4px 0; }
   </style>
 </head>
 <body>
+
+<!-- MENÚ INICIAL -->
+<div id="menu">
+  <h1>🛎️ Restaurante Gatuno</h1>
+  <p>Ayuda al gatito a recoger comida de la basura por la noche y servir a los gatos por la mañana.</p>
+  <button onclick="startGame()">Iniciar</button>
+</div>
+
+<!-- TIENDA -->
+<div id="shopModal" class="hidden">
+  <h1>Tienda de Mejoras 🛒</h1>
+  <button onclick="buyUpgrade('ads',10)">Publicidad maullante (+1 gato/h) – 10 💸</button>
+  <button onclick="buyUpgrade('storage',15)">+3 capacidad comida – 15 💸</button>
+  <button onclick="buyUpgrade('thief',20)">Gato ladrón – 20 💸</button>
+  <button onclick="closeShop()">Cerrar</button>
+</div>
+
+<!-- JUEGO -->
+<div id="game" class="hidden">
   <div id="topBar">
-    <div id="playerSelect">🐱</div>
-    <div>💸 <span id="money">0</span> | <span id="time">🌙</span></div>
+    <div id="playerSel">🐱</div>
+    <div>💸 <span id="money">0</span> | <span id="time">🌙</span> <span id="clock">00:00</span></div>
     <button onclick="openShop()">🛒</button>
   </div>
 
-  <div id="game">
-    <div id="map"></div>
-    <div id="queue"></div>
+  <div id="map"></div>
+  <div id="queue"></div>
+
+  <div id="inventory">
+    <strong>Inventario</strong>
   </div>
 
-  <button id="musicToggle" onclick="toggleMusic()">🎵</button>
+  <button id="musicBtn" style="position:absolute;bottom:10px;left:10px;" onclick="toggleMusic()">🎵</button>
+</div>
 
-  <!-- Shop Modal -->
-  <div id="shopModal">
-    <h2>TIENDA DE MEJORAS</h2>
-    <div class="upgrade">
-      📢 Publicidad maullante (+1 gato/h)<br>
-      Precio: 10 💸<br>
-      <button onclick="buyUpgrade('ads', 10)">Comprar</button>
-    </div>
-    <div class="upgrade">
-      📦 Mejora de almiaucenaje (+3 comida máx)<br>
-      Precio: 15 💸<br>
-      <button onclick="buyUpgrade('storage', 15)">Comprar</button>
-    </div>
-    <div class="upgrade">
-      🐾 Gato ladrón (trae 3 comidas)<br>
-      Precio: 20 💸<br>
-      <button onclick="buyUpgrade('thief', 20)">Comprar</button>
-    </div>
-    <button onclick="closeShop()">Cerrar</button>
-  </div>
+<audio id="music" loop>
+  <source src="https://files.catbox.moe/8mpoq5.mp3" type="audio/mpeg"/>
+</audio>
 
-  <audio id="music" loop>
-    <source src="https://files.catbox.moe/8mpoq5.mp3" type="audio/mpeg">
-  </audio>
+<script>
+  const foodEmojis=['🍕','🍣','🍩','🍗','🍔','🍰','🍙','🍜','🍟','🥐','🍞','🌮','🍤'];
+  const trashEmojis=['🗑️','🥫','📦','🧃','🥡','🧻'];
+  const players=['🐱','🐈','😺','😼','😻'];
+  let storage=JSON.parse(localStorage.getItem("catGame"))||{
+    money:0, food:{}, upgrades:{ads:0, storage:0, thief:false}, player:'🐱'
+  };
+  let isNight=true,hour=0,mapInterval,nightTimeout;
 
-  <script>
-    const foodEmojis = ['🍕','🍣','🍩','🍗','🍔','🍰','🍙','🍜','🍟','🥐','🍞','🌮','🍤'];
-    const playerOptions = ['🐱','🐈','😺','😼','😻'];
-    let storage = JSON.parse(localStorage.getItem("catGame")) || {
-      money: 0,
-      food: {},
-      upgrades: { ads: 0, storage: 0, thief: false },
-      player: '🐱'
-    };
-    let isNight = true, hour = 0;
+  const elMenu=document.getElementById("menu"),
+        elGame=document.getElementById("game"),
+        elShop=document.getElementById("shopModal"),
+        elTop=document.getElementById("topBar"),
+        elMoney=document.getElementById("money"),
+        elTime=document.getElementById("time"),
+        elClock=document.getElementById("clock"),
+        elPlayer=document.getElementById("playerSel"),
+        elMap=document.getElementById("map"),
+        elQueue=document.getElementById("queue"),
+        elInv=document.getElementById("inventory");
 
-    function save() {
-      localStorage.setItem("catGame", JSON.stringify(storage));
+  function save(){localStorage.setItem("catGame",JSON.stringify(storage));}
+
+  function updateUI(){
+    elMoney.textContent=storage.money;
+    elPlayer.textContent=storage.player;
+    elTime.textContent=isNight?'🌙':'🌞';
+    updateInv();
+  }
+  function updateInv(){
+    elInv.innerHTML='<strong>Inventario</strong>';
+    Object.entries(storage.food).forEach(([f,c])=>{
+      elInv.innerHTML+=`<div>${f} x${c}</div>`;
+    });
+  }
+
+  function startGame(){
+    elMenu.classList.add("hidden");
+    elGame.classList.remove("hidden");
+    elPlayer.onclick=()=>{let i=players.indexOf(storage.player);storage.player=players[(i+1)%players.length];save();updateUI();}
+    nightPhase();
+    toggleMusic();
+  }
+
+  function toggleMusic(){
+    const m=document.getElementById("music");
+    m.paused?m.play():m.pause();
+  }
+
+  function randomFood(){return foodEmojis[Math.floor(Math.random()*foodEmojis.length)];}
+  function randomTrash(){return trashEmojis[Math.floor(Math.random()*trashEmojis.length)];}
+  function getMaxFood(){return 3+(storage.upgrades.storage*3);}
+
+  function nightPhase(){
+    isNight=true;hour=0;updateUI();
+    elClock.textContent='00:00';
+    elQueue.innerHTML='';
+    storage.food={};updateInv();
+
+    elMap.innerHTML='';
+    for(let i=0;i<384;i++){
+      const t=document.createElement("div");
+      t.className="tile"; t.textContent=randomTrash();
+      t.onclick=()=>{
+        const f=randomFood(),cnt=storage.food[f]||0,max=getMaxFood();
+        if(cnt<max){storage.food[f]=cnt+1; t.textContent=f; updateInv(); save();}
+      };
+      elMap.appendChild(t);
+    }
+    if(storage.upgrades.thief){
+      for(let i=0;i<3;i++){
+        const f=randomFood();
+        storage.food[f]=(storage.food[f]||0)+1;
+      }
+      updateInv();
     }
 
-    function updateUI() {
-      document.getElementById("money").innerText = storage.money;
-      document.getElementById("playerSelect").innerText = storage.player;
-      document.getElementById("time").innerText = isNight ? '🌙' : '🌞';
-    }
+    pText("Toca los iconos del mapa para conseguir comida 🍕");
+    nightTimeout=setTimeout(morningPhase,8000);
+  }
 
-    function toggleMusic() {
-      const m = document.getElementById("music");
-      m.paused ? m.play() : m.pause();
-    }
+  function pText(txt){
+    elQueue.innerHTML=`<div style="width:100%;text-align:center;color:#0ff;font-size:14px">${txt}</div>`;
+  }
 
-    function randomFood() {
-      return foodEmojis[Math.floor(Math.random() * foodEmojis.length)];
-    }
+  function morningPhase(){
+    isNight=false;updateUI();
+    clearTimeout(nightTimeout);
+    elMap.innerHTML=''; elQueue.innerHTML='';
+    hour=6; // empieza a las 6:00
 
-    function getMaxFood() {
-      return 3 + (storage.upgrades.storage * 3);
-    }
-
-    function nightPhase() {
-      isNight = true; updateUI();
-      document.getElementById("queue").innerHTML = "";
-      storage.food = {};
-      document.getElementById("map").innerHTML = "";
-      for(let i=0; i<384; i++) {
-        const tile = document.createElement("div");
-        tile.className = "tile";
-        tile.innerText = '🗑️';
-        tile.onclick = () => {
-          const f = randomFood();
-          const max = getMaxFood();
-          const count = storage.food[f] || 0;
-          if (count < max) {
-            storage.food[f] = count + 1;
-            tile.innerText = f;
+    let minutes=0;
+    mapInterval=setInterval(()=>{
+      if(hour>=16){
+        clearInterval(mapInterval);
+        nightPhase();
+        return;
+      }
+      elClock.textContent=`${hour.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}`;
+      const cats=1+storage.upgrades.ads;
+      for(let i=0;i<cats;i++){
+        const cat=document.createElement("div");
+        cat.className="cat";
+        const food=randomFood();
+        cat.innerHTML=`<span>${storage.player}</span><small>${food}</small>`;
+        cat.onclick=()=>{
+          if((storage.food[food]||0)>0){
+            storage.food[food]--; storage.money++;
+            cat.innerHTML=`<span>😻</span><small>💸</small>`;
+            cat.onclick=null; save();updateUI();
           }
         };
-        document.getElementById("map").appendChild(tile);
+        elQueue.appendChild(cat);
       }
-      if (storage.upgrades.thief) {
-        for (let i = 0; i < 3; i++) {
-          const f = randomFood();
-          storage.food[f] = (storage.food[f] || 0) + 1;
-        }
-      }
-      setTimeout(morningPhase, 8000);
-    }
+      minutes+=6;
+      if(minutes>=60){minutes=0;hour++;}
+    },2400);
+  }
 
-    function morningPhase() {
-      isNight = false; updateUI();
-      hour = 0;
-      document.getElementById("map").innerHTML = "";
-      const queue = document.getElementById("queue");
-      queue.innerHTML = "";
-      const interval = setInterval(() => {
-        if (hour >= 10) {
-          clearInterval(interval);
-          nightPhase();
-          return;
-        }
-        const catsThisHour = 1 + storage.upgrades.ads;
-        for (let i = 0; i < catsThisHour; i++) {
-          const cat = document.createElement("div");
-          cat.className = "cat";
-          const food = randomFood();
-          cat.innerHTML = `<span>🐱</span><span>${food}</span>`;
-          cat.onclick = () => {
-            if ((storage.food[food] || 0) > 0) {
-              storage.food[food]--;
-              storage.money++;
-              cat.innerHTML = '<span>😻</span><span>💸</span>';
-              cat.onclick = null;
-              updateUI();
-              save();
-            }
-          };
-          queue.appendChild(cat);
-        }
-        hour++;
-      }, 24000 / 10);
-    }
+  function openShop(){elShop.classList.remove("hidden");}
+  function closeShop(){elShop.classList.add("hidden");}
 
-    function openShop() {
-      document.getElementById("shopModal").style.display = "block";
-    }
+  function buyUpgrade(type,cost){
+    if(storage.money<cost)return alert("No tienes suficientes 💸");
+    if(type==='thief'&&storage.upgrades.thief)return alert("Ya tienes al ladrón");
+    storage.money-=cost;
+    if(type==='thief')storage.upgrades.thief=true;
+    else storage.upgrades[type]++;
+    save();updateUI();alert("Mejora comprada");
+  }
 
-    function closeShop() {
-      document.getElementById("shopModal").style.display = "none";
-    }
-
-    function buyUpgrade(type, cost) {
-      if (storage.money < cost) return alert("No tienes suficientes maullidos");
-      if (type === 'thief' && storage.upgrades.thief) return alert("Ya tienes el gato ladrón");
-      storage.money -= cost;
-      if (type === 'thief') storage.upgrades.thief = true;
-      else storage.upgrades[type]++;
-      updateUI(); save();
-      alert("¡Mejora comprada!");
-    }
-
-    // Selector de gato
-    document.getElementById("playerSelect").onclick = () => {
-      let idx = playerOptions.indexOf(storage.player);
-      idx = (idx + 1) % playerOptions.length;
-      storage.player = playerOptions[idx];
-      updateUI(); save();
-    };
-
-    updateUI();
-    nightPhase();
-  </script>
+  updateUI();
+</script>
 </body>
 </html>
