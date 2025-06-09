@@ -438,7 +438,7 @@ const ubicaciones = [
   {
     name: "antesDragon",
     "button text": ["Sí, pelear contra El Perro", "No, quiero volver a la madriguera", "Organizo una manifestación contra El Perro"],
-    "button functions": [confirmarPeleaDragon, irPlaza, organizarManifestacion],
+    "button functions": [pelearDragon, irPlaza, organizarManifestacion],
     text: "Te acercas a la guarida de Perro Sánchez. Puedes oír sus ladridos autoritarios desde aquí. ¿Estás seguro de lo que quieres hacer?"
   },
   // NUEVA UBICACIÓN PARA EL DEBATE
@@ -907,7 +907,7 @@ function buscarEnemigos() {
 
     btn1.onclick = irTienda;
     btn2.onclick = irCalles;
-    btn3.onclick = pelearDragon;
+    btn3.onclick = antesDragon;
 
     // Configurar controles del laberinto
     document.querySelector("#boton-arriba").onclick = () => moverJugador(0, -1);
