@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Restaurante Gatuno</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #0d001a;
+      color: #00ffff;
+      font-family: 'Press Start 2P', monospace;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      height: 100vh;
+    }
+    h1 {
+      font-size: 14px;
+      margin: 8px 0;
+      text-shadow: 0 0 5px #0ff;
+    }
+    #topBar {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      padding: 4px 12px;
+      background: #111;
+      box-shadow: 0 0 10px #0ff;
+      font-size: 10px;
+    }
+    #game, #map, #queue {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    #map {
+      max-width: 384px;
+    }
+    .tile {
+      width: calc(100% / 16);
+      text-align: center;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #queue {
+      border-top: 2px solid #0ff;
+      padding: 4px;
+      height: 64px;
+      overflow-x: auto;
+      background: #111;
+    }
+    .cat {
+      display: inline-block;
+      text-align: center;
+      margin: 0 4px;
+    }
+    .cat span {
+      display: block;
+      font-size: 18px;
+    }
+    button {
+      background: black;
+      color: #0ff;
+      border: 2px solid #0ff;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      padding: 6px;
+      margin: 4px;
+      text-shadow: 0 0 4px #0ff;
+      box-shadow: 0 0 10px #0ff;
+      cursor: pointer;
+    }
+    #shopModal {
+      position: fixed;
+      top: 10%;
+      left: 10%;
+      width: 80%;
+      background: #000022;
+      border: 2px solid #0ff;
+      box-shadow: 0 0 20px #0ff;
+      padding: 10px;
+      display: none;
+      z-index: 10;
+    }
+    #shopModal h2 {
+      font-size: 12px;
+      color: #fff;
+      text-align: center;
+    }
+    .upgrade {
+      margin: 6px 0;
+      padding: 4px;
+      border-bottom: 1px solid #0ff;
+    }
+    .hidden {
+      display: none;
+    }
+    #musicToggle {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div id="topBar">
+    <div id="playerSelect">🐱</div>
+    <div>💸 <span id="money">0</span> | <span id="time">🌙</span></div>
+    <button onclick="openShop()">🛒</button>
+  </div>
+
+  <div id="game">
+    <div id="map"></div>
+    <div id="queue"></div>
+  </div>
+
+  <button id="musicToggle" onclick="toggleMusic()">🎵</button>
+
+  <!-- Shop Modal -->
+  <div id="shopModal">
+    <h2>TIENDA DE MEJORAS</h2>
+    <div class="upgrade">
+      📢 Publicidad maullante (+1 gato/h)<br>
+      Precio: 10 💸<br>
+      <button onclick="buyUpgrade('ads', 10)">Comprar</button>
+    </div>
+    <div class="upgrade">
+      📦 Mejora de almiaucenaje (+3 comida máx)<br>
+      Precio: 15 💸<br>
+      <button onclick="buyUpgrade('storage', 15)">Comprar</button>
+    </div>
+    <div class="upgrade">
+      🐾 Gato ladrón (trae 3 comidas)<br>
+      Precio: 20 💸<br>
+      <button onclick="buyUpgrade('thief', 20)">Comprar</button>
+    </div>
+    <button onclick="closeShop()">Cerrar</button>
+  </div>
+
+  <audio id="music" loop>
+    <source src="https://files.catbox.moe/8mpoq5.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const foodEmojis = ['🍕','🍣','🍩','🍗','🍔','🍰','🍙','🍜','🍟','🥐','🍞','🌮','🍤'];
+    const playerOptions = ['🐱','🐈','😺','😼','😻'];
+    let storage = JSON.parse(localStorage.getItem("catGame")) || {
+      money: 0,
+      food: {},
+      upgrades: { ads: 0, storage: 0, thief: false },
+      player: '🐱'
+    };
+    let isNight = true, hour = 0;
+
+    function save() {
+      localStorage.setItem("catGame", JSON.stringify(storage));
+    }
+
+    function updateUI() {
+      document.getElementById("money").innerText = storage.money;
+      document.getElementById("playerSelect").innerText = storage.player;
+      document.getElementById("time").innerText = isNight ? '🌙' : '🌞';
+    }
+
+    function toggleMusic() {
+      const m = document.getElementById("music");
+      m.paused ? m.play() : m.pause();
+    }
+
+    function randomFood() {
+      return foodEmojis[Math.floor(Math.random() * foodEmojis.length)];
+    }
+
+    function getMaxFood() {
+      return 3 + (storage.upgrades.storage * 3);
+    }
+
+    function nightPhase() {
+      isNight = true; updateUI();
+      document.getElementById("queue").innerHTML = "";
+      storage.food = {};
+      document.getElementById("map").innerHTML = "";
+      for(let i=0; i<384; i++) {
+        const tile = document.createElement("div");
+        tile.className = "tile";
+        tile.innerText = '🗑️';
+        tile.onclick = () => {
+          const f = randomFood();
+          const max = getMaxFood();
+          const count = storage.food[f] || 0;
+          if (count < max) {
+            storage.food[f] = count + 1;
+            tile.innerText = f;
+          }
+        };
+        document.getElementById("map").appendChild(tile);
+      }
+      if (storage.upgrades.thief) {
+        for (let i = 0; i < 3; i++) {
+          const f = randomFood();
+          storage.food[f] = (storage.food[f] || 0) + 1;
+        }
+      }
+      setTimeout(morningPhase, 8000);
+    }
+
+    function morningPhase() {
+      isNight = false; updateUI();
+      hour = 0;
+      document.getElementById("map").innerHTML = "";
+      const queue = document.getElementById("queue");
+      queue.innerHTML = "";
+      const interval = setInterval(() => {
+        if (hour >= 10) {
+          clearInterval(interval);
+          nightPhase();
+          return;
+        }
+        const catsThisHour = 1 + storage.upgrades.ads;
+        for (let i = 0; i < catsThisHour; i++) {
+          const cat = document.createElement("div");
+          cat.className = "cat";
+          const food = randomFood();
+          cat.innerHTML = `<span>🐱</span><span>${food}</span>`;
+          cat.onclick = () => {
+            if ((storage.food[food] || 0) > 0) {
+              storage.food[food]--;
+              storage.money++;
+              cat.innerHTML = '<span>😻</span><span>💸</span>';
+              cat.onclick = null;
+              updateUI();
+              save();
+            }
+          };
+          queue.appendChild(cat);
+        }
+        hour++;
+      }, 24000 / 10);
+    }
+
+    function openShop() {
+      document.getElementById("shopModal").style.display = "block";
+    }
+
+    function closeShop() {
+      document.getElementById("shopModal").style.display = "none";
+    }
+
+    function buyUpgrade(type, cost) {
+      if (storage.money < cost) return alert("No tienes suficientes maullidos");
+      if (type === 'thief' && storage.upgrades.thief) return alert("Ya tienes el gato ladrón");
+      storage.money -= cost;
+      if (type === 'thief') storage.upgrades.thief = true;
+      else storage.upgrades[type]++;
+      updateUI(); save();
+      alert("¡Mejora comprada!");
+    }
+
+    // Selector de gato
+    document.getElementById("playerSelect").onclick = () => {
+      let idx = playerOptions.indexOf(storage.player);
+      idx = (idx + 1) % playerOptions.length;
+      storage.player = playerOptions[idx];
+      updateUI(); save();
+    };
+
+    updateUI();
+    nightPhase();
+  </script>
+</body>
+</html>
