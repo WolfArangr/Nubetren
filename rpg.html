@@ -434,12 +434,19 @@ const ubicaciones = [
     "button functions": [reiniciar, reiniciar, reiniciar],
     text: "Has morido. ☠️"
   },
+  // NUEVA UBICACIÓN INTERMEDIA PARA PELEAR CONTRA EL PERRO
+  {
+    name: "antesDragon",
+    "button text": ["Sí, pelear contra El Perro", "No, quiero volver a la madriguera", "Organizo una manifestación contra El Perro"],
+    "button functions": [confirmarPeleaDragon, irPlaza, organizarManifestacion],
+    text: "Te acercas a la guarida de Perro Sánchez. Puedes oír sus ladridos autoritarios desde aquí. ¿Estás seguro de lo que quieres hacer?"
+  },
   // NUEVA UBICACIÓN PARA EL DEBATE
   {
     name: "debate",
     "button text": ["Es verdad, ¡fuera los fascistas!", "El socialismo sanchista es un claro ejemplo de tiranía que llevará necesariamente al neofascismo", "Ostras, otro apagón, nada, todos a casa..."],
     "button functions": [respuestaFascistas, respuestaTirania, respuestaApagon],
-    text: 'Perro Sánchez te mira fijamente y dice: "¡Basta de huir, cobarde! La prohibición de los gatitos en la aldea es culpa de la ultraderecha y son todo bulos. ¡Debáteme si te atreves!"'
+    text: 'Organizas una manifestación y Perro Sánchez sale a confrontarte. Te mira fijamente y dice: "¡La prohibición de los gatitos en la aldea es culpa de la ultraderecha y son todo bulos. ¡Debáteme si te atreves!"'
   },
   {
     name: "gana",
@@ -529,6 +536,7 @@ let ubicacionAnterior = "";
 let enemigosAventuraDerrotados = 0;
 
 // VARIABLES PARA EL DEBATE CON PERRO SÁNCHEZ
+let vecesHuidoPerroSanchez = 0;
 let vecesRetadoPerroSanchez = 0;
 
 // FUNCIÓN PARA SALIR DE LA ALDEA
@@ -538,17 +546,20 @@ function salirAldea() {
   actualizar("salidaAldea");
 }
 
-// FUNCIÓN MODIFICADA PARA PELEAR CONTRA EL DRAGÓN (PERRO SÁNCHEZ)
+// FUNCIÓN MODIFICADA PARA PELEAR CONTRA EL DRAGÓN (PANTALLA INTERMEDIA)
 function pelearDragon() {
-  vecesRetadoPerroSanchez++;
-  if (vecesRetadoPerroSanchez >= 4) {
-    // Activar debate
-    actualizar("debate");
-  } else {
-    // Combate normal
-    fighting = 2;
-    goFight();
-  }
+  actualizar("antesDragon");
+}
+
+// FUNCIÓN PARA CONFIRMAR LA PELEA CONTRA EL DRAGÓN
+function confirmarPeleaDragon() {
+  fighting = 2;
+  goFight();
+}
+
+// FUNCIÓN PARA ORGANIZAR MANIFESTACIÓN
+function organizarManifestacion() {
+  actualizar("debate");
 }
 
 // FUNCIONES DEL DEBATE
