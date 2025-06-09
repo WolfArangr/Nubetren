@@ -400,7 +400,7 @@ const monstruosAventura = [
 const ubicaciones = [
   {
     name: "madriguera",
-    "button text": ["Ir a la tienda", "Patrullar las calles", "Luchar contra El Perro"],
+    "button text": ["Ir a la tienda", "Patrullar las calles", "Luchar contra el dragón"],
     "button functions": [irTienda, irCalles, pelearDragon],
     text: 'Estás en tu madriguera. Escrito en idioma Gatés, ves un cartel que dice "Tienda clandestina".'
   },
@@ -529,7 +529,6 @@ let ubicacionAnterior = "";
 let enemigosAventuraDerrotados = 0;
 
 // VARIABLES PARA EL DEBATE CON PERRO SÁNCHEZ
-let vecesHuidoPerroSanchez = 0;
 let vecesRetadoPerroSanchez = 0;
 
 // FUNCIÓN PARA SALIR DE LA ALDEA
@@ -542,7 +541,7 @@ function salirAldea() {
 // FUNCIÓN MODIFICADA PARA PELEAR CONTRA EL DRAGÓN (PERRO SÁNCHEZ)
 function pelearDragon() {
   vecesRetadoPerroSanchez++;
-  if (vecesRetadoPerroSanchez >= 4 && vecesHuidoPerroSanchez >= 3) {
+  if (vecesRetadoPerroSanchez >= 4) {
     // Activar debate
     actualizar("debate");
   } else {
@@ -550,14 +549,6 @@ function pelearDragon() {
     fighting = 2;
     goFight();
   }
-}
-
-// FUNCIÓN PARA MANEJAR LA HUIDA EN EL COMBATE CONTRA PERRO SÁNCHEZ
-function huirPerroSanchez() {
-  if (fighting === 2) { // Si está luchando contra Perro Sánchez
-    vecesHuidoPerroSanchez++;
-  }
-  irPlaza(); // Función original de huir
 }
 
 // FUNCIONES DEL DEBATE
