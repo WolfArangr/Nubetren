@@ -953,7 +953,7 @@ function gameLoop() {
         }
         
         // La noche dura 30 segundos
-        if (Date.now() - gameState.nightStartTime > 30000) {
+        if (Date.now() - gameState.nightStartTime > 8000) {
             gameState.nightStartTime = 0;
             switchPhase();
         }
