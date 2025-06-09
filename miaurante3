@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🐱 Gato Manager - Restaurante Callejero</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Press Start 2P', monospace;
+            background: linear-gradient(135deg, #1a0033, #330066, #1a0033);
+            color: #00ffff;
+            overflow-x: hidden;
+            height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(255, 0, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .header {
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom: 2px solid #ff00ff;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            min-height: 80px;
+        }
+
+        .player-cat {
+            font-size: 24px;
+            background: rgba(255, 0, 255, 0.2);
+            padding: 5px 10px;
+            border-radius: 10px;
+            border: 2px solid #ff00ff;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.8);
+            cursor: pointer;
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .stat {
+            background: rgba(0, 255, 255, 0.2);
+            padding: 5px 8px;
+            border-radius: 8px;
+            border: 1px solid #00ffff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+        }
+
+        .music-btn {
+            background: rgba(255, 255, 0, 0.2);
+            border: 2px solid #ffff00;
+            color: #ffff00;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 0, 0.6);
+        }
+
+        .music-btn:hover {
+            background: rgba(255, 255, 0, 0.4);
+            box-shadow: 0 0 20px rgba(255, 255, 0, 0.8);
+        }
+
+        .game-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            padding-bottom: 120px; /* Espacio para inventario fijo */
+            overflow: hidden;
+        }
+
+        .trash-map {
+            display: grid;
+            gap: 4px;
+            margin: 20px auto;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #00ffff;
+            justify-content: center;
+            align-content: center;
+            min-height: 200px;
+        }
+
+        .trash-block {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
+        }
+
+        .trash-block:hover, .trash-block:active {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+            background: rgba(0, 255, 255, 0.2);
+        }
+
+        .inventory {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 10px;
+            border-top: 2px solid #ff00ff;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+            z-index: 50;
+        }
+
+        .inventory-title {
+            color: #ff00ff;
+            font-size: 10px;
+            margin-bottom: 8px;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
+        }
+
+        .food-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .food-item {
+            background: rgba(0, 255, 255, 0.2);
+            padding: 5px;
+            border-radius: 6px;
+            border: 1px solid #00ffff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .food-item:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+        }
+
+        .food-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff00ff;
+            color: white;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            font-size: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .customer-queue {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            border: 2px solid #00ffff;
+            padding: 10px;
+            overflow-y: auto;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .queue-title {
+            color: #00ffff;
+            font-size: 10px;
+            margin-bottom: 8px;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+        }
+
+        .customer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            margin-bottom: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            border: 1px solid #333;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .customer:hover {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .customer-cat {
+            font-size: 20px;
+        }
+
+        .customer-order {
+            font-size: 18px;
+            background: rgba(255, 0, 255, 0.3);
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid #ff00ff;
+        }
+
+        .shop {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            border: 3px solid #ffff00;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 30px rgba(255, 255, 0, 0.8);
+            z-index: 1001;
+            max-width: 90vw;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .shop-close {
+            background: #ff0066;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 10px;
+            margin-top: 15px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 0 15px rgba(255, 0, 102, 0.6);
+        }
+
+        .shop-close:hover {
+            background: #ff3388;
+            box-shadow: 0 0 25px rgba(255, 0, 102, 0.8);
+        }
+
+        .shop-title {
+            color: #ffff00;
+            font-size: 12px;
+            margin-bottom: 10px;
+            text-align: center;
+            text-shadow: 0 0 15px rgba(255, 255, 0, 0.8);
+        }
+
+        .upgrades {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .upgrade {
+            background: rgba(255, 255, 0, 0.1);
+            border: 1px solid #ffff00;
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 8px;
+            text-align: center;
+        }
+
+        .upgrade:hover {
+            background: rgba(255, 255, 0, 0.3);
+            box-shadow: 0 0 15px rgba(255, 255, 0, 0.8);
+        }
+
+        .upgrade.purchased {
+            background: rgba(0, 255, 0, 0.3);
+            border-color: #00ff00;
+            color: #00ff00;
+        }
+
+        .main-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #1a0033, #330066, #1a0033);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .menu-title {
+            color: #ff00ff;
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255, 0, 255, 1);
+            line-height: 1.5;
+        }
+
+        .cat-selector {
+            background: rgba(0, 0, 0, 0.8);
+            border: 3px solid #ff00ff;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.8);
+        }
+
+        .cat-selector h3 {
+            color: #ff00ff;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 10px;
+            text-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
+        }
+
+        .cat-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .cat-option {
+            font-size: 30px;
+            padding: 10px;
+            background: rgba(255, 0, 255, 0.2);
+            border: 2px solid #ff00ff;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .cat-option:hover, .cat-option.selected {
+            background: rgba(255, 0, 255, 0.5);
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.8);
+            transform: scale(1.1);
+        }
+
+        .close-selector {
+            background: #00ffff;
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 8px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: #00ffff;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.8);
+            z-index: 1001;
+            text-align: center;
+            font-size: 10px;
+            animation: fadeInOut 2s ease-in-out;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .phase-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #ffff00;
+            padding: 10px;
+            border-radius: 10px;
+            border: 2px solid #ffff00;
+            box-shadow: 0 0 15px rgba(255, 255, 0, 0.6);
+            font-size: 8px;
+            z-index: 100;
+        }
+
+        @media (max-height: 600px) {
+            .trash-map {
+                max-height: 150px;
+            }
+            .header {
+                min-height: 60px;
+            }
+            .stats {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="player-cat" id="playerCat">🐱</div>
+            <div class="stats">
+                <div class="stat">💸 <span id="money">0</span></div>
+                <div class="stat"><span id="timeIcon">🌙</span> <span id="timeDisplay">22:00</span></div>
+            </div>
+            <button class="music-btn" id="musicBtn">🎵 MÚSICA</button>
+        </div>
+
+        <div class="phase-indicator" id="phaseIndicator">🌙 NOCHE - Busca comida en la basura</div>
+
+        <div class="game-area">
+            <div class="trash-map" id="trashMap"></div>
+            
+            <div class="inventory">
+                <div class="inventory-title">🍽️ INVENTARIO</div>
+                <div class="food-items" id="foodItems"></div>
+            </div>
+
+            <div class="customer-queue" id="customerQueue">
+                <div class="queue-title">🐱 COLA DE CLIENTES</div>
+                <div id="queueList"></div>
+            </div>
+        </div>
+
+        <div class="shop hidden" id="shop">
+            <div class="shop-title">🛒 MEJORAS MAULLANTES</div>
+            <div class="upgrades">
+                <div class="upgrade" data-upgrade="advertising">📢 Publicidad (💸 50)<br>+2 gatos por hora</div>
+                <div class="upgrade" data-upgrade="storage">📦 Almiaucenaje (💸 75)<br>+2 max por comida</div>
+                <div class="upgrade" data-upgrade="thief">🥷 Gato Ladrón (💸 100)<br>+3 comidas por noche</div>
+            </div>
+            <button class="shop-close" id="closeShop">CERRAR</button>
+        </div>
+    <div class="main-menu" id="mainMenu">
+        <div class="menu-title">
+            🐱 GATO MANAGER<br>
+            RESTAURANTE CALLEJERO<br>
+            <small style="font-size: 8px; color: #00ffff;">Elige tu gato para comenzar</small>
+        </div>
+        <div class="cat-selector">
+            <h3>🐱 ELIGE TU GATO</h3>
+            <div class="cat-options">
+                <div class="cat-option" data-cat="🐱">🐱</div>
+                <div class="cat-option" data-cat="🐈">🐈</div>
+                <div class="cat-option" data-cat="😺">😺</div>
+                <div class="cat-option" data-cat="😼">😼</div>
+                <div class="cat-option" data-cat="😻">😻</div>
+                <div class="cat-option" data-cat="🙀">🙀</div>
+            </div>
+            <button class="close-selector" id="startGame">COMENZAR JUEGO</button>
+        </div>
+    </div>
+
+    <audio id="gameMusic" loop>
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmIaCjiR1/LNeSsFJHfH8N2QQAoUXbTp66hVFApGnt/yxXkrBSJ2x+/ekkELFVuz5+ytVhUKRp3e8sV5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUK" type="audio/wav">
+    </audio>
+
+    <script>
+        // Estado del juego
+        const gameState = {
+            money: 0,
+            selectedCat: '🐱',
+            currentPhase: 'night', // 'night' o 'day'
+            gameTime: 22, // Hora del juego (22 = 10 PM)
+            dayTime: 0, // Contador para el día
+            inventory: {},
+            customers: [],
+            upgrades: {
+                advertising: 0,
+                storage: 0,
+                thief: 0
+            },
+            isPlaying: false,
+            musicEnabled: false,
+            nightStartTime: 0,
+            trashMapSize: { cols: 4, rows: 4 }
+        };
+
+        // Comidas disponibles
+        const foods = ['🍕', '🍣', '🍩', '🍗', '🍔', '🍰', '🍙', '🍜', '🍟', '🥐', '🍞', '🌮', '🍤', '🥗', '🍱', '🥙', '🌯', '🥪', '🍖', '🥩'];
+        
+        // Gatos disponibles
+        const cats = ['🐱', '🐈', '😺', '😼', '😻', '🙀'];
+
+        // Elementos DOM
+        const elements = {
+            playerCat: document.getElementById('playerCat'),
+            money: document.getElementById('money'),
+            timeIcon: document.getElementById('timeIcon'),
+            timeDisplay: document.getElementById('timeDisplay'),
+            phaseIndicator: document.getElementById('phaseIndicator'),
+            trashMap: document.getElementById('trashMap'),
+            foodItems: document.getElementById('foodItems'),
+            queueList: document.getElementById('queueList'),
+            mainMenu: document.getElementById('mainMenu'),
+            shop: document.getElementById('shop'),
+            musicBtn: document.getElementById('musicBtn'),
+            gameMusic: document.getElementById('gameMusic')
+        };
+
+        // Cargar estado guardado
+        function loadGame() {
+            const saved = localStorage.getItem('catRestaurantGame');
+            if (saved) {
+                const data = JSON.parse(saved);
+                Object.assign(gameState, data);
+            }
+            elements.playerCat.textContent = gameState.selectedCat;
+            updateUI();
+        }
+
+        // Guardar estado
+        function saveGame() {
+            localStorage.setItem('catRestaurantGame', JSON.stringify(gameState));
+        }
+
+        // Crear mapa de basura
+        function createTrashMap() {
+            elements.trashMap.innerHTML = '';
+            const trashEmojis = ['🗑️', '♻️', '📦', '🥫', '🗑️'];
+            
+            for (let i = 0; i < 384; i++) { // 16x24
+                const block = document.createElement('div');
+                block.className = 'trash-block';
+                block.textContent = trashEmojis[Math.floor(Math.random() * trashEmojis.length)];
+                block.addEventListener('click', () => searchTrash(block));
+                elements.trashMap.appendChild(block);
+            }
+        }
+
+        // Buscar en la basura
+        function searchTrash(block) {
+            if (gameState.currentPhase !== 'night') return;
+            
+            const food = foods[Math.floor(Math.random() * foods.length)];
+            const maxStorage = 3 + (gameState.upgrades.storage * 2);
+            
+            if (!gameState.inventory[food]) {
+                gameState.inventory[food] = 0;
+            }
+            
+            if (gameState.inventory[food] < maxStorage) {
+                gameState.inventory[food]++;
+                block.style.opacity = '0.3';
+                block.style.pointerEvents = 'none';
+                
+                showNotification(`¡Encontraste ${food}!`);
+                updateInventory();
+                saveGame();
+            } else {
+                showNotification(`¡${food} inventario lleno!`);
+            }
+        }
+
+        // Actualizar inventario
+        function updateInventory() {
+            elements.foodItems.innerHTML = '';
+            
+            Object.entries(gameState.inventory).forEach(([food, count]) => {
+                if (count > 0) {
+                    const item = document.createElement('div');
+                    item.className = 'food-item';
+                    item.textContent = food;
+                    
+                    const countSpan = document.createElement('span');
+                    countSpan.className = 'food-count';
+                    countSpan.textContent = count;
+                    item.appendChild(countSpan);
+                    
+                    item.addEventListener('click', () => serveFood(food));
+                    elements.foodItems.appendChild(item);
+                }
+            });
+        }
+
+        // Servir comida
+        function serveFood(food) {
+            if (gameState.currentPhase !== 'day' || gameState.customers.length === 0) return;
+            
+            const customer = gameState.customers[0];
+            if (customer.order === food) {
+                // Servicio exitoso
+                gameState.money += 5 + gameState.upgrades.advertising;
+                gameState.inventory[food]--;
+                gameState.customers.shift();
+                
+                showNotification(`¡Cliente feliz! +💸${5 + gameState.upgrades.advertising}`);
+                updateCustomerQueue();
+                updateInventory();
+                updateUI();
+                saveGame();
+            } else {
+                showNotification(`¡Orden incorrecta! Cliente quiere ${customer.order}`);
+            }
+        }
+
+        // Generar cliente
+        function generateCustomer() {
+            return {
+                cat: cats[Math.floor(Math.random() * cats.length)],
+                order: foods[Math.floor(Math.random() * foods.length)]
+            };
+        }
+
+        // Actualizar cola de clientes
+        function updateCustomerQueue() {
+            elements.queueList.innerHTML = '';
+            
+            gameState.customers.forEach((customer, index) => {
+                const customerDiv = document.createElement('div');
+                customerDiv.className = 'customer';
+                
+                const catSpan = document.createElement('span');
+                catSpan.className = 'customer-cat';
+                catSpan.textContent = customer.cat;
+                
+                const orderSpan = document.createElement('span');
+                orderSpan.className = 'customer-order';
+                orderSpan.textContent = customer.order;
+                
+                customerDiv.appendChild(catSpan);
+                customerDiv.appendChild(orderSpan);
+                
+                if (index === 0) {
+                    customerDiv.style.border = '2px solid #ff00ff';
+                    customerDiv.style.boxShadow = '0 0 15px rgba(255, 0, 255, 0.8)';
+                }
+                
+                elements.queueList.appendChild(customerDiv);
+            });
+        }
+
+        // Actualizar UI
+        function updateUI() {
+            elements.money.textContent = gameState.money;
+            elements.timeDisplay.textContent = `${gameState.gameTime.toString().padStart(2, '0')}:00`;
+            
+            if (gameState.currentPhase === 'night') {
+                elements.timeIcon.textContent = '🌙';
+                elements.phaseIndicator.textContent = '🌙 NOCHE - Busca comida en la basura';
+                elements.trashMap.style.display = 'grid';
+                document.getElementById('customerQueue').style.display = 'none';
+            } else {
+                elements.timeIcon.textContent = '🌞';
+                elements.phaseIndicator.textContent = '🌞 DÍA - Atiende a los clientes';
+                elements.trashMap.style.display = 'none';
+                document.getElementById('customerQueue').style.display = 'block';
+            }
+            
+            // Actualizar botones de mejora
+            document.querySelectorAll('.upgrade').forEach(upgrade => {
+                const type = upgrade.dataset.upgrade;
+                const costs = { advertising: 50, storage: 75, thief: 100 };
+                const cost = costs[type] * (gameState.upgrades[type] + 1);
+                
+                if (gameState.upgrades[type] > 0) {
+                    upgrade.classList.add('purchased');
+                    upgrade.innerHTML = upgrade.innerHTML.replace(/💸 \d+/, `💸 ${cost}`);
+                } else {
+                    upgrade.classList.remove('purchased');
+                }
+                
+                if (gameState.money < cost) {
+                    upgrade.style.opacity = '0.5';
+                    upgrade.style.pointerEvents = 'none';
+                } else {
+                    upgrade.style.opacity = '1';
+                    upgrade.style.pointerEvents = 'auto';
+                }
+            });
+        }
+
+        // Cambiar fase del juego
+        function switchPhase() {
+            if (gameState.currentPhase === 'night') {
+                // Cambiar a día
+                gameState.currentPhase = 'day';
+                gameState.gameTime = 8; // 8 AM
+                gameState.dayTime = 0;
+                
+                // Limpiar inventario de comidas no utilizadas al final del día anterior
+                // (Esto se hace al inicio del nuevo día)
+                
+                // Añadir comidas del gato ladrón
+                for (let i = 0; i < gameState.upgrades.thief; i++) {
+                    for (let j = 0; j < 3; j++) {
+                        const food = foods[Math.floor(Math.random() * foods.length)];
+                        const maxStorage = 3 + (gameState.upgrades.storage * 2);
+                        
+                        if (!gameState.inventory[food]) {
+                            gameState.inventory[food] = 0;
+                        }
+                        
+                        if (gameState.inventory[food] < maxStorage) {
+                            gameState.inventory[food]++;
+                        }
+                    }
+                }
+                
+                // Generar primeros clientes
+                const baseCustomers = 2 + gameState.upgrades.advertising;
+                for (let i = 0; i < baseCustomers; i++) {
+                    gameState.customers.push(generateCustomer());
+                }
+                
+                showNotification('🌞 ¡El restaurante abre!');
+                
+            } else {
+                // Cambiar a noche
+                gameState.currentPhase = 'night';
+                gameState.gameTime = 22; // 10 PM
+                
+                // Limpiar inventario
+                gameState.inventory = {};
+                gameState.customers = [];
+                
+                // Resetear mapa de basura
+                createTrashMap();
+                
+                showNotification('🌙 ¡Hora de buscar comida!');
+            }
+            
+            updateUI();
+            updateInventory();
+            updateCustomerQueue();
+            saveGame();
+        }
+
+        // Mostrar notificación
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 2000);
+        }
+
+        // Configurar selector de gatos
+        function setupCatSelector() {
+            document.querySelectorAll('.cat-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('.cat-option').forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    gameState.selectedCat = option.dataset.cat;
+                });
+            });
+            
+            document.getElementById('closeCatSelector').addEventListener('click', () => {
+                elements.playerCat.textContent = gameState.selectedCat;
+                elements.catSelector.classList.add('hidden');
+                saveGame();
+            });
+            
+            elements.playerCat.addEventListener('click', () => {
+                elements.catSelector.classList.remove('hidden');
+            });
+        }
+
+        // Configurar mejoras
+        function setupUpgrades() {
+            document.querySelectorAll('.upgrade').forEach(upgrade => {
+                upgrade.addEventListener('click', () => {
+                    const type = upgrade.dataset.upgrade;
+                    const costs = { advertising: 50, storage: 75, thief: 100 };
+                    const cost = costs[type] * (gameState.upgrades[type] + 1);
+                    
+                    if (gameState.money >= cost) {
+                        gameState.money -= cost;
+                        gameState.upgrades[type]++;
+                        
+                        let message = '';
+                        switch(type) {
+                            case 'advertising':
+                                message = '📢 ¡Más gatos vendrán por la publicidad!';
+                                break;
+                            case 'storage':
+                                message = '📦 ¡Puedes almacenar más comida!';
+                                break;
+                            case 'thief':
+                                message = '🥷 ¡Un gato ladrón se unió al equipo!';
+                                break;
+                        }
+                        
+                        showNotification(message);
+                        updateUI();
+                        saveGame();
+                    }
+                });
+            });
+        }
+
+        // Configurar música
+        function setupMusic() {
+            // Generar tono arcade simple
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            let isPlaying = false;
+            
+            elements.musicBtn.addEventListener('click', () => {
+                if (!isPlaying) {
+                    playArcadeMusic(audioContext);
+                    elements.musicBtn.textContent = '🔇 SILENCIO';
+                    isPlaying = true;
+                } else {
+                    audioContext.suspend();
+                    elements.musicBtn.textContent = '🎵 MÚSICA';
+                    isPlaying = false;
+                }
+            });
+        }
+
+        // Reproducir música arcade
+        function playArcadeMusic(audioContext) {
+            const melody = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25];
+            let currentNote = 0;
+            
+            function playNote() {
+                if (audioContext.state === 'suspended') return;
+                
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(melody[currentNote], audioContext.currentTime);
+                oscillator.type = 'square';
+                
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+                
+                currentNote = (currentNote + 1) % melody.length;
+                
+                setTimeout(playNote, 400);
+            }
+            
+            playNote();
+        }
+
+        // Loop principal del juego
+        function gameLoop() {
+            if (!gameState.isPlaying) return;
+            
+            if (gameState.currentPhase === 'day') {
+                gameState.dayTime++;
+                
+                // Cada 24 segundos = 1 hora de juego
+                if (gameState.dayTime % 576 === 0) { // 24 * 24 = 576 frames (asumiendo 60fps)
+                    gameState.gameTime++;
+                    
+                    // Añadir nuevos clientes cada hora
+                    const newCustomers = 1 + Math.floor(gameState.upgrades.advertising / 2);
+                    for (let i = 0; i < newCustomers; i++) {
+                        gameState.customers.push(generateCustomer());
+                    }
+                    
+                    updateCustomerQueue();
+                    updateUI();
+                    
+                    // Fin del día (después de 10 horas, 18:00)
+                    if (gameState.gameTime >= 18) {
+                        switchPhase();
+                    }
+                }
+            }
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Inicializar juego
+        function initGame() {
+            loadGame();
+            createTrashMap();
+            setupCatSelector();
+            setupUpgrades();
+            setupMusic();
+            updateInventory();
+            updateCustomerQueue();
+            
+            // Comenzar con selector de gato si es primera vez
+            if (!localStorage.getItem('catRestaurantGame')) {
+                elements.catSelector.classList.remove('hidden');
+            }
+            
+            // Iniciar loop del juego
+            gameLoop();
+        }
+
+        // Prevenir zoom en móviles
+        document.addEventListener('touchstart', function(event) {
+            if (event.touches.length > 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // Inicializar cuando se carga la página
+        document.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>
