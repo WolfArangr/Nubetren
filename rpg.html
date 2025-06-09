@@ -446,7 +446,7 @@ const ubicaciones = [
     name: "debate",
     "button text": ["Es verdad, ¡fuera los fascistas!", "El socialismo sanchista es un claro ejemplo de tiranía que llevará necesariamente al neofascismo", "Ostras, otro apagón, nada, todos a casa..."],
     "button functions": [respuestaFascistas, respuestaTirania, respuestaApagon],
-    text: 'Organizas una manifestación y Perro Sánchez sale a confrontarte. Te mira fijamente y dice: "¡La prohibición de los gatitos en la aldea es culpa de la ultraderecha y son todo bulos. ¡Debáteme si te atreves!"'
+    text: 'Organizas una manifestación y Perro Sánchez sale a confrontarte. Te mira fijamente y dice: "¡La prohibición de los gatitos en la aldea es culpa de la ultraderecha y son todo bulos!"'
   },
   {
     name: "gana",
@@ -544,17 +544,6 @@ function salirAldea() {
   aventuraIniciada = true;
   enemigosAventuraDerrotados = 0;
   actualizar("salidaAldea");
-}
-
-// FUNCIÓN MODIFICADA PARA PELEAR CONTRA EL DRAGÓN (PANTALLA INTERMEDIA)
-function pelearDragon() {
-  actualizar("antesDragon");
-}
-
-// FUNCIÓN PARA CONFIRMAR LA PELEA CONTRA EL DRAGÓN
-function confirmarPeleaDragon() {
-  fighting = 2;
-  goFight();
 }
 
 // FUNCIÓN PARA ORGANIZAR MANIFESTACIÓN
