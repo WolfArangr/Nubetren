@@ -573,19 +573,27 @@
             localStorage.setItem('catRestaurantGame', JSON.stringify(gameState));
         }
 
-        // Crear mapa de basura
-        function createTrashMap() {
-            elements.trashMap.innerHTML = '';
-            const trashEmojis = ['🗑️', '♻️', '📦', '🥫', '🗑️'];
-            
-            for (let i = 0; i < 384; i++) { // 16x24
-                const block = document.createElement('div');
-                block.className = 'trash-block';
-                block.textContent = trashEmojis[Math.floor(Math.random() * trashEmojis.length)];
-                block.addEventListener('click', () => searchTrash(block));
-                elements.trashMap.appendChild(block);
-            }
-        }
+// Crear mapa de basura
+function createTrashMap() {
+    elements.trashMap.innerHTML = '';
+    const trashEmojis = ['🗑️', '♻️', '📦', '🥫', '🗑️'];
+    
+    // Configurar el grid según el tamaño definido en gameState
+    const { cols, rows } = gameState.trashMapSize;
+    elements.trashMap.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    elements.trashMap.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+    
+    // Crear solo la cantidad necesaria de bloques
+    const totalBlocks = cols * rows;
+    
+    for (let i = 0; i < totalBlocks; i++) {
+        const block = document.createElement('div');
+        block.className = 'trash-block';
+        block.textContent = trashEmojis[Math.floor(Math.random() * trashEmojis.length)];
+        block.addEventListener('click', () => searchTrash(block));
+        elements.trashMap.appendChild(block);
+    }
+}
 
         // Buscar en la basura
         function searchTrash(block) {
