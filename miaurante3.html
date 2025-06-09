@@ -664,41 +664,99 @@ function createTrashMap() {
         }
 
         // Generar cliente
-        function generateCustomer() {
-            return {
-                cat: cats[Math.floor(Math.random() * cats.length)],
-                order: foods[Math.floor(Math.random() * foods.length)]
-            };
-        }
+function generateCustomer() {
+    return {
+        cat: cats[Math.floor(Math.random() * cats.length)],
+        order: foods[Math.floor(Math.random() * foods.length)],
+        arrivalTime: Date.now() // Añadir tiempo de llegada
+    };
+}
 
         // Actualizar cola de clientes
-        function updateCustomerQueue() {
-            elements.queueList.innerHTML = '';
+function updateCustomerQueue() {
+    elements.queueList.innerHTML = '';
+    
+    gameState.customers.forEach((customer, index) => {
+        const customerDiv = document.createElement('div');
+        customerDiv.className = 'customer';
+        
+        const catSpan = document.createElement('span');
+        catSpan.className = 'customer-cat';
+        catSpan.textContent = customer.cat;
+        
+        const orderSpan = document.createElement('span');
+        orderSpan.className = 'customer-order';
+        orderSpan.textContent = customer.order;
+        
+        customerDiv.appendChild(catSpan);
+        customerDiv.appendChild(orderSpan);
+        
+        // Añadir botón de rechazo para el primer cliente
+        if (index === 0) {
+            customerDiv.style.border = '2px solid #ff00ff';
+            customerDiv.style.boxShadow = '0 0 15px rgba(255, 0, 255, 0.8)';
             
-            gameState.customers.forEach((customer, index) => {
-                const customerDiv = document.createElement('div');
-                customerDiv.className = 'customer';
-                
-                const catSpan = document.createElement('span');
-                catSpan.className = 'customer-cat';
-                catSpan.textContent = customer.cat;
-                
-                const orderSpan = document.createElement('span');
-                orderSpan.className = 'customer-order';
-                orderSpan.textContent = customer.order;
-                
-                customerDiv.appendChild(catSpan);
-                customerDiv.appendChild(orderSpan);
-                
-                if (index === 0) {
-                    customerDiv.style.border = '2px solid #ff00ff';
-                    customerDiv.style.boxShadow = '0 0 15px rgba(255, 0, 255, 0.8)';
-                }
-                
-                elements.queueList.appendChild(customerDiv);
+            // Crear botón de rechazo
+            const rejectBtn = document.createElement('span');
+            rejectBtn.textContent = '❌';
+            rejectBtn.style.cssText = `
+                font-size: 20px;
+                cursor: pointer;
+                margin-left: 10px;
+                color: #ff0000;
+                text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+                transition: all 0.2s;
+            `;
+            rejectBtn.addEventListener('click', () => rejectCustomer());
+            rejectBtn.addEventListener('mouseover', () => {
+                rejectBtn.style.transform = 'scale(1.2)';
             });
+            rejectBtn.addEventListener('mouseout', () => {
+                rejectBtn.style.transform = 'scale(1)';
+            });
+            
+            customerDiv.appendChild(rejectBtn);
+            
+            // Mostrar tiempo restante
+            const timeLeft = Math.max(0, 6000 - (Date.now() - customer.arrivalTime));
+            const secondsLeft = Math.ceil(timeLeft / 1000);
+            
+            const timerSpan = document.createElement('span');
+            timerSpan.style.cssText = `
+                font-size: 10px;
+                color: ${secondsLeft <= 2 ? '#ff0000' : '#ffff00'};
+                margin-left: 10px;
+                text-shadow: 0 0 5px currentColor;
+            `;
+            timerSpan.textContent = `⏱️${secondsLeft}s`;
+            customerDiv.appendChild(timerSpan);
         }
-
+        
+        elements.queueList.appendChild(customerDiv);
+    });
+}
+        function rejectCustomer() {
+    if (gameState.customers.length > 0) {
+        const rejectedCustomer = gameState.customers.shift();
+        showNotification(`${rejectedCustomer.cat} se fue molesto... 💔`);
+        updateCustomerQueue();
+        saveGame();
+    }
+}
+function checkCustomerTimeout() {
+    if (gameState.currentPhase !== 'day' || gameState.customers.length === 0) return;
+    
+    const firstCustomer = gameState.customers[0];
+    const waitTime = Date.now() - firstCustomer.arrivalTime;
+    
+    // Si han pasado 6 segundos (6000ms), el cliente se va
+    if (waitTime >= 6000) {
+        gameState.customers.shift();
+        showNotification(`${firstCustomer.cat} se cansó de esperar y se fue... 😾`);
+        updateCustomerQueue();
+        saveGame();
+    }
+}
         // Actualizar UI
         function updateUI() {
             elements.money.textContent = gameState.money;
@@ -928,6 +986,9 @@ function gameLoop() {
     if (gameState.currentPhase === 'day') {
         gameState.dayTime++;
         
+        // ✅ NUEVO: Verificar si los clientes se van por timeout
+        checkCustomerTimeout();
+        
         // Cada 24 segundos = 1 hora de juego
         if (gameState.dayTime % 576 === 0) { // 24 * 24 = 576 frames (asumiendo 60fps)
             gameState.gameTime++;
@@ -946,6 +1007,12 @@ function gameLoop() {
                 switchPhase();
             }
         }
+        
+        // ✅ NUEVO: Actualizar la cola cada segundo para mostrar el timer
+        if (gameState.dayTime % 60 === 0) { // Actualizar cada segundo aproximadamente
+            updateCustomerQueue();
+        }
+        
     } else if (gameState.currentPhase === 'night') {
         // Manejar la fase nocturna
         if (!gameState.nightStartTime) {
