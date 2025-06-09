@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐱⚔️ Escuela de Gatos Gladiadores ⚔️🐱</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>🐱⚔️ Gatos Gladiadores</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
         
@@ -11,6 +11,12 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
@@ -19,6 +25,7 @@
             color: #00ffff;
             overflow-x: hidden;
             min-height: 100vh;
+            touch-action: manipulation;
         }
         
         .neon-bg {
@@ -150,34 +157,31 @@
         .health-bar {
             position: absolute;
             bottom: 10px;
-            height: 8px;
-            background: #333;
-            border-radius: 4px;
-            border: 1px solid #666;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            border: 2px solid #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #ffffff;
+            text-shadow: 0 0 5px #000;
         }
         
         .player-health {
             left: 20px;
             width: 120px;
+            background: linear-gradient(90deg, #00ff00, #ffff00);
+            border-color: #00ff00;
         }
         
         .enemy-health {
             right: 20px;
             width: 120px;
-        }
-        
-        .health-fill {
-            height: 100%;
-            border-radius: 3px;
-            transition: width 0.3s ease;
-        }
-        
-        .player-health .health-fill {
-            background: linear-gradient(90deg, #00ff00, #ffff00);
-        }
-        
-        .enemy-health .health-fill {
             background: linear-gradient(90deg, #ff0000, #ff6600);
+            border-color: #ff0000;
         }
         
         .combat-log {
@@ -365,16 +369,12 @@
 
     <div class="game-container">
         <div class="arena-section">
-            <div class="section-title">⚔️ ARENA DE COMBATE ⚔️</div>
+            <div class="section-title">⚔️ ARENA DE COMBATE</div>
             <div class="arena" id="arena">
                 <div class="gladiator player-cat" id="playerCat">🐱</div>
                 <div class="gladiator enemy-cat" id="enemyCat">😾</div>
-                <div class="health-bar player-health">
-                    <div class="health-fill" id="playerHealth" style="width: 100%"></div>
-                </div>
-                <div class="health-bar enemy-health">
-                    <div class="health-fill" id="enemyHealth" style="width: 100%"></div>
-                </div>
+                <div class="health-bar player-health" id="playerHealth">100/100</div>
+                <div class="health-bar enemy-health" id="enemyHealth">50/50</div>
             </div>
             <div class="combat-log" id="combatLog">
                 <div>🏛️ ¡Bienvenido al Coliseo de Gatos! Haz clic en tu gato para atacar.</div>
@@ -386,7 +386,7 @@
         </div>
 
         <div class="arena-section">
-            <div class="section-title">⬆️ MEJORAS DE GLADIADOR ⬆️</div>
+            <div class="section-title">⬆️ MEJORAS DE GLADIADOR</div>
             <div class="upgrades-grid">
                 <div class="upgrade-card">
                     <div class="upgrade-title">⚔️ Daño de Ataque</div>
@@ -430,14 +430,14 @@
             <div class="events-list" id="eventsList">
                 <div class="event-card">
                     <div class="event-info">
-                        <div class="event-name">🏺 Torneo de Gatopeya</div>
+                        <div class="event-name">🏺 Torneo de Pompeya</div>
                         <div class="event-reward">Recompensa: 500💰 + 50⭐</div>
                     </div>
                     <button class="neon-button" onclick="startEvent('pompeya')">Participar</button>
                 </div>
                 <div class="event-card">
                     <div class="event-info">
-                        <div class="event-name">🦁 Duelo en el Circo Miauximo</div>
+                        <div class="event-name">🦁 Duelo en el Circo Máximo</div>
                         <div class="event-reward">Recompensa: 800💰 + 100⭐</div>
                     </div>
                     <button class="neon-button" onclick="startEvent('circo')">Participar</button>
@@ -535,8 +535,8 @@
             gameState.playerStats.health = gameState.playerStats.maxHealth;
             
             document.getElementById('enemyCat').textContent = gameState.currentEnemy.type;
-            document.getElementById('playerHealth').style.width = '100%';
-            document.getElementById('enemyHealth').style.width = '100%';
+            document.getElementById('playerHealth').textContent = `${gameState.playerStats.health}/${gameState.playerStats.maxHealth}`;
+            document.getElementById('enemyHealth').textContent = `${gameState.currentEnemy.health}/${gameState.currentEnemy.maxHealth}`;
             
             logCombat(`⚔️ ¡Nuevo combate iniciado! Enemigo: ${gameState.currentEnemy.type}`);
         }
@@ -556,8 +556,7 @@
             showDamage(enemyCat, damage);
             logCombat(`🐱 ¡Atacaste por ${damage} de daño!`);
             
-            const enemyHealthPercent = (gameState.currentEnemy.health / gameState.currentEnemy.maxHealth) * 100;
-            document.getElementById('enemyHealth').style.width = Math.max(0, enemyHealthPercent) + '%';
+            document.getElementById('enemyHealth').textContent = `${Math.max(0, gameState.currentEnemy.health)}/${gameState.currentEnemy.maxHealth}`;
             
             if (gameState.currentEnemy.health <= 0) {
                 winCombat();
@@ -587,8 +586,7 @@
             showDamage(playerCat, damage);
             logCombat(`😾 El enemigo te atacó por ${damage} de daño!`);
             
-            const playerHealthPercent = (gameState.playerStats.health / gameState.playerStats.maxHealth) * 100;
-            document.getElementById('playerHealth').style.width = Math.max(0, playerHealthPercent) + '%';
+            document.getElementById('playerHealth').textContent = `${Math.max(0, gameState.playerStats.health)}/${gameState.playerStats.maxHealth}`;
             
             if (gameState.playerStats.health <= 0) {
                 loseCombat();
@@ -699,7 +697,7 @@
                 gameState.glory += event.glory;
                 logCombat(`🏆 ¡Evento completado! +${event.reward}💰 +${event.glory}⭐`);
             } else {
-                logCombat(`💀 Evento fallado. ¡Mejora tus habilidades!`);
+                logCombat(`💀 Evento fallado. ¡Mejora tus estadísticas!`);
             }
             updateUI();
         }
@@ -747,4 +745,7 @@
 
         // Inicializar el juego
         updateUI();
-        logCombat('🏛️ ¡
+        logCombat('🏛️ ¡Bienvenido al Coliseo de Gatos! Haz clic en tu gato para atacar.');
+    </script>
+</body>
+</html>
