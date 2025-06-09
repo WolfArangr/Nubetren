@@ -145,17 +145,18 @@
             background: rgba(0, 255, 255, 0.2);
         }
 
-        .inventory {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.9);
-            padding: 10px;
-            border-top: 2px solid #ff00ff;
-            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
-            z-index: 50;
-        }
+.inventory {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.9);
+    padding: 15px;
+    border-top: 2px solid #ff00ff;
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+    z-index: 50;
+    min-height: 140px;
+}
 
         .inventory-title {
             color: #ff00ff;
@@ -172,16 +173,20 @@
             justify-content: center;
         }
 
-        .food-item {
-            background: rgba(0, 255, 255, 0.2);
-            padding: 5px;
-            border-radius: 6px;
-            border: 1px solid #00ffff;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-        }
+.food-item {
+    background: rgba(0, 255, 255, 0.2);
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #00ffff;
+    font-size: clamp(18px, 4vw, 28px);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    min-width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
         .food-item:hover {
             transform: scale(1.1);
@@ -239,17 +244,17 @@
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
 
-        .customer-cat {
-            font-size: 20px;
-        }
+.customer-cat {
+    font-size: 28px;
+}
 
-        .customer-order {
-            font-size: 18px;
-            background: rgba(255, 0, 255, 0.3);
-            padding: 4px 8px;
-            border-radius: 6px;
-            border: 1px solid #ff00ff;
-        }
+.customer-order {
+    font-size: 24px;
+    background: rgba(255, 0, 255, 0.3);
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid #ff00ff;
+}
 
         .shop {
             position: fixed;
@@ -429,7 +434,7 @@
 
 .phase-indicator {
     position: fixed;
-    top: 90px; /* Movido más abajo para evitar superposición */
+    top: 90px;
     right: 20px;
     background: rgba(0, 0, 0, 0.8);
     color: #ffff00;
@@ -439,11 +444,13 @@
     box-shadow: 0 0 15px rgba(255, 255, 0, 0.6);
     font-size: 8px;
     z-index: 100;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
 }
 
 @media (max-height: 600px) {
     .phase-indicator {
-        top: 70px; /* Ajuste para pantallas pequeñas */
+        top: 70px;
         font-size: 7px;
     }
 }
