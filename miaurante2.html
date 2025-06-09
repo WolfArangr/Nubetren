@@ -50,6 +50,78 @@
             position: relative;
         }
 
+        .main-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .main-menu h1 {
+            color: #ff00ff;
+            font-size: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(255, 0, 255, 0.8);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px rgba(255, 0, 255, 0.8); }
+            to { text-shadow: 0 0 30px rgba(255, 0, 255, 1), 0 0 40px rgba(0, 255, 255, 0.5); }
+        }
+
+        .main-menu-cats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .main-menu-cat {
+            font-size: 40px;
+            padding: 20px;
+            background: rgba(255, 0, 255, 0.2);
+            border: 3px solid #ff00ff;
+            border-radius: 15px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+        }
+
+        .main-menu-cat:hover {
+            background: rgba(255, 0, 255, 0.5);
+            box-shadow: 0 0 25px rgba(255, 0, 255, 0.8);
+            transform: scale(1.1);
+        }
+
+        .start-game-btn {
+            background: #00ffff;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+            transition: all 0.3s;
+        }
+
+        .start-game-btn:hover {
+            background: #ffffff;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
+            transform: scale(1.05);
+        }
+
         .header {
             padding: 10px;
             background: rgba(0, 0, 0, 0.8);
@@ -113,12 +185,12 @@
 
         .trash-map {
             display: grid;
-            grid-template-columns: repeat(8, 1fr);
+            grid-template-columns: repeat(16, 1fr);
             gap: 2px;
             margin-bottom: 10px;
-            max-height: 120px;
+            max-height: 200px;
             background: rgba(0, 0, 0, 0.3);
-            padding: 8px;
+            padding: 10px;
             border-radius: 10px;
             border: 2px solid #00ffff;
         }
@@ -246,12 +318,37 @@
         }
 
         .shop {
-            background: rgba(0, 0, 0, 0.8);
-            border: 2px solid #ffff00;
-            border-radius: 10px;
-            padding: 15px;
-            margin: 10px;
-            box-shadow: 0 0 20px rgba(255, 255, 0, 0.6);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            border: 3px solid #ffff00;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 30px rgba(255, 255, 0, 0.8);
+            z-index: 1000;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .shop-close-btn {
+            background: #ff0066;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 10px;
+            margin-top: 15px;
+            width: 100%;
+            box-shadow: 0 0 15px rgba(255, 0, 102, 0.6);
+        }
+
+        .shop-close-btn:hover {
+            background: #ff3388;
+            box-shadow: 0 0 20px rgba(255, 0, 102, 0.8);
         }
 
         .shop-title {
@@ -290,92 +387,17 @@
             color: #00ff00;
         }
 
-        .main-menu {
+        .cat-selector {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: linear-gradient(135deg, #1a0033, #330066, #1a0033);
-            z-index: 2000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
-        .main-menu::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(255, 0, 255, 0.2) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.2) 0%, transparent 50%),
-                radial-gradient(circle at 40% 80%, rgba(255, 0, 255, 0.2) 0%, transparent 50%);
-            pointer-events: none;
-        }
-
-        .main-menu-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .game-title {
-            font-size: 18px;
-            color: #ff00ff;
-            text-shadow: 0 0 20px rgba(255, 0, 255, 1);
-            margin-bottom: 10px;
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-
-        .game-subtitle {
-            font-size: 10px;
-            color: #00ffff;
-            text-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
-            margin-bottom: 30px;
-        }
-
-        .cat-selection-menu {
-            background: rgba(0, 0, 0, 0.8);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
             border: 3px solid #ff00ff;
             border-radius: 15px;
             padding: 20px;
+            z-index: 1000;
             box-shadow: 0 0 30px rgba(255, 0, 255, 0.8);
-            margin-bottom: 20px;
-        }
-
-        .cat-selection-title {
-            color: #ff00ff;
-            font-size: 12px;
-            margin-bottom: 15px;
-            text-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
-        }
-
-        .start-game-btn {
-            background: linear-gradient(45deg, #ff00ff, #00ffff);
-            color: #000;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
-            font-family: inherit;
-            font-size: 12px;
-            cursor: pointer;
-            box-shadow: 0 0 20px rgba(255, 0, 255, 0.6);
-            transition: all 0.3s;
-        }
-
-        .start-game-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(255, 0, 255, 0.8);
-        }
-
-        @keyframes glow {
-            from { text-shadow: 0 0 20px rgba(255, 0, 255, 0.8); }
-            to { text-shadow: 0 0 30px rgba(255, 0, 255, 1), 0 0 40px rgba(255, 0, 255, 0.8); }
         }
 
         .cat-selector h3 {
@@ -477,6 +499,19 @@
     </style>
 </head>
 <body>
+    <div class="main-menu" id="mainMenu">
+        <h1>🐱 GATO MANAGER<br>RESTAURANTE CALLEJERO</h1>
+        <div class="main-menu-cats" id="mainMenuCats">
+            <div class="main-menu-cat" data-cat="🐱">🐱</div>
+            <div class="main-menu-cat" data-cat="🐈">🐈</div>
+            <div class="main-menu-cat" data-cat="😺">😺</div>
+            <div class="main-menu-cat" data-cat="😼">😼</div>
+            <div class="main-menu-cat" data-cat="😻">😻</div>
+            <div class="main-menu-cat" data-cat="🙀">🙀</div>
+        </div>
+        <button class="start-game-btn" id="startGameBtn">EMPEZAR AVENTURA</button>
+    </div>
+
     <div class="container">
         <div class="header">
             <div class="player-cat" id="playerCat">🐱</div>
@@ -503,13 +538,14 @@
             </div>
         </div>
 
-        <div class="shop" id="shop">
+        <div class="shop hidden" id="shop">
             <div class="shop-title">🛒 MEJORAS MAULLANTES</div>
             <div class="upgrades">
                 <div class="upgrade" data-upgrade="advertising">📢 Publicidad (💸 50)<br>+2 gatos por hora</div>
                 <div class="upgrade" data-upgrade="storage">📦 Almiaucenaje (💸 75)<br>+2 max por comida</div>
                 <div class="upgrade" data-upgrade="thief">🥷 Gato Ladrón (💸 100)<br>+3 comidas por noche</div>
             </div>
+            <button class="shop-close-btn" id="shopCloseBtn">CERRAR</button>
         </div>
     </div>
 
@@ -545,8 +581,10 @@
                 storage: 0,
                 thief: 0
             },
-            isPlaying: true,
-            musicEnabled: false
+            isPlaying: false,
+            musicEnabled: false,
+            nightTimer: 0,
+            gameStarted: false
         };
 
         // Comidas disponibles
@@ -567,7 +605,10 @@
             queueList: document.getElementById('queueList'),
             catSelector: document.getElementById('catSelector'),
             musicBtn: document.getElementById('musicBtn'),
-            gameMusic: document.getElementById('gameMusic')
+            gameMusic: document.getElementById('gameMusic'),
+            mainMenu: document.getElementById('mainMenu'),
+            shop: document.getElementById('shop'),
+            shopCloseBtn: document.getElementById('shopCloseBtn')
         };
 
         // Cargar estado guardado
@@ -591,7 +632,7 @@
             elements.trashMap.innerHTML = '';
             const trashEmojis = ['🗑️', '♻️', '📦', '🥫', '🗑️'];
             
-            for (let i = 0; i < 384; i++) { // 16x24
+            for (let i = 0; i < 60; i++) { // 6x10
                 const block = document.createElement('div');
                 block.className = 'trash-block';
                 block.textContent = trashEmojis[Math.floor(Math.random() * trashEmojis.length)];
@@ -745,42 +786,14 @@
         // Cambiar fase del juego
         function switchPhase() {
             if (gameState.currentPhase === 'night') {
-                // Cambiar a día
-                gameState.currentPhase = 'day';
-                gameState.gameTime = 8; // 8 AM
-                gameState.dayTime = 0;
-                
-                // Limpiar inventario de comidas no utilizadas al final del día anterior
-                // (Esto se hace al inicio del nuevo día)
-                
-                // Añadir comidas del gato ladrón
-                for (let i = 0; i < gameState.upgrades.thief; i++) {
-                    for (let j = 0; j < 3; j++) {
-                        const food = foods[Math.floor(Math.random() * foods.length)];
-                        const maxStorage = 3 + (gameState.upgrades.storage * 2);
-                        
-                        if (!gameState.inventory[food]) {
-                            gameState.inventory[food] = 0;
-                        }
-                        
-                        if (gameState.inventory[food] < maxStorage) {
-                            gameState.inventory[food]++;
-                        }
-                    }
-                }
-                
-                // Generar primeros clientes
-                const baseCustomers = 2 + gameState.upgrades.advertising;
-                for (let i = 0; i < baseCustomers; i++) {
-                    gameState.customers.push(generateCustomer());
-                }
-                
-                showNotification('🌞 ¡El restaurante abre!');
+                // Mostrar tienda después de la noche
+                elements.shop.classList.remove('hidden');
                 
             } else {
                 // Cambiar a noche
                 gameState.currentPhase = 'night';
                 gameState.gameTime = 22; // 10 PM
+                gameState.nightTimer = 0;
                 
                 // Limpiar inventario
                 gameState.inventory = {};
@@ -790,8 +803,45 @@
                 createTrashMap();
                 
                 showNotification('🌙 ¡Hora de buscar comida!');
+                updateUI();
+                updateInventory();
+                updateCustomerQueue();
+                saveGame();
+            }
+        }
+
+        // Finalizar compras y comenzar día
+        function startDay() {
+            elements.shop.classList.add('hidden');
+            
+            // Cambiar a día
+            gameState.currentPhase = 'day';
+            gameState.gameTime = 8; // 8 AM
+            gameState.dayTime = 0;
+            
+            // Añadir comidas del gato ladrón
+            for (let i = 0; i < gameState.upgrades.thief; i++) {
+                for (let j = 0; j < 3; j++) {
+                    const food = foods[Math.floor(Math.random() * foods.length)];
+                    const maxStorage = 3 + (gameState.upgrades.storage * 2);
+                    
+                    if (!gameState.inventory[food]) {
+                        gameState.inventory[food] = 0;
+                    }
+                    
+                    if (gameState.inventory[food] < maxStorage) {
+                        gameState.inventory[food]++;
+                    }
+                }
             }
             
+            // Generar primeros clientes
+            const baseCustomers = 2 + gameState.upgrades.advertising;
+            for (let i = 0; i < baseCustomers; i++) {
+                gameState.customers.push(generateCustomer());
+            }
+            
+            showNotification('🌞 ¡El restaurante abre!');
             updateUI();
             updateInventory();
             updateCustomerQueue();
@@ -810,24 +860,25 @@
             }, 2000);
         }
 
-        // Configurar selector de gatos
-        function setupCatSelector() {
-            document.querySelectorAll('.cat-option').forEach(option => {
-                option.addEventListener('click', () => {
-                    document.querySelectorAll('.cat-option').forEach(opt => opt.classList.remove('selected'));
-                    option.classList.add('selected');
-                    gameState.selectedCat = option.dataset.cat;
+        // Configurar menú principal
+        function setupMainMenu() {
+            let selectedCat = '🐱';
+            
+            document.querySelectorAll('.main-menu-cat').forEach(cat => {
+                cat.addEventListener('click', () => {
+                    document.querySelectorAll('.main-menu-cat').forEach(c => c.style.background = 'rgba(255, 0, 255, 0.2)');
+                    cat.style.background = 'rgba(255, 0, 255, 0.5)';
+                    selectedCat = cat.dataset.cat;
                 });
             });
             
-            document.getElementById('closeCatSelector').addEventListener('click', () => {
-                elements.playerCat.textContent = gameState.selectedCat;
-                elements.catSelector.classList.add('hidden');
+            document.getElementById('startGameBtn').addEventListener('click', () => {
+                gameState.selectedCat = selectedCat;
+                gameState.gameStarted = true;
+                gameState.isPlaying = true;
+                elements.playerCat.textContent = selectedCat;
+                elements.mainMenu.classList.add('hidden');
                 saveGame();
-            });
-            
-            elements.playerCat.addEventListener('click', () => {
-                elements.catSelector.classList.remove('hidden');
             });
         }
 
@@ -861,6 +912,10 @@
                         saveGame();
                     }
                 });
+            });
+            
+            elements.shopCloseBtn.addEventListener('click', () => {
+                startDay();
             });
         }
 
@@ -918,11 +973,19 @@
         function gameLoop() {
             if (!gameState.isPlaying) return;
             
-            if (gameState.currentPhase === 'day') {
+            if (gameState.currentPhase === 'night') {
+                gameState.nightTimer++;
+                
+                // Fase de noche dura 12 segundos (720 frames a 60fps)
+                if (gameState.nightTimer >= 720) {
+                    switchPhase();
+                }
+                
+            } else if (gameState.currentPhase === 'day') {
                 gameState.dayTime++;
                 
                 // Cada 24 segundos = 1 hora de juego
-                if (gameState.dayTime % 576 === 0) { // 24 * 24 = 576 frames (asumiendo 60fps)
+                if (gameState.dayTime % 1440 === 0) { // 24 * 60 = 1440 frames
                     gameState.gameTime++;
                     
                     // Añadir nuevos clientes cada hora
@@ -948,15 +1011,18 @@
         function initGame() {
             loadGame();
             createTrashMap();
-            setupCatSelector();
+            setupMainMenu();
             setupUpgrades();
             setupMusic();
             updateInventory();
             updateCustomerQueue();
             
-            // Comenzar con selector de gato si es primera vez
-            if (!localStorage.getItem('catRestaurantGame')) {
-                elements.catSelector.classList.remove('hidden');
+            // Mostrar menú principal si es primera vez
+            if (!gameState.gameStarted) {
+                elements.mainMenu.classList.remove('hidden');
+            } else {
+                elements.mainMenu.classList.add('hidden');
+                gameState.isPlaying = true;
             }
             
             // Iniciar loop del juego
