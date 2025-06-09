@@ -434,7 +434,13 @@ const ubicaciones = [
     "button functions": [reiniciar, reiniciar, reiniciar],
     text: "Has morido. ☠️"
   },
-  // NUEVA UBICACIÓN MODIFICADA PARA GANAR
+  // NUEVA UBICACIÓN PARA EL DEBATE
+  {
+    name: "debate",
+    "button text": ["Es verdad, ¡fuera los fascistas!", "El socialismo sanchista es un claro ejemplo de tiranía que llevará necesariamente al neofascismo", "Ostras, otro apagón, nada, todos a casa..."],
+    "button functions": [respuestaFascistas, respuestaTirania, respuestaApagon],
+    text: 'Perro Sánchez te mira fijamente y dice: "¡Basta de huir, cobarde! La prohibición de los gatitos en la aldea es culpa de la ultraderecha y son todo bulos. ¡Debáteme si te atreves!"'
+  },
   {
     name: "gana",
     "button text": ["¿REJUGAR?", "Volver a la madriguera", "Salir de la aldea"],
@@ -522,11 +528,53 @@ let aventuraIniciada = false;
 let ubicacionAnterior = "";
 let enemigosAventuraDerrotados = 0;
 
+// VARIABLES PARA EL DEBATE CON PERRO SÁNCHEZ
+let vecesHuidoPerroSanchez = 0;
+let vecesRetadoPerroSanchez = 0;
+
 // FUNCIÓN PARA SALIR DE LA ALDEA
 function salirAldea() {
   aventuraIniciada = true;
   enemigosAventuraDerrotados = 0;
   actualizar("salidaAldea");
+}
+
+// FUNCIÓN MODIFICADA PARA PELEAR CONTRA EL DRAGÓN (PERRO SÁNCHEZ)
+function pelearDragon() {
+  vecesRetadoPerroSanchez++;
+  if (vecesRetadoPerroSanchez >= 4 && vecesHuidoPerroSanchez >= 3) {
+    // Activar debate
+    actualizar("debate");
+  } else {
+    // Combate normal
+    fighting = 2;
+    goFight();
+  }
+}
+
+// FUNCIÓN PARA MANEJAR LA HUIDA EN EL COMBATE CONTRA PERRO SÁNCHEZ
+function huirPerroSanchez() {
+  if (fighting === 2) { // Si está luchando contra Perro Sánchez
+    vecesHuidoPerroSanchez++;
+  }
+  irPlaza(); // Función original de huir
+}
+
+// FUNCIONES DEL DEBATE
+function respuestaFascistas() {
+  text.innerText = "¡Has caído en la trampa! El pueblo te apalea por traidor. Has sido derrotado por el populismo.";
+  health = 0;
+  setTimeout(() => actualizar("derrota"), 2000);
+}
+
+function respuestaTirania() {
+  text.innerText = "¡Tu respuesta intelectualmente superior despierta al pueblo! Los aldeanos se levantan en revuelta contra la tiranía. Perro Sánchez huye despavorido. ¡Has ganado con el poder de la razón!";
+  setTimeout(() => actualizar("gana"), 2000);
+}
+
+function respuestaApagon() {
+  text.innerText = "Misteriosamente se va la luz en toda la aldea. Todos se van a casa confusos. Perro Sánchez desaparece en la oscuridad. Has evitado el conflicto... por ahora.";
+  setTimeout(() => irPlaza(), 2000);
 }
 
 // FUNCIONES DEL BOSQUE
