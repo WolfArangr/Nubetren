@@ -797,61 +797,65 @@ function checkCustomerTimeout() {
             });
         }
 
-        // Cambiar fase del juego
-        function switchPhase() {
-            if (gameState.currentPhase === 'night') {
-                // Cambiar a día
-                gameState.currentPhase = 'day';
-                gameState.gameTime = 8; // 8 AM
-                gameState.dayTime = 0;
+
+// Cambiar fase del juego
+function switchPhase() {
+    if (gameState.currentPhase === 'night') {
+        // Cambiar a día
+        gameState.currentPhase = 'day';
+        gameState.gameTime = 8; // 8 AM
+        gameState.dayTime = 0;
+        
+        // Limpiar inventario de comidas no utilizadas al final del día anterior
+        // (Esto se hace al inicio del nuevo día)
+        
+        // Añadir comidas del gato ladrón
+        for (let i = 0; i < gameState.upgrades.thief; i++) {
+            for (let j = 0; j < 3; j++) {
+                const food = foods[Math.floor(Math.random() * foods.length)];
+                const maxStorage = 3 + (gameState.upgrades.storage * 2);
                 
-                // Limpiar inventario de comidas no utilizadas al final del día anterior
-                // (Esto se hace al inicio del nuevo día)
-                
-                // Añadir comidas del gato ladrón
-                for (let i = 0; i < gameState.upgrades.thief; i++) {
-                    for (let j = 0; j < 3; j++) {
-                        const food = foods[Math.floor(Math.random() * foods.length)];
-                        const maxStorage = 3 + (gameState.upgrades.storage * 2);
-                        
-                        if (!gameState.inventory[food]) {
-                            gameState.inventory[food] = 0;
-                        }
-                        
-                        if (gameState.inventory[food] < maxStorage) {
-                            gameState.inventory[food]++;
-                        }
-                    }
+                if (!gameState.inventory[food]) {
+                    gameState.inventory[food] = 0;
                 }
                 
-                // Generar primeros clientes
-                const baseCustomers = 2 + gameState.upgrades.advertising;
-                for (let i = 0; i < baseCustomers; i++) {
-                    gameState.customers.push(generateCustomer());
+                if (gameState.inventory[food] < maxStorage) {
+                    gameState.inventory[food]++;
                 }
-                
-                showNotification('🌞 ¡El restaurante abre!');
-                
-            } else {
-                // Cambiar a noche
-                gameState.currentPhase = 'night';
-                gameState.gameTime = 22; // 10 PM
-                
-                // Limpiar inventario
-                gameState.inventory = {};
-                gameState.customers = [];
-                
-                // Resetear mapa de basura
-                createTrashMap();
-                
-                showNotification('🌙 ¡Hora de buscar comida!');
             }
-            
-            updateUI();
-            updateInventory();
-            updateCustomerQueue();
-            saveGame();
         }
+        
+        // Generar primeros clientes
+        const baseCustomers = 2 + gameState.upgrades.advertising;
+        for (let i = 0; i < baseCustomers; i++) {
+            gameState.customers.push(generateCustomer());
+        }
+        
+        showNotification('🌞 ¡El restaurante abre!');
+        
+    } else {
+        // Cambiar a noche
+        gameState.currentPhase = 'night';
+        gameState.gameTime = 22; // 10 PM
+        
+        // Limpiar inventario
+        gameState.inventory = {};
+        gameState.customers = [];
+        
+        // Resetear mapa de basura
+        createTrashMap();
+        
+        // ✅ NUEVO: Abrir la tienda automáticamente al finalizar el día
+        elements.shop.classList.remove('hidden');
+        
+        showNotification('🌙 ¡Hora de buscar comida! Puedes comprar mejoras.');
+    }
+    
+    updateUI();
+    updateInventory();
+    updateCustomerQueue();
+    saveGame();
+}
 
         // Mostrar notificación
         function showNotification(message) {
