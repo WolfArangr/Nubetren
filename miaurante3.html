@@ -108,13 +108,12 @@
             display: flex;
             flex-direction: column;
             padding: 10px;
-            padding-bottom: 120px;
+            padding-bottom: 120px; /* Espacio para inventario fijo */
             overflow: hidden;
         }
 
         .trash-map {
             display: grid;
-            grid-template-columns: repeat(8, 1fr);
             gap: 4px;
             margin: 20px auto;
             background: rgba(0, 0, 0, 0.3);
@@ -124,7 +123,6 @@
             justify-content: center;
             align-content: center;
             min-height: 200px;
-            max-width: 400px;
         }
 
         .trash-block {
@@ -390,23 +388,17 @@
             transform: scale(1.1);
         }
 
-        .start-btn {
+        .close-selector {
             background: #00ffff;
             color: #000;
             border: none;
-            padding: 12px 24px;
+            padding: 8px 16px;
             border-radius: 8px;
             cursor: pointer;
             font-family: inherit;
-            font-size: 10px;
+            font-size: 8px;
             display: block;
             margin: 0 auto;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
-        }
-
-        .start-btn:hover {
-            background: #44ffff;
-            box-shadow: 0 0 25px rgba(0, 255, 255, 0.8);
         }
 
         .hidden {
@@ -449,23 +441,6 @@
             z-index: 100;
         }
 
-        .shop-btn {
-            background: rgba(255, 255, 0, 0.2);
-            border: 2px solid #ffff00;
-            color: #ffff00;
-            padding: 8px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 10px;
-            box-shadow: 0 0 10px rgba(255, 255, 0, 0.6);
-            margin-left: 10px;
-        }
-
-        .shop-btn:hover {
-            background: rgba(255, 255, 0, 0.4);
-            box-shadow: 0 0 20px rgba(255, 255, 0, 0.8);
-        }
-
         @media (max-height: 600px) {
             .trash-map {
                 max-height: 150px;
@@ -487,10 +462,7 @@
                 <div class="stat">💸 <span id="money">0</span></div>
                 <div class="stat"><span id="timeIcon">🌙</span> <span id="timeDisplay">22:00</span></div>
             </div>
-            <div>
-                <button class="music-btn" id="musicBtn">🎵 MÚSICA</button>
-                <button class="shop-btn" id="shopBtn">🛒 TIENDA</button>
-            </div>
+            <button class="music-btn" id="musicBtn">🎵 MÚSICA</button>
         </div>
 
         <div class="phase-indicator" id="phaseIndicator">🌙 NOCHE - Busca comida en la basura</div>
@@ -518,36 +490,38 @@
             </div>
             <button class="shop-close" id="closeShop">CERRAR</button>
         </div>
-
-        <div class="main-menu" id="mainMenu">
-            <div class="menu-title">
-                🐱 GATO MANAGER<br>
-                RESTAURANTE CALLEJERO<br>
-                <small style="font-size: 8px; color: #00ffff;">Elige tu gato para comenzar</small>
+    <div class="main-menu" id="mainMenu">
+        <div class="menu-title">
+            🐱 GATO MANAGER<br>
+            RESTAURANTE CALLEJERO<br>
+            <small style="font-size: 8px; color: #00ffff;">Elige tu gato para comenzar</small>
+        </div>
+        <div class="cat-selector">
+            <h3>🐱 ELIGE TU GATO</h3>
+            <div class="cat-options">
+                <div class="cat-option" data-cat="🐱">🐱</div>
+                <div class="cat-option" data-cat="🐈">🐈</div>
+                <div class="cat-option" data-cat="😺">😺</div>
+                <div class="cat-option" data-cat="😼">😼</div>
+                <div class="cat-option" data-cat="😻">😻</div>
+                <div class="cat-option" data-cat="🙀">🙀</div>
             </div>
-            <div class="cat-selector">
-                <h3>🐱 ELIGE TU GATO</h3>
-                <div class="cat-options">
-                    <div class="cat-option selected" data-cat="🐱">🐱</div>
-                    <div class="cat-option" data-cat="🐈">🐈</div>
-                    <div class="cat-option" data-cat="😺">😺</div>
-                    <div class="cat-option" data-cat="😼">😼</div>
-                    <div class="cat-option" data-cat="😻">😻</div>
-                    <div class="cat-option" data-cat="🙀">🙀</div>
-                </div>
-                <button class="start-btn" id="startGame">COMENZAR JUEGO</button>
-            </div>
+<button class="close-selector" id="startGame">COMENZAR JUEGO</button>
         </div>
     </div>
+
+    <audio id="gameMusic" loop>
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmIaCjiR1/LNeSsFJHfH8N2QQAoUXbTp66hVFApGnt/yxXkrBSJ2x+/ekkELFVuz5+ytVhUKRp3e8sV5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUKRZze8cZ5KwUidsfu35JBCxVbs+fsr1YVCkWc3vHGeSsFInbH7t+SQQsVW7Pn7K9WFQpFnN7xxnkrBSJ2x+7fkkELFVuz5+yvVhUK" type="audio/wav">
+    </audio>
 
     <script>
         // Estado del juego
         const gameState = {
             money: 0,
             selectedCat: '🐱',
-            currentPhase: 'night',
-            gameTime: 22,
-            dayTime: 0,
+            currentPhase: 'night', // 'night' o 'day'
+            gameTime: 22, // Hora del juego (22 = 10 PM)
+            dayTime: 0, // Contador para el día
             inventory: {},
             customers: [],
             upgrades: {
@@ -556,7 +530,9 @@
                 thief: 0
             },
             isPlaying: false,
-            musicEnabled: false
+            musicEnabled: false,
+            nightStartTime: 0,
+            trashMapSize: { cols: 4, rows: 4 }
         };
 
         // Comidas disponibles
@@ -578,16 +554,31 @@
             mainMenu: document.getElementById('mainMenu'),
             shop: document.getElementById('shop'),
             musicBtn: document.getElementById('musicBtn'),
-            shopBtn: document.getElementById('shopBtn'),
-            customerQueue: document.getElementById('customerQueue')
+            gameMusic: document.getElementById('gameMusic')
         };
+
+        // Cargar estado guardado
+        function loadGame() {
+            const saved = localStorage.getItem('catRestaurantGame');
+            if (saved) {
+                const data = JSON.parse(saved);
+                Object.assign(gameState, data);
+            }
+            elements.playerCat.textContent = gameState.selectedCat;
+            updateUI();
+        }
+
+        // Guardar estado
+        function saveGame() {
+            localStorage.setItem('catRestaurantGame', JSON.stringify(gameState));
+        }
 
         // Crear mapa de basura
         function createTrashMap() {
             elements.trashMap.innerHTML = '';
-            const trashEmojis = ['🗑️', '♻️', '📦', '🥫'];
+            const trashEmojis = ['🗑️', '♻️', '📦', '🥫', '🗑️'];
             
-            for (let i = 0; i < 48; i++) {
+            for (let i = 0; i < 384; i++) { // 16x24
                 const block = document.createElement('div');
                 block.className = 'trash-block';
                 block.textContent = trashEmojis[Math.floor(Math.random() * trashEmojis.length)];
@@ -612,13 +603,9 @@
                 block.style.opacity = '0.3';
                 block.style.pointerEvents = 'none';
                 
-                setTimeout(() => {
-                    block.style.opacity = '1';
-                    block.style.pointerEvents = 'auto';
-                }, 3000);
-                
                 showNotification(`¡Encontraste ${food}!`);
                 updateInventory();
+                saveGame();
             } else {
                 showNotification(`¡${food} inventario lleno!`);
             }
@@ -650,7 +637,8 @@
             if (gameState.currentPhase !== 'day' || gameState.customers.length === 0) return;
             
             const customer = gameState.customers[0];
-            if (customer.order === food && gameState.inventory[food] > 0) {
+            if (customer.order === food) {
+                // Servicio exitoso
                 gameState.money += 5 + gameState.upgrades.advertising;
                 gameState.inventory[food]--;
                 gameState.customers.shift();
@@ -659,10 +647,9 @@
                 updateCustomerQueue();
                 updateInventory();
                 updateUI();
-            } else if (customer.order !== food) {
-                showNotification(`¡Orden incorrecta! Cliente quiere ${customer.order}`);
+                saveGame();
             } else {
-                showNotification(`¡No tienes ${food}!`);
+                showNotification(`¡Orden incorrecta! Cliente quiere ${customer.order}`);
             }
         }
 
@@ -711,12 +698,12 @@
                 elements.timeIcon.textContent = '🌙';
                 elements.phaseIndicator.textContent = '🌙 NOCHE - Busca comida en la basura';
                 elements.trashMap.style.display = 'grid';
-                elements.customerQueue.style.display = 'none';
+                document.getElementById('customerQueue').style.display = 'none';
             } else {
                 elements.timeIcon.textContent = '🌞';
                 elements.phaseIndicator.textContent = '🌞 DÍA - Atiende a los clientes';
                 elements.trashMap.style.display = 'none';
-                elements.customerQueue.style.display = 'block';
+                document.getElementById('customerQueue').style.display = 'block';
             }
             
             // Actualizar botones de mejora
@@ -727,6 +714,9 @@
                 
                 if (gameState.upgrades[type] > 0) {
                     upgrade.classList.add('purchased');
+                    upgrade.innerHTML = upgrade.innerHTML.replace(/💸 \d+/, `💸 ${cost}`);
+                } else {
+                    upgrade.classList.remove('purchased');
                 }
                 
                 if (gameState.money < cost) {
@@ -742,21 +732,27 @@
         // Cambiar fase del juego
         function switchPhase() {
             if (gameState.currentPhase === 'night') {
+                // Cambiar a día
                 gameState.currentPhase = 'day';
-                gameState.gameTime = 8;
+                gameState.gameTime = 8; // 8 AM
                 gameState.dayTime = 0;
                 
+                // Limpiar inventario de comidas no utilizadas al final del día anterior
+                // (Esto se hace al inicio del nuevo día)
+                
                 // Añadir comidas del gato ladrón
-                for (let i = 0; i < gameState.upgrades.thief * 3; i++) {
-                    const food = foods[Math.floor(Math.random() * foods.length)];
-                    const maxStorage = 3 + (gameState.upgrades.storage * 2);
-                    
-                    if (!gameState.inventory[food]) {
-                        gameState.inventory[food] = 0;
-                    }
-                    
-                    if (gameState.inventory[food] < maxStorage) {
-                        gameState.inventory[food]++;
+                for (let i = 0; i < gameState.upgrades.thief; i++) {
+                    for (let j = 0; j < 3; j++) {
+                        const food = foods[Math.floor(Math.random() * foods.length)];
+                        const maxStorage = 3 + (gameState.upgrades.storage * 2);
+                        
+                        if (!gameState.inventory[food]) {
+                            gameState.inventory[food] = 0;
+                        }
+                        
+                        if (gameState.inventory[food] < maxStorage) {
+                            gameState.inventory[food]++;
+                        }
                     }
                 }
                 
@@ -769,10 +765,15 @@
                 showNotification('🌞 ¡El restaurante abre!');
                 
             } else {
+                // Cambiar a noche
                 gameState.currentPhase = 'night';
-                gameState.gameTime = 22;
+                gameState.gameTime = 22; // 10 PM
                 
+                // Limpiar inventario
+                gameState.inventory = {};
                 gameState.customers = [];
+                
+                // Resetear mapa de basura
                 createTrashMap();
                 
                 showNotification('🌙 ¡Hora de buscar comida!');
@@ -781,6 +782,7 @@
             updateUI();
             updateInventory();
             updateCustomerQueue();
+            saveGame();
         }
 
         // Mostrar notificación
@@ -791,32 +793,32 @@
             document.body.appendChild(notification);
             
             setTimeout(() => {
-                if (notification.parentNode) {
-                    document.body.removeChild(notification);
-                }
+                document.body.removeChild(notification);
             }, 2000);
         }
 
-        // Configurar selector de gatos
-        function setupCatSelector() {
-            document.querySelectorAll('.cat-option').forEach(option => {
-                option.addEventListener('click', () => {
-                    document.querySelectorAll('.cat-option').forEach(opt => opt.classList.remove('selected'));
-                    option.classList.add('selected');
-                    gameState.selectedCat = option.dataset.cat;
-                });
-            });
-            
-            document.getElementById('closeCatSelector').addEventListener('click', () => {
-                elements.playerCat.textContent = gameState.selectedCat;
-                elements.catSelector.classList.add('hidden');
-                saveGame();
-            });
-            
-            elements.playerCat.addEventListener('click', () => {
-                elements.catSelector.classList.remove('hidden');
-            });
-        }
+// Configurar selector de gatos
+function setupCatSelector() {
+    document.querySelectorAll('.cat-option').forEach(option => {
+        option.addEventListener('click', () => {
+            document.querySelectorAll('.cat-option').forEach(opt => opt.classList.remove('selected'));
+            option.classList.add('selected');
+            gameState.selectedCat = option.dataset.cat;
+        });
+    });
+    
+    document.getElementById('startGame').addEventListener('click', () => {
+        elements.playerCat.textContent = gameState.selectedCat;
+        elements.mainMenu.classList.add('hidden');
+        gameState.isPlaying = true;
+        saveGame();
+    });
+    
+    elements.playerCat.addEventListener('click', () => {
+        elements.mainMenu.classList.remove('hidden');
+        gameState.isPlaying = false;
+    });
+}
 
         // Configurar mejoras
         function setupUpgrades() {
@@ -869,7 +871,15 @@
                 }
             });
         }
+// Event listeners para la tienda
+document.getElementById('closeShop').addEventListener('click', () => {
+    elements.shop.classList.add('hidden');
+});
 
+// Abrir tienda con doble click en el dinero
+elements.money.addEventListener('dblclick', () => {
+    elements.shop.classList.remove('hidden');
+});
         // Reproducir música arcade
         function playArcadeMusic(audioContext) {
             const melody = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25];
