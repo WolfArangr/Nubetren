@@ -76,7 +76,7 @@
     display: flex;
     gap: 15px;
     align-items: center;
-    font-size: 12px;  /* ← Arreglado */
+    font-size: 16px;  /* ← Arreglado */
 }
 
         .stat {
@@ -615,7 +615,7 @@
                 <br>
                 <p><strong>🌙 NOCHE:</strong> Busca comida en la basura</p>
                 <p><strong>🌞 DÍA:</strong> Atiende a los clientes</p>
-                <p><strong>💸 GANA:</strong> Maullidos para mejoras</p>
+                <p><strong>💸 Gana</strong> Maullidos para mejoras</p>
             </div>
             <button class="play-btn" id="playBtn">JUGAR</button>
         </div>
@@ -888,12 +888,12 @@ function checkCustomerTimeout() {
             
             if (gameState.currentPhase === 'night') {
                 elements.timeIcon.textContent = '🌙';
-                elements.phaseIndicator.textContent = '🌙 NOCHE';
+                elements.phaseIndicator.textContent = '🌙 NOCHE - ¡Ponte a robar comida!';
                 elements.trashMap.style.display = 'grid';
                 document.getElementById('customerQueue').style.display = 'none';
             } else {
                 elements.timeIcon.textContent = '🌞';
-                elements.phaseIndicator.textContent = '🌞 DÍA';
+                elements.phaseIndicator.textContent = '🌞 DÍA - ¡Atiende a los clientes!';
                 elements.trashMap.style.display = 'none';
                 document.getElementById('customerQueue').style.display = 'block';
             }
@@ -957,17 +957,18 @@ function switchPhase() {
         
         showNotification('🌞 ¡El restaurante abre!');
         
-    } else {
-        // Cambiar a noche
-        gameState.currentPhase = 'night';
-        gameState.gameTime = 22; // 10 PM
-        document.getElementById('skipNightBtn').classList.add('hidden');
-        // Limpiar inventario
-        gameState.inventory = {};
-        gameState.customers = [];
-        
-        // Resetear mapa de basura
-        createTrashMap();
+} else {
+    // Cambiar a noche
+    gameState.currentPhase = 'night';
+    gameState.gameTime = 22; // 10 PM
+    gameState.nightStartTime = 0; // ← AÑADIR ESTA LÍNEA
+    document.getElementById('skipNightBtn').classList.add('hidden');
+    // Limpiar inventario
+    gameState.inventory = {};
+    gameState.customers = [];
+    
+    // Resetear mapa de basura
+    createTrashMap();
         
         // ✅ NUEVO: Abrir la tienda automáticamente al finalizar el día
         elements.shop.classList.remove('hidden');
@@ -1007,7 +1008,7 @@ function startActualGame() {
     elements.mainMenu.classList.add('hidden');
     gameState.isPlaying = true;
     gameState.currentPhase = 'night'; // Asegurar que empiece en noche
-    gameState.nightStartTime = Date.now(); // Inicializar timer nocturno
+    gameState.nightStartTime = 0; // Inicializar timer nocturno
     
     // Mostrar indicador de fase
     elements.phaseIndicator.style.opacity = '1';
