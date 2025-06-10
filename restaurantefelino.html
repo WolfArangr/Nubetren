@@ -647,16 +647,21 @@
             gameMusic: document.getElementById('gameMusic')
         };
 
-        // Cargar estado guardado
-        function loadGame() {
-            const saved = localStorage.getItem('catRestaurantGame');
-            if (saved) {
-                const data = JSON.parse(saved);
-                Object.assign(gameState, data);
-            }
-            elements.playerCat.textContent = gameState.selectedCat;
-            updateUI();
-        }
+// Cargar estado guardado
+function loadGame() {
+    const saved = localStorage.getItem('catRestaurantGame');
+    if (saved) {
+        const data = JSON.parse(saved);
+        Object.assign(gameState, data);
+    }
+    // ✅ SOLO actualizar UI si los elementos DOM existen
+    if (elements.playerCat) {
+        elements.playerCat.textContent = gameState.selectedCat;
+    }
+    if (elements.money) {
+        updateUI();
+    }
+}
 
         // Guardar estado
         function saveGame() {
@@ -1161,6 +1166,12 @@ function gameLoop() {
 
 // Inicializar juego
 function initGame() {
+    // ✅ PRIMERO asegurar que DOM esté listo
+    if (!elements.playerCat || !elements.money) {
+        console.error('Elementos DOM no encontrados');
+        return;
+    }
+    
     loadGame();
     createTrashMap();
     setupCatSelector();
@@ -1170,7 +1181,10 @@ function initGame() {
     updateCustomerQueue();
     
     // Configurar evento del botón de jugar
-    document.getElementById('playBtn').addEventListener('click', startActualGame);
+    const playBtn = document.getElementById('playBtn');
+    if (playBtn) {
+        playBtn.addEventListener('click', startActualGame);
+    }
     
     // Comenzar con selector de gato si es primera vez O si no está jugando
     if (!localStorage.getItem('catRestaurantGame') || !gameState.isPlaying) {
