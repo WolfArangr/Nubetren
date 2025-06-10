@@ -983,6 +983,12 @@ function setupCatSelector() {
         showContextScreen();
     });
     
+    // ✅ CORREGIDO: Configurar evento del botón de jugar aquí
+    const playBtn = document.getElementById('playBtn');
+    if (playBtn) {
+        playBtn.addEventListener('click', startActualGame);
+    }
+    
     elements.playerCat.addEventListener('click', () => {
         elements.mainMenu.classList.remove('hidden');
         gameState.isPlaying = false;
@@ -1065,11 +1071,7 @@ function startActualGame() {
                     elements.musicBtn.textContent = '🎵 MÚSICA';
                     isPlaying = false;
                 }
-                // Configurar evento del botón de jugar (una sola vez)
-const playBtn = document.getElementById('playBtn');
-if (playBtn) {
-    playBtn.addEventListener('click', startActualGame);
-}
+
             });
         }
 // Event listeners para la tienda
