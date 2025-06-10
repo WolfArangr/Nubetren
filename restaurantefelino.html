@@ -703,6 +703,9 @@ function createTrashMap() {
             
             if (gameState.inventory[food] < maxStorage) {
                 gameState.inventory[food]++;
+            if (!gameState.nightStartTime) {
+            gameState.nightStartTime = Date.now();
+}
                 block.style.opacity = '0.3';
                 block.style.pointerEvents = 'none';
                 
@@ -1153,11 +1156,10 @@ function gameLoop() {
     } else if (gameState.currentPhase === 'night') {
         // Manejar la fase nocturna
         if (!gameState.nightStartTime) {
-            gameState.nightStartTime = Date.now();
         }
         
         // La noche dura 30 segundos
-        if (Date.now() - gameState.nightStartTime > 8000) {
+if (gameState.nightStartTime && Date.now() - gameState.nightStartTime > 8000) {
             gameState.nightStartTime = 0;
             switchPhase();
         }
