@@ -577,9 +577,9 @@
         <div class="shop hidden" id="shop">
             <div class="shop-title">🛒 MEJORAS MAULLANTES 🛒</div>
             <div class="upgrades">
-                <div class="upgrade" data-upgrade="advertising">📢 Publicidad (💸 50)<br>+2 gatos por hora</div>
-                <div class="upgrade" data-upgrade="storage">📦 Almiaucenaje (💸 75)<br>+2 max por comida</div>
-                <div class="upgrade" data-upgrade="thief">🥷 Gato Ladrón (💸 100)<br>+3 comidas por noche</div>
+                <div class="upgrade" data-upgrade="advertising">📢 Publimiudad (💸 50)<br>+2 clientes por hora</div>
+                <div class="upgrade" data-upgrade="storage">📦 Almiaucenaje (💸 75)<br>+2 cantidad maxima por comida</div>
+                <div class="upgrade" data-upgrade="thief">🥷 Gato Ladrón (💸 100)<br>Un gatito te trae 3 comidas extra noche</div>
             </div>
             <button class="shop-close" id="closeShop">CERRAR</button>
         </div>
@@ -611,7 +611,7 @@
             <div class="context-cat" id="contextCat">🐱</div>
             <div class="context-text">
                 <h3>TU HISTORIA</h3>
-                <p>Tras años como gato viviendo de las sobras de un reconocido restaurante, decides que es hora de montarlo por tu cuenta para que otros gatos caten la buena vida.</p>
+                <p>Tras años como gato viviendo de las sobras de un reconocido restaurante observando al chef, decides que es hora de montártelo por tu cuenta para que otros gatos caten la buena vida y obtener una estrella Miauchelin.</p>
                 <br>
                 <p><strong>🌙 NOCHE:</strong> Busca comida en la basura</p>
                 <p><strong>🌞 DÍA:</strong> Atiende a los clientes</p>
@@ -632,8 +632,8 @@
         const gameState = {
             money: 0,
             selectedCat: '🐱',
-            currentPhase: 'night', // 'night' o 'day'
-            gameTime: 22, // Hora del juego (22 = 10 PM)
+            currentPhase: 'day', // 'night' o 'day'
+            gameTime: 18, // Hora del juego (22 = 10 PM)
             dayTime: 0, // Contador para el día
             inventory: {},
             customers: [],
@@ -645,7 +645,7 @@
             isPlaying: false,
             musicEnabled: false,
             nightStartTime: 0,
-            trashMapSize: { cols: 6, rows: 8 }
+            trashMapSize: { cols: 7, rows: 9 }
         };
 
         // Comidas disponibles
