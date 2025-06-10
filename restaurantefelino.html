@@ -1041,6 +1041,7 @@ function setupCatSelector() {
     const playBtn = document.getElementById('playBtn');
     if (playBtn) {
         playBtn.addEventListener('click', startActualGame);
+        location.reload();
     }
     
     elements.playerCat.addEventListener('click', () => {
