@@ -822,7 +822,7 @@ function updateCustomerQueue() {
             
             // Crear botón de rechazo
             const rejectBtn = document.createElement('span');
-            rejectBtn.textContent = '❌';
+            rejectBtn.textContent = '❌ No me queda...';
             rejectBtn.style.cssText = `
                 font-size: 20px;
                 cursor: pointer;
@@ -862,7 +862,7 @@ function updateCustomerQueue() {
         function rejectCustomer() {
     if (gameState.customers.length > 0) {
         const rejectedCustomer = gameState.customers.shift();
-        showNotification(`${rejectedCustomer.cat} se fue molesto... 💔`);
+        showNotification(`${rejectedCustomer.cat} se fue hambiento y con el corazón roto... 💔`);
         updateCustomerQueue();
         saveGame();
     }
@@ -876,7 +876,7 @@ function checkCustomerTimeout() {
     // Si han pasado 6 segundos (6000ms), el cliente se va
     if (waitTime >= 6000) {
         gameState.customers.shift();
-        showNotification(`${firstCustomer.cat} se cansó de esperar y se fue... 😾`);
+        showNotification(`${firstCustomer.cat} se cansó de esperar y se fue a robar por ahí... 😾`);
         updateCustomerQueue();
         saveGame();
     }
