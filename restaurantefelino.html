@@ -600,8 +600,9 @@
     </div>
 </div>
 
-    <audio id="gameMusic" loop>
-        <source src="/8bitmusic.mp3" type="audio/mpeg">
+<audio id="gameMusic" loop>
+        <source src="./8bitmusic.mp3" type="audio/mpeg">
+        <source src="8bitmusic.mp3" type="audio/mpeg">
     </audio>
 
     <script>
@@ -690,32 +691,36 @@ function createTrashMap() {
     }
 }
 
-        // Buscar en la basura
-        function searchTrash(block) {
-            if (gameState.currentPhase !== 'night') return;
-            
-            const food = foods[Math.floor(Math.random() * foods.length)];
-            const maxStorage = 3 + (gameState.upgrades.storage * 2);
-            
-            if (!gameState.inventory[food]) {
-                gameState.inventory[food] = 0;
-            }
-            
-            if (gameState.inventory[food] < maxStorage) {
-                gameState.inventory[food]++;
-            if (!gameState.nightStartTime) {
-            gameState.nightStartTime = Date.now();
+// Buscar en la basura
+function searchTrash(block) {
+    if (gameState.currentPhase !== 'night') return;
+    
+    // ✅ NUEVO: Iniciar timer nocturno solo en el primer clic
+    if (!gameState.nightStartTime) {
+        gameState.nightStartTime = Date.now();
+        showNotification('🌙 ¡8 segundos para buscar comida!');
+    }
+    
+    const food = foods[Math.floor(Math.random() * foods.length)];
+    const maxStorage = 3 + (gameState.upgrades.storage * 2);
+    
+    if (!gameState.inventory[food]) {
+        gameState.inventory[food] = 0;
+    }
+    
+    if (gameState.inventory[food] < maxStorage) {
+        gameState.inventory[food]++;
+        
+        block.style.opacity = '0.3';
+        block.style.pointerEvents = 'none';
+        
+        showNotification(`¡Encontraste ${food}!`);
+        updateInventory();
+        saveGame();
+    } else {
+        showNotification(`¡${food} inventario lleno!`);
+    }
 }
-                block.style.opacity = '0.3';
-                block.style.pointerEvents = 'none';
-                
-                showNotification(`¡Encontraste ${food}!`);
-                updateInventory();
-                saveGame();
-            } else {
-                showNotification(`¡${food} inventario lleno!`);
-            }
-        }
 
         // Actualizar inventario
         function updateInventory() {
