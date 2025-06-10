@@ -963,37 +963,6 @@ function switchPhase() {
         }
 
 
-// Configurar selector de gatos
-function setupCatSelector() {
-    document.querySelectorAll('.cat-option').forEach(option => {
-        option.addEventListener('click', () => {
-            document.querySelectorAll('.cat-option').forEach(opt => opt.classList.remove('selected'));
-            option.classList.add('selected');
-            gameState.selectedCat = option.dataset.cat;
-            
-            // Actualizar el emoji del gato en la pantalla de contexto
-            const contextCat = document.getElementById('contextCat');
-            if (contextCat) {
-                contextCat.textContent = gameState.selectedCat;
-            }
-        });
-    });
-    
-    document.getElementById('startGame').addEventListener('click', () => {
-        showContextScreen();
-    });
-    
-    // ✅ CORREGIDO: Configurar evento del botón de jugar aquí
-    const playBtn = document.getElementById('playBtn');
-    if (playBtn) {
-        playBtn.addEventListener('click', startActualGame);
-    }
-    
-    elements.playerCat.addEventListener('click', () => {
-        elements.mainMenu.classList.remove('hidden');
-        gameState.isPlaying = false;
-    });
-}
 
 // Nueva función para mostrar pantalla de contexto
 function showContextScreen() {
@@ -1014,6 +983,38 @@ function startActualGame() {
     
     updateUI();
     saveGame();
+}
+
+// Configurar selector de gatos
+function setupCatSelector() {
+    document.querySelectorAll('.cat-option').forEach(option => {
+        option.addEventListener('click', () => {
+            document.querySelectorAll('.cat-option').forEach(opt => opt.classList.remove('selected'));
+            option.classList.add('selected');
+            gameState.selectedCat = option.dataset.cat;
+            
+            // Actualizar el emoji del gato en la pantalla de contexto
+            const contextCat = document.getElementById('contextCat');
+            if (contextCat) {
+                contextCat.textContent = gameState.selectedCat;
+            }
+        });
+    });
+    
+    document.getElementById('startGame').addEventListener('click', () => {
+        showContextScreen();
+    });
+    
+    // Configurar evento del botón de jugar
+    const playBtn = document.getElementById('playBtn');
+    if (playBtn) {
+        playBtn.addEventListener('click', startActualGame);
+    }
+    
+    elements.playerCat.addEventListener('click', () => {
+        elements.mainMenu.classList.remove('hidden');
+        gameState.isPlaying = false;
+    });
 }
     
     elements.playerCat.addEventListener('click', () => {
