@@ -1053,26 +1053,26 @@ function setupCatSelector() {
             });
         }
 
-        // Configurar música
-        function setupMusic() {
-            // Generar tono arcade simple
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            let isPlaying = false;
-            
-elements.musicBtn.addEventListener('click', () => {
-    if (!isPlaying) {
-        audioContext.resume().then(() => {
-            playArcadeMusic(audioContext);
-            elements.musicBtn.textContent = '🔇';
-            isPlaying = true;
-        });
-    } else {
-        audioContext.suspend();
-        elements.musicBtn.textContent = '🎵';
-        isPlaying = false;
-    }
-});
+function setupMusic() {
+    const gameMusic = elements.gameMusic;
+    let isPlaying = false;
+    
+    elements.musicBtn.addEventListener('click', () => {
+        if (!isPlaying) {
+            gameMusic.play().then(() => {
+                elements.musicBtn.textContent = '🔇';
+                isPlaying = true;
+            }).catch(error => {
+                console.error('Error reproduciendo música:', error);
+                showNotification('🎵 No se pudo cargar la música');
+            });
+        } else {
+            gameMusic.pause();
+            elements.musicBtn.textContent = '🎵';
+            isPlaying = false;
         }
+    });
+}
 // Event listeners para la tienda
 document.getElementById('closeShop').addEventListener('click', () => {
     elements.shop.classList.add('hidden');
