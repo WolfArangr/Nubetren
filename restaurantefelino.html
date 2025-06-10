@@ -62,22 +62,22 @@
             min-height: 80px;
         }
 
-        .player-cat {
-            : 24px;
-            background: rgba(255, 0, 255, 0.2);
-            padding: 5px 10px;
-            border-radius: 10px;
-            border: 2px solid #ff00ff;
-            box-shadow: 0 0 15px rgba(255, 0, 255, 0.8);
-            cursor: pointer;
-        }
+.player-cat {
+    font-size: 24px;  /* ← Arreglado */
+    background: rgba(255, 0, 255, 0.2);
+    padding: 5px 10px;
+    border-radius: 10px;
+    border: 2px solid #ff00ff;
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.8);
+    cursor: pointer;
+}
 
-        .stats {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            : 12px;
-        }
+.stats {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    font-size: 12px;  /* ← Arreglado */
+}
 
         .stat {
             background: rgba(0, 255, 255, 0.2);
@@ -522,6 +522,7 @@
     box-shadow: 0 0 30px rgba(255, 0, 255, 0.8);
 }
 .phase-indicator {
+    display: none
     position: fixed;
     top: 90px;
     right: 50%;
