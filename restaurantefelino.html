@@ -534,7 +534,7 @@
             isPlaying: false,
             musicEnabled: false,
             nightStartTime: 0,
-            trashMapSize: { cols: 4, rows: 4 }
+            trashMapSize: { cols: 6, rows: 8 }
         };
 
         // Comidas disponibles
@@ -986,6 +986,12 @@ elements.money.addEventListener('dblclick', () => {
 // Loop principal del juego
 function gameLoop() {
     if (!gameState.isPlaying) return;
+    
+    // ✅ PAUSAR EL JUEGO SI LA TIENDA ESTÁ ABIERTA
+    if (!elements.shop.classList.contains('hidden')) {
+        requestAnimationFrame(gameLoop);
+        return;
+    }
     
     if (gameState.currentPhase === 'day') {
         gameState.dayTime++;
