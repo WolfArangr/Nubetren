@@ -1056,18 +1056,19 @@ function setupCatSelector() {
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             let isPlaying = false;
             
-            elements.musicBtn.addEventListener('click', () => {
-                if (!isPlaying) {
-                    playArcadeMusic(audioContext);
-                    elements.musicBtn.textContent = '🔇';
-                    isPlaying = true;
-                } else {
-                    audioContext.suspend();
-                    elements.musicBtn.textContent = '🎵';
-                    isPlaying = false;
-                }
-
-            });
+elements.musicBtn.addEventListener('click', () => {
+    if (!isPlaying) {
+        audioContext.resume().then(() => {
+            playArcadeMusic(audioContext);
+            elements.musicBtn.textContent = '🔇';
+            isPlaying = true;
+        });
+    } else {
+        audioContext.suspend();
+        elements.musicBtn.textContent = '🎵';
+        isPlaying = false;
+    }
+});
         }
 // Event listeners para la tienda
 document.getElementById('closeShop').addEventListener('click', () => {
