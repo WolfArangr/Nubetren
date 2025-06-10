@@ -131,7 +131,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 20px;
             cursor: pointer;
             border-radius: 6px;
             transition: all 0.2s;
@@ -160,7 +160,7 @@
 
         .inventory-title {
             color: #ff00ff;
-            font-size: 10px;
+            font-size: 12px;
             margin-bottom: 8px;
             text-align: center;
             text-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
@@ -202,7 +202,7 @@
             border-radius: 50%;
             width: 16px;
             height: 16px;
-            font-size: 8px;
+            font-size: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -220,7 +220,7 @@
 
         .queue-title {
             color: #00ffff;
-            font-size: 10px;
+            font-size: 12px;
             margin-bottom: 8px;
             text-align: center;
             text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
@@ -245,11 +245,11 @@
         }
 
 .customer-cat {
-    font-size: 28px;
+    font-size: 32px;
 }
 
 .customer-order {
-    font-size: 24px;
+    font-size: 26px;
     background: rgba(255, 0, 255, 0.3);
     padding: 4px 8px;
     border-radius: 6px;
@@ -280,7 +280,7 @@
             border-radius: 8px;
             cursor: pointer;
             font-family: inherit;
-            font-size: 10px;
+            font-size: 12px;
             margin-top: 15px;
             display: block;
             margin-left: auto;
@@ -295,7 +295,7 @@
 
         .shop-title {
             color: #ffff00;
-            font-size: 12px;
+            font-size: 14px;
             margin-bottom: 10px;
             text-align: center;
             text-shadow: 0 0 15px rgba(255, 255, 0, 0.8);
@@ -314,7 +314,7 @@
             padding: 8px;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 8px;
+            font-size: 10px;
             text-align: center;
         }
 
@@ -365,7 +365,7 @@
             color: #ff00ff;
             text-align: center;
             margin-bottom: 15px;
-            font-size: 10px;
+            font-size: 12px;
             text-shadow: 0 0 10px rgba
         }
 
@@ -533,27 +533,27 @@
                 <div class="stat">💸 <span id="money">0</span></div>
                 <div class="stat"><span id="timeIcon">🌙</span> <span id="timeDisplay">22:00</span></div>
             </div>
-            <button class="music-btn" id="musicBtn">🎵 MÚSICA</button>
+            <button class="music-btn" id="musicBtn">🎵</button>
         </div>
 
-        <div class="phase-indicator" id="phaseIndicator">🌙 NOCHE - Busca comida en la basura</div>
+        <div class="phase-indicator" id="phaseIndicator">🌙 NOCHE</div>
 
         <div class="game-area">
             <div class="trash-map" id="trashMap"></div>
             
             <div class="inventory">
-                <div class="inventory-title">🍽️ INVENTARIO</div>
+                <div class="inventory-title">🍽️ INVENTARIO 🍽️</div>
                 <div class="food-items" id="foodItems"></div>
             </div>
 
             <div class="customer-queue" id="customerQueue">
-                <div class="queue-title">🐱 COLA DE CLIENTES</div>
+                <div class="queue-title">🐱 COLA DE CLIENTES 🐱</div>
                 <div id="queueList"></div>
             </div>
         </div>
 
         <div class="shop hidden" id="shop">
-            <div class="shop-title">🛒 MEJORAS MAULLANTES</div>
+            <div class="shop-title">🛒 MEJORAS MAULLANTES 🛒</div>
             <div class="upgrades">
                 <div class="upgrade" data-upgrade="advertising">📢 Publicidad (💸 50)<br>+2 gatos por hora</div>
                 <div class="upgrade" data-upgrade="storage">📦 Almiaucenaje (💸 75)<br>+2 max por comida</div>
@@ -564,18 +564,18 @@
 
 <div class="main-menu" id="mainMenu">
     <div class="menu-title">
-        🐱 GATO MANAGER<br>
-        RESTAURANTE CALLEJERO<br>
+        🐱 GATO MANAGER 🐱<br>
+        RESTAURANTE FELINO<br>
         <small style="font-size: 8px; color: #00ffff;">Elige tu gato para comenzar</small>
     </div>
     
     <!-- Selector de gatos -->
     <div class="cat-selector" id="catSelector">
-        <h3>🐱 ELIGE TU GATO</h3>
+        <h3>🐱 ELIGE TU GATO 🐱</h3>
         <div class="cat-options">
             <div class="cat-option" data-cat="🐱">🐱</div>
-            <div class="cat-option" data-cat="🐈">🐈</div>
-            <div class="cat-option" data-cat="😺">😺</div>
+            <div class="cat-option" data-cat="😸">😸</div>
+            <div class="cat-option" data-cat="😹">😹</div>
             <div class="cat-option" data-cat="😼">😼</div>
             <div class="cat-option" data-cat="😻">😻</div>
             <div class="cat-option" data-cat="🙀">🙀</div>
@@ -593,7 +593,7 @@
                 <br>
                 <p><strong>🌙 NOCHE:</strong> Busca comida en la basura</p>
                 <p><strong>🌞 DÍA:</strong> Atiende a los clientes</p>
-                <p><strong>💸 GANA:</strong> Dinero para mejoras</p>
+                <p><strong>💸 GANA:</strong> Maullidos para mejoras</p>
             </div>
             <button class="play-btn" id="playBtn">JUGAR</button>
         </div>
@@ -629,7 +629,7 @@
         const foods = ['🍕', '🍣', '🍩', '🍗', '🍔', '🍰', '🍙', '🍜', '🍟', '🥐', '🍞', '🌮', '🍤', '🥗', '🍱', '🥙', '🌯', '🥪', '🍖', '🥩'];
         
         // Gatos disponibles
-        const cats = ['🐱', '🐈', '😺', '😼', '😻', '🙀'];
+        const cats = ['🐱', '😸', '😹', '😼', '😻', '🙀'];
 
         // Elementos DOM
         const elements = {
@@ -857,12 +857,12 @@ function checkCustomerTimeout() {
             
             if (gameState.currentPhase === 'night') {
                 elements.timeIcon.textContent = '🌙';
-                elements.phaseIndicator.textContent = '🌙 NOCHE - Busca comida en la basura';
+                elements.phaseIndicator.textContent = '🌙 NOCHE';
                 elements.trashMap.style.display = 'grid';
                 document.getElementById('customerQueue').style.display = 'none';
             } else {
                 elements.timeIcon.textContent = '🌞';
-                elements.phaseIndicator.textContent = '🌞 DÍA - Atiende a los clientes';
+                elements.phaseIndicator.textContent = '🌞 DÍA';
                 elements.trashMap.style.display = 'none';
                 document.getElementById('customerQueue').style.display = 'block';
             }
