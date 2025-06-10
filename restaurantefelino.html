@@ -540,6 +540,7 @@
 
 @media (max-height: 600px) {
     .phase-indicator {
+        display: none
         top: 70px;
         font-size: 6px;
     }
@@ -693,7 +694,7 @@ function loadGame() {
 // Crear mapa de basura
 function createTrashMap() {
     elements.trashMap.innerHTML = '';
-    const trashEmojis = ['🗑️', '♻️', '📦', '🥫', '🗑️'];
+    const trashEmojis = ['🗑️', '📦', '🥫', '🧺','🪣'];
     
     // Configurar el grid según el tamaño definido en gameState
     const { cols, rows } = gameState.trashMapSize;
