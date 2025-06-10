@@ -187,7 +187,27 @@
     align-items: center;
     justify-content: center;
 }
+.skip-night-btn {
+    background: linear-gradient(45deg, #ff6600, #ffaa00);
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: bold;
+    margin: 10px auto;
+    display: block;
+    box-shadow: 0 0 15px rgba(255, 102, 0, 0.6);
+    transition: all 0.3s;
+    text-transform: uppercase;
+}
 
+.skip-night-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(255, 102, 0, 0.8);
+}
         .food-item:hover {
             transform: scale(1.1);
             box-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
@@ -540,7 +560,7 @@
 
         <div class="game-area">
             <div class="trash-map" id="trashMap"></div>
-            
+            <button class="skip-night-btn hidden" id="skipNightBtn">⏭️ TERMINAR NOCHE</button>
             <div class="inventory">
                 <div class="inventory-title">🍽️ INVENTARIO 🍽️</div>
                 <div class="food-items" id="foodItems"></div>
@@ -698,6 +718,7 @@ function searchTrash(block) {
     // ✅ NUEVO: Iniciar timer nocturno solo en el primer clic
     if (!gameState.nightStartTime) {
         gameState.nightStartTime = Date.now();
+        document.getElementById('skipNightBtn').classList.remove('hidden');
         showNotification('🌙 ¡8 segundos para buscar comida!');
     }
     
@@ -938,7 +959,7 @@ function switchPhase() {
         // Cambiar a noche
         gameState.currentPhase = 'night';
         gameState.gameTime = 22; // 10 PM
-        
+        document.getElementById('skipNightBtn').classList.add('hidden');
         // Limpiar inventario
         gameState.inventory = {};
         gameState.customers = [];
@@ -1180,7 +1201,12 @@ function initGame() {
         console.error('Elementos DOM no encontrados');
         return;
     }
-    
+    document.getElementById('skipNightBtn').addEventListener('click', () => {
+    if (gameState.currentPhase === 'night') {
+        gameState.nightStartTime = 0;
+        switchPhase();
+    }
+});
     loadGame();
     createTrashMap();
     setupCatSelector();
