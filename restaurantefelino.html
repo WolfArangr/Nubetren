@@ -984,6 +984,12 @@ function setupCatSelector() {
         showContextScreen();
     });
     
+    // Configurar evento del botón de jugar
+    const playBtn = document.getElementById('playBtn');
+    if (playBtn) {
+        playBtn.addEventListener('click', startActualGame);
+    }
+    
     elements.playerCat.addEventListener('click', () => {
         elements.mainMenu.classList.remove('hidden');
         gameState.isPlaying = false;
