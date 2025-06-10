@@ -980,15 +980,8 @@ function setupCatSelector() {
     });
     
     document.getElementById('startGame').addEventListener('click', () => {
-        // Mostrar pantalla de contexto en lugar de iniciar directamente
         showContextScreen();
     });
-    
-    // Configurar evento del botón de jugar
-    const playBtn = document.getElementById('playBtn');
-    if (playBtn) {
-        playBtn.addEventListener('click', startActualGame);
-    }
     
     elements.playerCat.addEventListener('click', () => {
         elements.mainMenu.classList.remove('hidden');
@@ -1072,6 +1065,11 @@ function startActualGame() {
                     elements.musicBtn.textContent = '🎵 MÚSICA';
                     isPlaying = false;
                 }
+                // Configurar evento del botón de jugar (una sola vez)
+const playBtn = document.getElementById('playBtn');
+if (playBtn) {
+    playBtn.addEventListener('click', startActualGame);
+}
             });
         }
 // Event listeners para la tienda
@@ -1186,12 +1184,7 @@ function initGame() {
     updateInventory();
     updateCustomerQueue();
     
-    // Configurar evento del botón de jugar
-    const playBtn = document.getElementById('playBtn');
-    if (playBtn) {
-        playBtn.addEventListener('click', startActualGame);
-    }
-    
+ 
     // Comenzar con selector de gato si es primera vez O si no está jugando
     if (!localStorage.getItem('catRestaurantGame') || !gameState.isPlaying) {
         elements.mainMenu.classList.remove('hidden');
